@@ -7,6 +7,7 @@ class CustomText extends StatelessWidget {
     this.color = Colors.white,
     this.size = 16,
     this.weight = FontWeight.normal,
+    this.textAlign = TextAlign.center,
     this.fontFamily = 'JakartaSans',
     this.overflow = TextOverflow.ellipsis,
     this.maxLines = 1,
@@ -16,6 +17,7 @@ class CustomText extends StatelessWidget {
   final Color color;
   final double size;
   final FontWeight weight;
+  final TextAlign textAlign;
   final String fontFamily;
   final TextOverflow overflow;
   final int maxLines;
@@ -27,6 +29,7 @@ class CustomText extends StatelessWidget {
       text,
       overflow: overflow,
       maxLines: maxLines,
+      textAlign: textAlign,
       style: TextStyle(
         color: color,
         fontSize: size,
