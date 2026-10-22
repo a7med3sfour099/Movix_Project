@@ -12,6 +12,7 @@ class CustomTextfield extends StatefulWidget {
     this.validator,
     this.onChanged,
     this.textInputAction,
+    this.icon,
   });
 
   final String hint;
@@ -21,6 +22,7 @@ class CustomTextfield extends StatefulWidget {
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
   final TextInputAction? textInputAction;
+  final IconData? icon;
 
   @override
   State<CustomTextfield> createState() => _CustomTextfieldState();
@@ -52,7 +54,19 @@ class _CustomTextfieldState extends State<CustomTextfield> {
       cursorHeight: 20,
       validator: widget.validator,
       obscureText: _obscureText,
-      decoration: InputDecoration(
+      decoration:
+       InputDecoration(
+        prefixIcon: widget.icon != null
+    ? const SizedBox(
+        width: 48,
+        height: 48,
+        child: Icon(
+          Icons.person,
+          color: AppColors.secondary,
+          size: 22,
+        ),
+      )
+    : null,
         suffixIcon: widget.isPass
             ? GestureDetector(
                 onTap: _togglePasswordVisibility,
@@ -70,15 +84,14 @@ class _CustomTextfieldState extends State<CustomTextfield> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         labelText: widget.hint,
-        labelStyle: TextStyle(color: AppColors.primary),
-        fillColor: AppColors.background,
+        labelStyle: TextStyle(color: AppColors.secondary),
+        fillColor: AppColors.InputFiledBckground,
         filled: true,
       ),
     );
