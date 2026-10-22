@@ -91,7 +91,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
         ),
         labelText: widget.hint,
         labelStyle: TextStyle(color: AppColors.secondary),
-        fillColor: AppColors.InputFiledBckground,
+        fillColor: AppColors.InputFiledBackground,
         filled: true,
       ),
     );
