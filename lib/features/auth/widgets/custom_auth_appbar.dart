@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 
