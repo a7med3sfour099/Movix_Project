@@ -1,4 +1,5 @@
 import 'package:movixapp/Widgets/custom_text.dart';
+import 'package:movixapp/Widgets/svg_image.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -6,14 +7,15 @@ import 'package:gap/gap.dart';
 class CustomOutlinedButton extends StatelessWidget {
   const CustomOutlinedButton({
     super.key,
-    this.backgroundImage,
+
     required this.text,
     this.onPressed,
     this.showIcon = true,
     this.child,
+    this.imageUrl,
   });
 
-  final String? backgroundImage;
+  final String? imageUrl;
   final String text;
   final VoidCallback? onPressed;
   final bool? showIcon;
@@ -33,21 +35,19 @@ class CustomOutlinedButton extends StatelessWidget {
       child:
           child ??
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              if (backgroundImage != null && showIcon!) ...[
-                Image.asset(
-                  backgroundImage!,
-                  width: 31.5,
-                  height: 32.14,
-                  fit: BoxFit.cover,
+              if (imageUrl != null && showIcon!) ...[
+                SvgImage(
+                  path:
+                      imageUrl ?? 'assets/auth_assets/google-icon-logo-svg.svg',
+                  size: 30,
                 ),
               ],
-              Gap(5),
+              Gap(60),
               CustomText(
                 text: text,
-                size: 23,
+                size: 20,
                 color: AppColors.secondary,
                 weight: FontWeight.w500,
               ),
