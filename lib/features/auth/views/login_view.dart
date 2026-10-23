@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:movixapp/Widgets/custom_elevated_button.dart';
+import 'package:movixapp/Widgets/custom_outlined_button.dart';
 import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/Widgets/custom_text_button.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
@@ -10,6 +10,7 @@ import 'package:movixapp/Widgets/custom_text_field.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/utils/email_validator.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -47,27 +48,15 @@ class _LoginViewState extends State<LoginView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
-                      // height: 161,
-                      // color: Colors.white,
-                      // width: 161,
-                      // child: SvgImage(
-                      //   path: 'assets/auth_assets/login_icon.svg',
-                      //   color: Colors.black,
-                      // ),
                       child: Image.asset(
-                        'assets/auth_assets/testwithpng.png',
+                        'assets/auth_assets/login_icon.png',
                         height: 161,
                         width: 161,
                       ),
-                      // child: SvgPicture.asset(
-                      //   'assets/auth_assets/login_icon.svg',
-                      //   height: 161,
-                      //   width: 161,
-                      // ),
                     ),
                     CustomTextfield(
                       textFieldName: 'Email',
-                      hint: 'Example@example.com',
+                      hint: 'Enter your email',
                       isPass: false,
                       controller: emailController,
                       keyboard: TextInputType.emailAddress,
@@ -101,14 +90,22 @@ class _LoginViewState extends State<LoginView> {
                     Gap(15),
                     CustomElevatedbutton(text: 'Login', onPressed: () {}),
                     Gap(15),
-                    Gap(15),
-
-                    CustomTextButton(
-                      text: 'Login with Apple',
+                    CustomOutlinedButton(
+                      imageUrl: 'assets/auth_assets/google-icon-logo-svg.svg',
+                      text: 'Continue with Google',
                       onPressed: () {},
-                      color: AppColors.primary,
-                      size: 25,
-                      weight: FontWeight.bold,
+                    ),
+                    Gap(15),
+                    CustomOutlinedButton(
+                      imageUrl: 'assets/auth_assets/facebook-svg.svg',
+                      text: 'Continue with Facebook',
+                      onPressed: () {},
+                    ),
+                    Gap(15),
+                    CustomOutlinedButton(
+                      imageUrl: 'assets/auth_assets/twitter-x-svg.svg',
+                      text: 'Continue with   X',
+                      onPressed: () {},
                     ),
                     Gap(15),
                     Row(
