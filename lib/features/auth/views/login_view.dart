@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:movixapp/Widgets/custom_elevated_button.dart';
-
 import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/Widgets/custom_text_button.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
@@ -11,7 +10,6 @@ import 'package:movixapp/Widgets/custom_text_field.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/utils/email_validator.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
-
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -103,7 +101,6 @@ class _LoginViewState extends State<LoginView> {
                     Gap(15),
                     CustomElevatedbutton(text: 'Login', onPressed: () {}),
                     Gap(15),
-
                     Gap(15),
 
                     CustomTextButton(
