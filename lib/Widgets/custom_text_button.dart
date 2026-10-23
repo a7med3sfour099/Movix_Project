@@ -21,7 +21,17 @@ class CustomTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: onPressed,
-      child: CustomText(text: text, size: size, color: color, weight: weight),
+       style: TextButton.styleFrom(
+        padding: EdgeInsets.zero,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: CustomText(
+        text: text,
+        size: size,
+        color: color,
+        weight: weight,
+      ),
     );
   }
 }

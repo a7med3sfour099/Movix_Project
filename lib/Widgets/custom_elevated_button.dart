@@ -9,27 +9,39 @@ class CustomElevatedbutton extends StatelessWidget {
     this.onPressed,
     this.child,
     this.backgroundColor,
+    this.size=20,
+    this.isLoading = false,
   });
 
   final String text;
   final VoidCallback? onPressed;
   final Widget? child;
   final Color? backgroundColor;
-
+  final double size;
+  final bool isLoading;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: backgroundColor ??  AppColors.secondary,
-        minimumSize: const Size(double.infinity, 50),
+        backgroundColor: backgroundColor ??  AppColors.primary,
+        disabledBackgroundColor: backgroundColor ?? AppColors.primary,
+        minimumSize: const Size(double.infinity, 50)
       ),
-      onPressed: onPressed,
-      child: child ??
+      onPressed: isLoading ? null : onPressed,
+      child: isLoading
+    ? const SizedBox(
+        width: 22,
+        height: 22,
+        child: CircularProgressIndicator(
+          strokeWidth: 2.5,
+          color: AppColors.background,
+        ),
+      ):
           CustomText(
             text: text,
-            size: 23,
-            color: Colors.white,
+            size: size,
+            color: AppColors.background,
             weight: FontWeight.w500,
             textAlign: TextAlign.center,
           ),
