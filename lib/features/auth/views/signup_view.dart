@@ -88,7 +88,7 @@ class SignupView extends StatelessWidget {
                           );
                         },
                       ),
-                      
+
                       BlocBuilder<SignupPasswordCubit, int>(
                         builder: (context, state) {
                           final cubit = context.read<SignupPasswordCubit>();
@@ -131,7 +131,6 @@ class SignupView extends StatelessWidget {
                         icon: Icons.lock_outlined,
                         textFieldName: 'Confirm your password',
                         onChanged: (value) {
-                   
                           context.read<SignupPasswordCubit>().passwordChanged(
                             password: formCubit.passwordController.text,
                             confirmPassword: value,
