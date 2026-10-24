@@ -15,6 +15,14 @@ String? validateStrongPassword(String? value) {
 
   final password = value.trim();
 
+  if (!RegExp(r'[A-Z]').hasMatch(value)) {
+    return "Password must contain an uppercase letter";
+  }
+
+  if (!RegExp(r'[a-z]').hasMatch(value)) {
+    return "Password must contain a lowercase letter";
+  }
+
   if (password.length < 8) {
     return 'Password must be at least 8 characters';
   }
