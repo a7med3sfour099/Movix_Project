@@ -6,7 +6,6 @@ import 'package:movixapp/Widgets/custom_outlined_button.dart';
 import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/Widgets/custom_text_button.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
-
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/utils/email_validator.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';

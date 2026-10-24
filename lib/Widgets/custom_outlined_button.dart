@@ -50,6 +50,7 @@ class CustomOutlinedButton extends StatelessWidget {
                 size: 20,
                 color: AppColors.secondary,
                 weight: FontWeight.w500,
+
               ),
             ],
           ),
