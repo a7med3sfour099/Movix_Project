@@ -127,7 +127,6 @@ class _CustomTextfieldState extends State<CustomTextfield> {
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(color: AppColors.error, width: 2),
               ),
-              labelText: widget.textFieldName,
               hintText: widget.hint,
               labelStyle: TextStyle(color: AppColors.secondary, fontSize: 18),
               hintStyle: TextStyle(color: AppColors.secondary.withOpacity(0.6)),

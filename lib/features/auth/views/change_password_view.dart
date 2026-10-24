@@ -21,15 +21,15 @@ class changePassword extends StatefulWidget {
 class _changePasswordState extends State<changePassword> {
   
   final _formKey = GlobalKey<FormState>();
-  final CurrentPasswordController = TextEditingController();
-  final NewPasswordController = TextEditingController();
+  final currentPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool isLoading = false;
   
   @override
   void dispose() {
-    CurrentPasswordController.dispose();
-    NewPasswordController.dispose();
+    currentPasswordController.dispose();
+    newPasswordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
   }
@@ -40,6 +40,7 @@ class _changePasswordState extends State<changePassword> {
       backgroundColor: AppColors.background,
       appBar: CustomAppbar(
         title: "Change Password",
+        back: true,
         onPressed: () {
           Navigator.pop(context);
         },
@@ -53,11 +54,11 @@ class _changePasswordState extends State<changePassword> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomTextfield(
-                  hint: "Enter your password",
+                  hint: "Enter your Password",
                   isPass: true,
-                  controller: CurrentPasswordController,
+                  controller: currentPasswordController,
                   icon: Icons.lock_outlined,
-                  textFieldName: "Current password",
+                  textFieldName: "Current Password",
                   validator : validateStrongPassword,
                   onChanged: (value){
                     setState(() {});
@@ -71,19 +72,20 @@ class _changePasswordState extends State<changePassword> {
                     onTap: () {},
                     child: CustomText(
                       text: 'Forgot Password?',
-                      size: 16,
+                      size: 12,
                       color: AppColors.primary,
+                      weight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
               Gap(15),
               CustomTextfield(
-                hint: "Create your password",
+                hint: "Create your Password",
                 isPass: true,
-                controller: NewPasswordController,
+                controller: newPasswordController,
                 icon: Icons.lock_outlined,
-                textFieldName: "New password",
+                textFieldName: "New Password",
                 validator : validateStrongPassword,
                 onChanged: (value){
                   setState(() {});
@@ -92,21 +94,21 @@ class _changePasswordState extends State<changePassword> {
               Gap(15),
               PasswordRequirement(
                 text: "At least 8 characters",
-                isChecked: NewPasswordController.text.length >= 8,
+                isChecked: newPasswordController.text.length >= 8,
               ),
               PasswordRequirement(
                 text: "At least one uppercase letter",
-                isChecked: RegExp(r'[A-Z]').hasMatch(NewPasswordController.text),
+                isChecked: RegExp(r'[A-Z]').hasMatch(newPasswordController.text),
               ),
               PasswordRequirement(
                 text: "At least one lowercase letter",
-                isChecked: RegExp(r'[a-z]').hasMatch(NewPasswordController.text),
+                isChecked: RegExp(r'[a-z]').hasMatch(newPasswordController.text),
               ),
               PasswordRequirement(
                 text: "At least one number and one special character",
                 isChecked:
-                RegExp(r'[0-9]').hasMatch(NewPasswordController.text) &&
-                    RegExp(r'[^a-zA-Z0-9]').hasMatch(NewPasswordController.text),
+                RegExp(r'[0-9]').hasMatch(newPasswordController.text) &&
+                    RegExp(r'[^a-zA-Z0-9]').hasMatch(newPasswordController.text),
               ),
               Gap(15),
               CustomTextfield(
@@ -114,26 +116,36 @@ class _changePasswordState extends State<changePassword> {
                 isPass: true,
                 controller: confirmPasswordController,
                 icon: Icons.lock_outlined,
-                textFieldName: 'Confirm your password',
+                textFieldName: 'Confirm your Password',
                 onChanged: (value) {
                   setState(() {});
                 },
-                validator: validateStrongPassword,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Please confirm your password";
+                  }
+                  if (value != newPasswordController.text) {
+                    return "Passwords do not match";
+                  }
+                  return null;
+                },
+
               ),
               PasswordRequirement(
                 text: "Password must match",
                 isChecked:
                 confirmPasswordController.text.isNotEmpty &&
-                    confirmPasswordController.text == NewPasswordController.text,
+                    confirmPasswordController.text == newPasswordController.text,
               ),
               Gap(20),
               CustomElevatedbutton(
                 isLoading: isLoading,
                 text: "Change Password",
+                size: 16,
                 onPressed: () async {
                   if (_formKey.currentState!.validate() &&
                       confirmPasswordController.text.isNotEmpty &&
-                      confirmPasswordController.text == NewPasswordController.text
+                      confirmPasswordController.text == newPasswordController.text
                   ) {
                     setState(() {
                       isLoading = true;

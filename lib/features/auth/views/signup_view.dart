@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
+import 'package:movixapp/core/utils/email_validator.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
 import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
@@ -40,6 +41,7 @@ class _SignupViewState extends State<SignupView> {
       backgroundColor: AppColors.background,
       appBar: CustomAppbar(
         title: "Create Account",
+        back: true,
         onPressed: () {
           Navigator.pop(context);
         },
@@ -73,16 +75,7 @@ class _SignupViewState extends State<SignupView> {
                   controller: emailController,
                   icon: Icons.email_outlined,
                   textFieldName: 'Email',
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "Email is required";
-                    }
-                    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                        .hasMatch(value.trim())) {
-                      return "please enter a valid email address \nEX: example@example.com";
-                    }
-                    return null;
-                  },
+                  validator: validateEmail,
                 ),
                 Gap(15),
                 CustomTextfield(
@@ -91,33 +84,7 @@ class _SignupViewState extends State<SignupView> {
                   controller: passwordController,
                   icon: Icons.lock_outlined,
                   textFieldName: 'Password',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Password is required";
-                    }
-
-                    if (value.length < 8) {
-                      return "Password must be at least 8 characters";
-                    }
-
-                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                      return "Password must contain an uppercase letter";
-                    }
-
-                    if (!RegExp(r'[a-z]').hasMatch(value)) {
-                      return "Password must contain a lowercase letter";
-                    }
-
-                    if (!RegExp(r'[0-9]').hasMatch(value)) {
-                      return "Password must contain a number";
-                    }
-
-                    if (!RegExp(r'[^a-zA-Z0-9]').hasMatch(value)) {
-                      return "Password must contain a special character";
-                    }
-
-                    return null;
-                  },
+                  validator: validateStrongPassword,
                   onChanged: (value) {
                     setState(() {});
                   },
