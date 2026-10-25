@@ -6,6 +6,7 @@ import 'package:movixapp/features/auth/views/signup_view.dart';
 import 'package:movixapp/features/auth/views/change_password_view.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
 import 'package:movixapp/features/auth/views/forget_password.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +19,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // home: SignupView(),
-      home: LoginView(),
-      // home: changePassword(),
-      //home: ForgetPassword(),
-      //home: SettingsView(),
+    return ResponsiveSizer(
+      builder: (context, orientation, screenType) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          // home: SignupView(),
+          home: LoginView(),
+          // home: changePassword(),
+          // home: ForgetPassword(),
+          // home: SettingsView(),
+        );
+      },
     );
   }
 }
