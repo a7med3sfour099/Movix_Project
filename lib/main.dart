@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // home: SignupView(),
-      home: LoginView()
-      //home: changePassword(),
+      home: LoginView(),
+      // home: changePassword(),
       //home: ForgetPassword(),
       //home: SettingsView(),
     );
