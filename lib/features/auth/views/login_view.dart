@@ -6,12 +6,14 @@ import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/utils/email_validator.dart';
+import 'package:movixapp/features/auth/views/signup_view.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/features/auth/cubit/signup/auth_cubit.dart';
 import 'package:movixapp/features/auth/cubit/login_form_cubit.dart';
 import 'package:movixapp/features/auth/cubit/signup/auth_state.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
+import 'package:movixapp/features/home/views/home_screen.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -94,6 +96,13 @@ class _LoginViewState extends State<LoginView> {
                                   context,
                                   message: "Login Successful!",
                                 );
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const HomeScreen(),
+                                  ),
+                                  (route) => false,
+                                );
                               }
 
                               if (state is AuthFailure) {
@@ -150,7 +159,14 @@ class _LoginViewState extends State<LoginView> {
                               ),
                               Gap(5),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const SignupView(),
+                                    ),
+                                  );
+                                },
                                 child: CustomText(
                                   text: 'Sign Up',
                                   size: 16,

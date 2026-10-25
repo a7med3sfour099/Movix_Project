@@ -6,6 +6,7 @@ import 'package:movixapp/features/auth/views/signup_view.dart';
 import 'package:movixapp/features/auth/views/change_password_view.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
 import 'package:movixapp/features/auth/views/forget_password.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // home: SignupView(),
-      home: LoginView(),
+      home: LoginView()
       //home: changePassword(),
       //home: ForgetPassword(),
       //home: SettingsView(),

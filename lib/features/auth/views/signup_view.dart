@@ -57,15 +57,17 @@ class SignupView extends StatelessWidget {
                         icon: Icons.person_2_outlined,
                         textFieldName: 'Name',
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
+                          if (value == null || value.trim().isEmpty)
                             return "Name is required";
-                          }
+                          if (value.trim().length < 3) return 'Name too short';
+                          if (RegExp(r'^[0-9]').hasMatch(value.trim()))
+                            return 'Name cannot start with number';
                           return null;
                         },
                       ),
                       Gap(15),
                       CustomTextfield(
-                        hint: "Enter your email",
+                        hint: "example@example",
                         isPass: false,
                         controller: formCubit.emailController,
                         icon: Icons.email_outlined,
@@ -167,8 +169,12 @@ class SignupView extends StatelessWidget {
                               context,
                               message: "Account created successfully!",
                             );
-
-                            // TODO: Navigate to HomeView after successful signup.
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginView(),
+                              ),
+                            );
                           }
 
                           if (state is AuthFailure) {
@@ -185,7 +191,11 @@ class SignupView extends StatelessWidget {
                             isLoading: state is AuthLoading,
                             onPressed: () {
                               if (formCubit.formKey.currentState!.validate()) {
-                                context.read<AuthCubit>().signUp();
+                                context.read<AuthCubit>().signUp(
+                                  userName: formCubit.nameController.text,
+                                  email: formCubit.emailController.text,
+                                  password: formCubit.passwordController.text,
+                                );
                               }
                             },
                           );
