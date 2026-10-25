@@ -23,3 +23,11 @@ class ChangePasswordFailure extends ChangePasswordState{
 
 
 }
+class ChangePasswordTyping extends ChangePasswordState {
+  final int version;
+
+  const ChangePasswordTyping(this.version);
+
+  @override
+  List<Object?> get props => [version];
+}
