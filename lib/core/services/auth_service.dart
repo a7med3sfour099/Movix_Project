@@ -56,9 +56,13 @@ class AuthService {
       );
       await currentUser!.reauthenticateWithCredential(credential);
       await currentUser!.updatePassword(newPassword);
-    } catch (e) {
-      throw Exception(e);
-    }
+     } 
+    //catch (e) {
+    //   throw Exception(e);
+    // }
+    on FirebaseAuthException {
+  rethrow;
+}
   }
 
   /// Delete account
