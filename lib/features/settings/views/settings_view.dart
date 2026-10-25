@@ -5,63 +5,67 @@ import 'package:movixapp/features/settings/styles/settings_text_styles.dart';
 import 'package:movixapp/features/settings/widgets/settings_tile.dart';
 import 'package:movixapp/features/settings/widgets/settings_switch_tile.dart';
 import 'package:movixapp/features/settings/widgets/logout_button.dart';
-class SettingsView extends StatefulWidget {
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movixapp/features/settings/cubit/settings_cubit.dart';
+
+class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
 
-  @override
-  State<SettingsView> createState() => _SettingsViewState();
-}
-
-class _SettingsViewState extends State<SettingsView> {
-  bool _notificationsEnabled = true;
   static const _tileGap = SizedBox(height: 12);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: CustomAppbar(
+    return BlocProvider(
+      create: (context) => SettingsCubit(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: CustomAppbar(
           title: "Settings",
           back: true,
-          onPressed:()=> Navigator.maybePop(context),
+          onPressed: () => Navigator.maybePop(context),
         ),
-      body: SafeArea(
+        body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Profile" , style: SettingsTextStyles.sectionTitle,),
+                Text("Profile", style: SettingsTextStyles.sectionTitle),
                 _tileGap,
-                SettingsTile(title: "Edit Profile", onTap: (){}),
+                SettingsTile(title: "Edit Profile", onTap: () {}),
                 _tileGap,
-                SettingsTile(title: "Change Password", onTap: (){},),
-                SizedBox(height: 20,),
-                Text("Preference" , style: SettingsTextStyles.sectionTitle,),
+                SettingsTile(title: "Change Password", onTap: () {}),
+                SizedBox(height: 20),
+                Text("Preference", style: SettingsTextStyles.sectionTitle),
                 _tileGap,
-                SettingsSwitchTile(
-                    title: "Notifications",
-                    value: _notificationsEnabled,
-                    onChanged: (v) => setState(() {
-                      _notificationsEnabled = v;
-                    })),
-                SizedBox(height: 20,),
-                Text("About" , style: SettingsTextStyles.sectionTitle,),
+                BlocBuilder<SettingsCubit, bool>(
+                  builder: (context, state) {
+                    return SettingsSwitchTile(
+                      title: "Notifications",
+                      value: state,
+                      onChanged: (value) {
+                        context.read<SettingsCubit>().toggleNotifications(
+                          value,
+                        );
+                      },
+                    );
+                  },
+                ),
+                SizedBox(height: 20),
+                Text("About", style: SettingsTextStyles.sectionTitle),
                 _tileGap,
-                SettingsTile(title: "About App", onTap: (){},),
+                SettingsTile(title: "About App", onTap: () {}),
                 _tileGap,
-                SettingsTile(title: "Privacy Policy", onTap: (){},),
+                SettingsTile(title: "Privacy Policy", onTap: () {}),
                 _tileGap,
-                SettingsTile(title: "Terms & Conditions", onTap: (){}),
-                SizedBox(height: 15,),
-                Center(child: LogoutButton(onPressed: (){}),),
-
+                SettingsTile(title: "Terms & Conditions", onTap: () {}),
+                SizedBox(height: 15),
+                Center(child: LogoutButton(onPressed: () {})),
               ],
             ),
-          )
-
+          ),
+        ),
       ),
-
     );
   }
 }
