@@ -25,12 +25,8 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthCubit>(
-          create: (_) => AuthCubit(),
-        ),
-        BlocProvider<LoginFormCubit>(
-          create: (_) => LoginFormCubit(),
-        ),
+        BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
+        BlocProvider<LoginFormCubit>(create: (_) => LoginFormCubit()),
       ],
       child: Builder(
         builder: (context) {
@@ -74,8 +70,6 @@ class _LoginViewState extends State<LoginView> {
                             isPass: true,
                             controller: formCubit.passController,
                             textInputAction: TextInputAction.done,
-                            //validator: validateStrongPassword,
-                            
                             icon: Icons.lock_outlined,
                           ),
                           Gap(15),
@@ -93,56 +87,39 @@ class _LoginViewState extends State<LoginView> {
                             ],
                           ),
                           Gap(15),
-                          // CustomElevatedbutton(
-                          //   text: 'Login',
-                          //   onPressed: () {},
-                          // ),
                           BlocConsumer<AuthCubit, AuthState>(
-  // listener: (context, state) {
-  //   if (state is AuthSuccess) {
-  //     showCustomSnackBar(
-  //       context,
-  //       message: "Login Successful!",
-  //     );
-  //   }
+                            listener: (context, state) {
+                              if (state is AuthSuccess) {
+                                showCustomSnackBar(
+                                  context,
+                                  message: "Login Successful!",
+                                );
+                              }
 
-  //   if (state is AuthFailure) {
-  //     showCustomSnackBar(
-  //       context,
-  //       message: state.message,
-  //     );
-  //   }
-  // },
-  listener: (context, state) {
-  if (state is AuthSuccess) {
-    showCustomSnackBar(
-      context,
-      message: "Login Successful!",
-    );
-  }
-
-  if (state is AuthFailure) {
-    showCustomSnackBar(
-      context,
-      message: state.message,
-    );
-  }
-},
-  builder: (context, state) {
-    return CustomElevatedbutton(
-      text: 'Login',
-      isLoading: state is AuthLoading,
-      onPressed: () {
-        if (formCubit.formKey.currentState!.validate()) {
-          context.read<AuthCubit>().login(
-            email: formCubit.emailController.text.trim(),
-            password: formCubit.passController.text,
-          );
-        }
-      },
-    );
-  },
-),
+                              if (state is AuthFailure) {
+                                showCustomSnackBar(
+                                  context,
+                                  message: state.message,
+                                );
+                              }
+                            },
+                            builder: (context, state) {
+                              return CustomElevatedbutton(
+                                text: 'Login',
+                                isLoading: state is AuthLoading,
+                                onPressed: () {
+                                  if (formCubit.formKey.currentState!
+                                      .validate()) {
+                                    context.read<AuthCubit>().login(
+                                      email: formCubit.emailController.text
+                                          .trim(),
+                                      password: formCubit.passController.text,
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          ),
                           Gap(15),
                           CustomOutlinedButton(
                             imageUrl:
