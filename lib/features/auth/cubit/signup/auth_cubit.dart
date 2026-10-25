@@ -8,4 +8,24 @@ class AuthCubit extends Cubit<AuthState> {
     await Future.delayed(const Duration(seconds: 2));
     emit(AuthSuccess());
   }
+  Future<void> login({
+  required String email,
+  required String password,
+}) async {
+  emit(AuthLoading());
+
+  try {
+    // Temporary simulation until Firebase integration
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (isClosed) return;
+
+    emit(AuthSuccess());
+  } catch (e) {
+    if (isClosed) return;
+
+    emit(AuthFailure(e.toString()));
+  }
 }
+}
+
