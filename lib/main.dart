@@ -19,10 +19,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-       home: SignupView(),
+      // home: SignupView(),
       //home: LoginView(),
       //home: changePassword(),
-      //home: ForgetPassword(),
+      home: ForgetPassword(),
     );
   }
 }
