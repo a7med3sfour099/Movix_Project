@@ -11,10 +11,10 @@ import 'package:movixapp/Widgets/custom_text_button.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
-import 'package:movixapp/features/auth/cubit/auth_state.dart';
-import 'package:movixapp/features/auth/cubit/signup_password_cubit.dart';
-import 'package:movixapp/features/auth/cubit/signup_form_cubit.dart';
+import 'package:movixapp/features/auth/cubit/signup/auth_cubit.dart';
+import 'package:movixapp/features/auth/cubit/signup/auth_state.dart';
+import 'package:movixapp/features/auth/cubit/signup/signup_password_cubit.dart';
+import 'package:movixapp/features/auth/cubit/signup/signup_form_cubit.dart';
 
 class SignupView extends StatelessWidget {
   const SignupView({super.key});
