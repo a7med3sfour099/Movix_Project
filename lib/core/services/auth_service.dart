@@ -62,6 +62,17 @@ class AuthService {
     );
   }
 
+  /// Confirm password reset
+  Future<void> confirmPasswordReset({
+    required String oobCode,
+    required String newPassword,
+  }) async {
+    await firebaseAuth.confirmPasswordReset(
+      code: oobCode,
+      newPassword: newPassword,
+    );
+  }
+
   /// Delete account
   Future<void> deleteAccount({
     required String email,
@@ -85,24 +96,22 @@ class AuthService {
   Future<void> updatePhotoUrl({required String photoUrl}) async {
     await firebaseAuth.currentUser?.updatePhotoURL(photoUrl);
   }
+
   Future<UserCredential> signInWithGoogle() async {
-  final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+    final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
-  await googleSignIn.initialize(
-    serverClientId:
-      '851109101482-fc79db6qjoiv2knkp8itmva2dde2j2tr.apps.googleusercontent.com',
-  );
+    await googleSignIn.initialize(
+      serverClientId: '851109101482-fc79db6qjoiv2knkp8itmva2dde2j2tr.apps.googleusercontent.com',
+    );
 
-  final GoogleSignInAccount googleUser =
-      await googleSignIn.authenticate();
+    final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
 
-  final GoogleSignInAuthentication googleAuth =
-      googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-  final AuthCredential credential = GoogleAuthProvider.credential(
-    idToken: googleAuth.idToken,
-  );
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
 
-  return await firebaseAuth.signInWithCredential(credential);
-}
+    return await firebaseAuth.signInWithCredential(credential);
+  }
 }
