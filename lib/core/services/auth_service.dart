@@ -31,8 +31,8 @@ class AuthService {
     await firebaseAuth.signOut();
   }
 
-  /// Reset password
-  Future<void> resetPassword({
+  /// Change password
+  Future<void> changePassword({
     required String email,
     required String currentPassword,
     required String newPassword,
@@ -44,6 +44,15 @@ class AuthService {
     await currentUser!.reauthenticateWithCredential(credential);
     await currentUser!.updatePassword(newPassword);
   }
+
+  /// Send password reset email
+  Future<void> sendPasswordResetEmail({
+  required String email,
+}) async {
+  await firebaseAuth.sendPasswordResetEmail(
+    email: email.trim(),
+  );
+}
 
   /// Delete account
   Future<void> deleteAccount({

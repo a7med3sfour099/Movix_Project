@@ -6,6 +6,7 @@ import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/utils/email_validator.dart';
+import 'package:movixapp/features/auth/views/forget_password.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,7 +80,15 @@ class _LoginViewState extends State<LoginView> {
                             children: [
                               Spacer(),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ForgetPassword(),
+                                    ),
+                                  );
+                                },
                                 child: CustomText(
                                   text: 'Forgot Password?',
                                   size: 16,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movixapp/core/network/firebase_error_handler.dart';
+import 'package:movixapp/core/services/auth_service.dart';
 
 abstract class ForgetPasswordState {}
 
@@ -21,13 +23,18 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
 
+  final AuthService _authService = authService.value;
+
   Future<void> resetPassword() async {
     emit(ForgetPasswordLoading());
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (isClosed) return;
-
-    emit(ForgetPasswordSuccess());
+    try {
+      await _authService.sendPasswordResetEmail(email: emailController.text);
+      if (isClosed) return;
+      emit(ForgetPasswordSuccess());
+    } catch (error) {
+      if (isClosed) return;
+      emit(ForgetPasswordFailure(FirebaseErrorHandler.getMessage(error)));
+    }
   }
 
   @override

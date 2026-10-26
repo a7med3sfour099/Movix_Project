@@ -27,7 +27,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState>{
         return;
       }
 
-      await _authService.resetPassword(
+      await _authService.changePassword(
         email: user.email!,
         currentPassword: currentPassword,
         newPassword: newPassword,
