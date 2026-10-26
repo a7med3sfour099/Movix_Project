@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/network/firebase_error_handler.dart';
 import 'package:movixapp/core/services/auth_service.dart';
-
+import 'package:flutter/foundation.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -45,7 +45,28 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
     }
   }
+// Google Login
+Future<void> loginWithGoogle() async {
+  emit(AuthLoading());
 
+  try {
+    await _authService.signInWithGoogle();
+
+    if (isClosed) return;
+    emit(AuthSuccess());
+  }
+  //  catch (error) {
+  //   if (isClosed) return;
+  //   emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+  // }
+  catch (error, stackTrace) {
+  debugPrint('GOOGLE LOGIN ERROR: $error');
+  debugPrintStack(stackTrace: stackTrace);
+
+  if (isClosed) return;
+  emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+}
+}
   // Logout
   Future<void> logout() async {
     emit(AuthLoading());

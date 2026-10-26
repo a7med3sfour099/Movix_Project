@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
@@ -84,4 +85,24 @@ class AuthService {
   Future<void> updatePhotoUrl({required String photoUrl}) async {
     await firebaseAuth.currentUser?.updatePhotoURL(photoUrl);
   }
+  Future<UserCredential> signInWithGoogle() async {
+  final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+
+  await googleSignIn.initialize(
+    serverClientId:
+      '851109101482-fc79db6qjoiv2knkp8itmva2dde2j2tr.apps.googleusercontent.com',
+  );
+
+  final GoogleSignInAccount googleUser =
+      await googleSignIn.authenticate();
+
+  final GoogleSignInAuthentication googleAuth =
+      googleUser.authentication;
+
+  final AuthCredential credential = GoogleAuthProvider.credential(
+    idToken: googleAuth.idToken,
+  );
+
+  return await firebaseAuth.signInWithCredential(credential);
+}
 }

@@ -143,7 +143,10 @@ class _LoginViewState extends State<LoginView> {
                             imageUrl:
                                 'assets/auth_assets/google-icon-logo-svg.svg',
                             text: 'Continue with Google',
-                            onPressed: () {},
+                            onPressed: () {
+
+    context.read<AuthCubit>().loginWithGoogle();
+                            },
                           ),
                           Gap(15),
                           CustomOutlinedButton(
