@@ -46,13 +46,20 @@ class AuthService {
   }
 
   /// Send password reset email
-  Future<void> sendPasswordResetEmail({
-  required String email,
-}) async {
-  await firebaseAuth.sendPasswordResetEmail(
-    email: email.trim(),
-  );
-}
+
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    final actionCodeSettings = ActionCodeSettings(
+      url: 'https://movix-project-301f5.firebaseapp.com/finishReset',
+      handleCodeInApp: true,
+      androidPackageName: 'com.example.movixapp',
+      iOSBundleId: 'com.example.movixapp',
+    );
+
+    await firebaseAuth.sendPasswordResetEmail(
+      email: email.trim(),
+      actionCodeSettings: actionCodeSettings,
+    );
+  }
 
   /// Delete account
   Future<void> deleteAccount({
