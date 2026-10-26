@@ -49,9 +49,9 @@ class SignupView extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 500),
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-  horizontal: 4.w.clamp(12.0, 24.0),
-  vertical: 2.h.clamp(12.0, 24.0),
-),
+                      horizontal: 4.w.clamp(12.0, 24.0),
+                      vertical: 2.h.clamp(12.0, 24.0),
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: Form(
@@ -139,7 +139,8 @@ class SignupView extends StatelessWidget {
                                   ],
                                 );
                               },
-                            ),Gap((2.h).clamp(12.0, 20.0)),
+                            ),
+                            Gap((2.h).clamp(12.0, 20.0)),
                             CustomTextfield(
                               hint: "Password Confirmation",
                               isPass: true,
@@ -222,28 +223,31 @@ class SignupView extends StatelessWidget {
                                 );
                               },
                             ),
-                           Gap((2.h).clamp(12.0, 20.0)),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              spacing: 4,
-                              children: [
-                                CustomText(text: "Already have an account?"),
-                                CustomTextButton(
-                                  text: "Login",
-                                  color: AppColors.primary,
-                                  size: 16,
-                                  weight: FontWeight.normal,
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const LoginView(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
+                            Gap((2.h).clamp(12.0, 20.0)),
+                            Center(
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 4,
+                                children: [
+                                  CustomText(text: "Already have an account?"),
+                                  CustomTextButton(
+                                    text: "Login",
+                                    color: AppColors.primary,
+                                    size: 16,
+                                    weight: FontWeight.normal,
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginView(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

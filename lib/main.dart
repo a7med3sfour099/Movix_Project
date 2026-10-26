@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/firebase_options.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
@@ -8,9 +9,17 @@ import 'package:movixapp/features/settings/views/settings_view.dart';
 import 'package:movixapp/features/auth/views/forget_password.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
+final AppLinkService appLinkService = AppLinkService();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await appLinkService.init(
+    onPasswordResetLink: (oobCode) {
+      debugPrint('Password reset link received successfully');
+    },
+  );
   runApp(const MyApp());
 }
 
