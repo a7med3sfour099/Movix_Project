@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
@@ -114,4 +115,29 @@ class AuthService {
 
     return await firebaseAuth.signInWithCredential(credential);
   }
+  /// Sign in with Facebook
+Future<UserCredential> signInWithFacebook() async {
+  final LoginResult result = await FacebookAuth.instance.login(
+    permissions: ['public_profile'],
+  );
+
+  if (result.status == LoginStatus.success) {
+    final AccessToken? accessToken = result.accessToken;
+
+    if (accessToken == null) {
+      throw Exception('Facebook access token is missing');
+    }
+
+    final OAuthCredential credential =
+        FacebookAuthProvider.credential(accessToken.tokenString);
+
+    return await firebaseAuth.signInWithCredential(credential);
+  }
+
+  if (result.status == LoginStatus.cancelled) {
+    throw Exception('Facebook login cancelled');
+  }
+
+  throw Exception(result.message ?? 'Facebook login failed');
+}
 }

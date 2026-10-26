@@ -8,8 +8,10 @@
 
 #include <app_links/app_links_plugin_c_api.h>
 #include <cloud_firestore/cloud_firestore_plugin_c_api.h>
+#include <facebook_auth_desktop/facebook_auth_desktop_plugin_c_api.h>
 #include <firebase_auth/firebase_auth_plugin_c_api.h>
 #include <firebase_core/firebase_core_plugin_c_api.h>
+#include <flutter_secure_storage_windows/flutter_secure_storage_windows_plugin.h>
 #include <rive_native/rive_native_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
@@ -17,10 +19,14 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("AppLinksPluginCApi"));
   CloudFirestorePluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("CloudFirestorePluginCApi"));
+  FacebookAuthDesktopPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FacebookAuthDesktopPluginCApi"));
   FirebaseAuthPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FirebaseAuthPluginCApi"));
   FirebaseCorePluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
+  FlutterSecureStorageWindowsPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FlutterSecureStorageWindowsPlugin"));
   RiveNativePluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("RiveNativePlugin"));
 }

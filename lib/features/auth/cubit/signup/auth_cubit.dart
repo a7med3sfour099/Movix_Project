@@ -81,4 +81,21 @@ Future<void> loginWithGoogle() async {
       emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
     }
   }
+// Facebook Login
+Future<void> loginWithFacebook() async {
+  emit(AuthLoading());
+
+  try {
+    await _authService.signInWithFacebook();
+
+    if (isClosed) return;
+    emit(AuthSuccess());
+  } catch (error, stackTrace) {
+    debugPrint('FACEBOOK LOGIN ERROR: $error');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (isClosed) return;
+    emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+  }
+}
 }

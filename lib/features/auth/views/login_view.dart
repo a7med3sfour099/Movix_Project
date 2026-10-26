@@ -152,7 +152,9 @@ class _LoginViewState extends State<LoginView> {
                           CustomOutlinedButton(
                             imageUrl: 'assets/auth_assets/facebook-svg.svg',
                             text: 'Continue with Facebook',
-                            onPressed: () {},
+                            onPressed: () {
+                              context.read<AuthCubit>().loginWithFacebook();
+                            },
                           ),
                           Gap(15),
                           CustomOutlinedButton(
