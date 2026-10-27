@@ -29,64 +29,66 @@ class ForgetPassword extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            body: Padding(
-              padding: EdgeInsets.all(15),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Form(
-                  key: cubit.formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomTextfield(
-                        hint: "Enter your email",
-                        isPass: false,
-                        controller: cubit.emailController,
-                        icon: Icons.email_outlined,
-                        textFieldName: 'Email',
-                        validator: validateEmail,
-                      ),
-                      Gap(12),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: CustomText(
-                          text: "We will send to you email to reset your password",
-                          color: AppColors.secondary,
-                          size: 12,
+            body: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(15),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Form(
+                    key: cubit.formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomTextfield(
+                          hint: "Enter your email",
+                          isPass: false,
+                          controller: cubit.emailController,
+                          icon: Icons.email_outlined,
+                          textFieldName: 'Email',
+                          validator: validateEmail,
                         ),
-                      ),
-                      Gap(20),
-                      BlocConsumer<ForgetPasswordCubit, ForgetPasswordState>(
-                        listener: (context, state) {
-                          if (state is ForgetPasswordSuccess) {
-                            showCustomSnackBar(
-                              context,
-                              message: "If an account exists with this email, you'll receive a password reset link shortly. Please check your inbox.",
+                        Gap(12),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: CustomText(
+                            text: "We will send to you email to reset your password",
+                            color: AppColors.secondary,
+                            size: 12,
+                          ),
+                        ),
+                        Gap(20),
+                        BlocConsumer<ForgetPasswordCubit, ForgetPasswordState>(
+                          listener: (context, state) {
+                            if (state is ForgetPasswordSuccess) {
+                              showCustomSnackBar(
+                                context,
+                                message: "If an account exists with this email, you'll receive a password reset link shortly. Please check your inbox.",
+                              );
+                            }
+              
+                            if (state is ForgetPasswordFailure) {
+                              showCustomSnackBar(
+                                context,
+                                message: state.message,
+                                isError: true,
+                              );
+                            }
+                          },
+                          builder: (context, state) {
+                            return CustomElevatedbutton(
+                              text: "Reset Password",
+                              size: 16,
+                              isLoading: state is ForgetPasswordLoading,
+                              onPressed: () {
+                                if (cubit.formKey.currentState!.validate()) {
+                                  cubit.resetPassword();
+                                }
+                              },
                             );
-                          }
-
-                          if (state is ForgetPasswordFailure) {
-                            showCustomSnackBar(
-                              context,
-                              message: state.message,
-                              isError: true,
-                            );
-                          }
-                        },
-                        builder: (context, state) {
-                          return CustomElevatedbutton(
-                            text: "Reset Password",
-                            size: 16,
-                            isLoading: state is ForgetPasswordLoading,
-                            onPressed: () {
-                              if (cubit.formKey.currentState!.validate()) {
-                                cubit.resetPassword();
-                              }
-                            },
-                          );
-                        },
-                      ),
-                    ],
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -200,15 +200,6 @@ CustomOutlinedButton(
   text: 'Continue as Guest',
   showIcon: false,
   borderColor: AppColors.primary,
-//   onPressed: () {
-//   Navigator.pushAndRemoveUntil(
-//     context,
-//     MaterialPageRoute(
-//       builder: (context) => const HomeScreen(),
-//     ),
-//     (route) => false,
-//   );
-// },
 onPressed: () {
   GuestService.enterGuestMode();
 

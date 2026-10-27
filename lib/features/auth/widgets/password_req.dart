@@ -31,7 +31,16 @@ class PasswordRequirement extends StatelessWidget {
               side: const BorderSide(color: AppColors.secondary, width: 1.5),
             ),
           ),
-          CustomText(text: text, color: AppColors.secondary, size: 12),
+          Expanded(
+  child: CustomText(
+    text: text,
+    color: AppColors.secondary,
+    size: 12,
+    textAlign: TextAlign.left,
+    maxLines: 2,
+    overflow: TextOverflow.visible,
+  ),
+),
         ],
       ),
     );
