@@ -34,7 +34,12 @@ class SettingsView extends StatelessWidget {
                 _tileGap,
                 SettingsTile(title: "Edit Profile", onTap: () {}),
                 _tileGap,
-                SettingsTile(title: "Change Password", onTap: () {}),
+                SettingsTile(
+                  title: "Change Password",
+                  onTap: () {
+                    Navigator.pushNamed(context, '/change-password');
+                  },
+                ),
                 SizedBox(height: 20),
                 Text("Preference", style: SettingsTextStyles.sectionTitle),
                 _tileGap,

@@ -36,13 +36,7 @@ class SignupView extends StatelessWidget {
           return Scaffold(
             resizeToAvoidBottomInset: true,
             backgroundColor: AppColors.background,
-            appBar: CustomAppbar(
-              title: "Create Account",
-              back: true,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+            appBar: CustomAppbar(title: "Create Account", back: false),
             body: SafeArea(
               child: Center(
                 child: ConstrainedBox(
@@ -237,12 +231,9 @@ class SignupView extends StatelessWidget {
                                     size: 16,
                                     weight: FontWeight.normal,
                                     onPressed: () {
-                                      Navigator.pushReplacement(
+                                      Navigator.pushReplacementNamed(
                                         context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginView(),
-                                        ),
+                                        '/login',
                                       );
                                     },
                                   ),

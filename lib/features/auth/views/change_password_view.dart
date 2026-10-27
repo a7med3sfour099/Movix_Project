@@ -8,14 +8,12 @@ import 'package:movixapp/Widgets/custom_text_field.dart';
 import 'package:gap/gap.dart';
 import 'package:movixapp/features/auth/widgets/password_req.dart';
 import 'package:movixapp/Widgets/custom_elevated_button.dart';
-import 'package:movixapp/Widgets/custom_text_button.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
-import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/auth/cubit/change_password/change_password_cubit.dart';
 import 'package:movixapp/features/auth/cubit/change_password/change_password_state.dart';
 
-class changePassword extends StatelessWidget {
-  changePassword({super.key});
+class ChangePassword extends StatelessWidget {
+  ChangePassword({super.key});
   final _formKey = GlobalKey<FormState>();
   final currentPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
@@ -45,7 +43,13 @@ class changePassword extends StatelessWidget {
         builder: (context) {
           return Scaffold(
             backgroundColor: AppColors.background,
-            appBar: const CustomAppbar(title: "Change Password", back: true),
+            appBar: const CustomAppbar(
+              title: "Change Password",
+              back: true,
+              // onPressed: () {
+              //   Navigator.pop(context);
+              // },
+            ),
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(15),
@@ -74,7 +78,9 @@ class changePassword extends StatelessWidget {
                           children: [
                             Spacer(),
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.pushNamed(context, '/forgotPassword');
+                              },
                               child: const CustomText(
                                 text: 'Forgot Password?',
                                 size: 12,
@@ -119,8 +125,9 @@ class changePassword extends StatelessWidget {
                                 PasswordRequirement(
                                   text: "At least one number and one special character",
                                   isChecked:
-                                      RegExp(r'[0-9]')
-                                          .hasMatch(newPasswordController.text) &&
+                                      RegExp(
+                                        r'[0-9]',
+                                      ).hasMatch(newPasswordController.text) &&
                                       RegExp(r'[^a-zA-Z0-9]')
                                           .hasMatch(newPasswordController.text),
                                 ),
@@ -166,9 +173,17 @@ class changePassword extends StatelessWidget {
                                 context,
                                 message: "Password changed successfully!",
                               );
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/setting',
+                                (_) => false,
+                              );
                               _clearFields();
                             } else if (state is ChangePasswordFailure) {
-                              showCustomSnackBar(context, message: state.message);
+                              showCustomSnackBar(
+                                context,
+                                message: state.message,
+                              );
                             }
                           },
                           builder: (context, state) {
