@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/utils/email_validator.dart';
+import 'package:movixapp/features/auth/cubit/reset_password_cubit.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
 import 'package:gap/gap.dart';
@@ -12,16 +13,16 @@ import 'package:movixapp/features/auth/cubit/change_password/change_password_cub
 import 'package:movixapp/features/auth/cubit/change_password/change_password_state.dart';
 
 class ResetPassword extends StatelessWidget {
-  ResetPassword({super.key});
+  ResetPassword({super.key, required this.oobCode});
+  final String oobCode;
   final _formKey = GlobalKey<FormState>();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
   void _submit(BuildContext context) {
     if (_formKey.currentState!.validate()) {
-      context.read<ChangePasswordCubit>().changePassword(
+      context.read<ResetPasswordCubit>().resetPassword(
         newPassword: newPasswordController.text,
-        currentPassword: '',
       );
     }
   }
@@ -35,7 +36,7 @@ class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ChangePasswordCubit(),
+      create: (_) => ResetPasswordCubit(oobCode: oobCode),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -124,15 +125,15 @@ class ResetPassword extends StatelessWidget {
                         },
                       ),
                       const Gap(20),
-                      BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
+                      BlocConsumer<ResetPasswordCubit, ResetPasswordState>(
                         listener: (context, state) {
-                          if (state is ChangePasswordSuccess) {
+                          if (state is ResetPasswordSuccess) {
                             showCustomSnackBar(
                               context,
                               message: "Password changed successfully!",
                             );
                             _clearFields();
-                          } else if (state is ChangePasswordFailure) {
+                          } else if (state is ResetPasswordFailure) {
                             showCustomSnackBar(context, message: state.message);
                           }
                         },
