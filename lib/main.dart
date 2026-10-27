@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
+import 'package:movixapp/features/auth/views/reset_password_view.dart';
 import 'package:movixapp/firebase_options.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
 import 'package:movixapp/features/auth/views/change_password_view.dart';
@@ -33,9 +34,10 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           // home: SignupView(),
-          home: LoginView(),
+          // home: LoginView(),
           // home: changePassword(),
-          //home: ForgetPassword(),
+          home: ResetPassword(),
+          // home: ForgetPassword(),
           // home: SettingsView(),
         );
       },
