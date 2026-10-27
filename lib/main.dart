@@ -12,16 +12,43 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 final AppLinkService appLinkService = AppLinkService();
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+String? _pendingOobCode;
+String? _lastHandledOobCode;
+
+void _openResetPassword(String oobCode) {
+  // Prevent opening the same reset link twice.
+  if (_lastHandledOobCode == oobCode) return;
+
+  final navigator = navigatorKey.currentState;
+
+  if (navigator == null) {
+    _pendingOobCode = oobCode;
+    return;
+  }
+
+  _lastHandledOobCode = oobCode;
+  _pendingOobCode = null;
+
+  navigator.push(
+    MaterialPageRoute(builder: (_) => ResetPassword(oobCode: oobCode)),
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await appLinkService.init(
-    onPasswordResetLink: (oobCode) {
-      debugPrint('Password reset link received successfully');
-    },
-  );
+  await appLinkService.init(onPasswordResetLink: _openResetPassword);
   runApp(const MyApp());
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final code = _pendingOobCode;
+    if (code != null) {
+      _openResetPassword(code);
+    }
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -34,9 +61,8 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           // home: SignupView(),
-          // home: LoginView(),
+          home: LoginView(),
           // home: changePassword(),
-          home: ResetPassword(),
           // home: ForgetPassword(),
           // home: SettingsView(),
         );
