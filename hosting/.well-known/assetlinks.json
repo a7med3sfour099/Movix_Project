@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.movixapp",
+      "sha256_cert_fingerprints": [
+        "EF:BF:CD:0E:35:F1:E1:9C:78:CB:50:70:1D:C8:EF:77:02:FC:AD:12:42:6A:31:C8:27:59:7D:1F:30:DE:90:3D"
+      ]
+    }
+  }
+]
