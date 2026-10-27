@@ -115,29 +115,38 @@ class AuthService {
 
     return await firebaseAuth.signInWithCredential(credential);
   }
+
   /// Sign in with Facebook
-Future<UserCredential> signInWithFacebook() async {
-  final LoginResult result = await FacebookAuth.instance.login(
-    permissions: ['public_profile'],
-  );
+  Future<UserCredential> signInWithFacebook() async {
+    final LoginResult result = await FacebookAuth.instance.login(
+      permissions: ['public_profile'],
+    );
 
-  if (result.status == LoginStatus.success) {
-    final AccessToken? accessToken = result.accessToken;
+    if (result.status == LoginStatus.success) {
+      final AccessToken? accessToken = result.accessToken;
 
-    if (accessToken == null) {
-      throw Exception('Facebook access token is missing');
+      if (accessToken == null) {
+        throw Exception('Facebook access token is missing');
+      }
+
+      final OAuthCredential credential = FacebookAuthProvider.credential(
+        accessToken.tokenString,
+      );
+
+      return await firebaseAuth.signInWithCredential(credential);
     }
 
-    final OAuthCredential credential =
-        FacebookAuthProvider.credential(accessToken.tokenString);
+    if (result.status == LoginStatus.cancelled) {
+      throw Exception('Facebook login cancelled');
+    }
 
-    return await firebaseAuth.signInWithCredential(credential);
+    throw Exception(result.message ?? 'Facebook login failed');
   }
 
-  if (result.status == LoginStatus.cancelled) {
-    throw Exception('Facebook login cancelled');
-  }
+  /// Sign in with Twitter / X
+  Future<UserCredential> signInWithTwitter() async {
+    final twitterProvider = TwitterAuthProvider();
 
-  throw Exception(result.message ?? 'Facebook login failed');
-}
+    return await firebaseAuth.signInWithProvider(twitterProvider);
+  }
 }

@@ -144,8 +144,7 @@ class _LoginViewState extends State<LoginView> {
                                 'assets/auth_assets/google-icon-logo-svg.svg',
                             text: 'Continue with Google',
                             onPressed: () {
-
-    context.read<AuthCubit>().loginWithGoogle();
+                              context.read<AuthCubit>().loginWithGoogle();
                             },
                           ),
                           Gap(15),
@@ -160,7 +159,9 @@ class _LoginViewState extends State<LoginView> {
                           CustomOutlinedButton(
                             imageUrl: 'assets/auth_assets/twitter-x-svg.svg',
                             text: 'Continue with X',
-                            onPressed: () {},
+                            onPressed: () {
+                              context.read<AuthCubit>().loginWithTwitter();
+                            },
                           ),
                           Gap(15),
                           Row(

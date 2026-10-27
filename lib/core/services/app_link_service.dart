@@ -1,4 +1,3 @@
-
 import 'package:app_links/app_links.dart';
 
 class AppLinkService {
@@ -19,24 +18,17 @@ class AppLinkService {
     });
   }
 
-  void _handleUri(
-    Uri uri,
-    void Function(String oobCode) onPasswordResetLink,
-  ) {
+  void _handleUri(Uri uri, void Function(String oobCode) onPasswordResetLink) {
     // Firebase wrap the actual action URL inside the "link" parameter.
     final nestedLink = uri.queryParameters['link'];
-    final actionUri = nestedLink != null
-        ? Uri.tryParse(nestedLink)
-        : uri;
+    final actionUri = nestedLink != null ? Uri.tryParse(nestedLink) : uri;
 
     if (actionUri == null) return;
 
     final mode = actionUri.queryParameters['mode'];
     final oobCode = actionUri.queryParameters['oobCode'];
 
-    if (mode == 'resetPassword' &&
-        oobCode != null &&
-        oobCode.isNotEmpty) {
+    if (mode == 'resetPassword' && oobCode != null && oobCode.isNotEmpty) {
       onPasswordResetLink(oobCode);
     }
   }

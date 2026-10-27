@@ -15,7 +15,7 @@ class PasswordRequirement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left:4),
+      padding: const EdgeInsets.only(left: 4),
       child: Row(
         children: [
           Transform.scale(

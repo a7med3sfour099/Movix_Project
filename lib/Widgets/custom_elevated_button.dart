@@ -9,7 +9,7 @@ class CustomElevatedbutton extends StatelessWidget {
     this.onPressed,
     this.child,
     this.backgroundColor,
-    this.size=20,
+    this.size = 20,
     this.isLoading = false,
   });
 
@@ -24,27 +24,27 @@ class CustomElevatedbutton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: backgroundColor ??  AppColors.primary,
+        backgroundColor: backgroundColor ?? AppColors.primary,
         disabledBackgroundColor: backgroundColor ?? AppColors.primary,
-        minimumSize: const Size(double.infinity, 50)
+        minimumSize: const Size(double.infinity, 50),
       ),
       onPressed: isLoading ? null : onPressed,
       child: isLoading
-    ? const SizedBox(
-        width: 22,
-        height: 22,
-        child: CircularProgressIndicator(
-          strokeWidth: 2.5,
-          color: AppColors.background,
-        ),
-      ):
-          CustomText(
-            text: text,
-            size: size,
-            color: AppColors.background,
-            weight: FontWeight.bold,
-            textAlign: TextAlign.center,
-          ),
+          ? const SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: AppColors.background,
+              ),
+            )
+          : CustomText(
+              text: text,
+              size: size,
+              color: AppColors.background,
+              weight: FontWeight.bold,
+              textAlign: TextAlign.center,
+            ),
     );
   }
 }

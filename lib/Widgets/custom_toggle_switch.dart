@@ -27,9 +27,7 @@ class AppToggleSwitch extends StatelessWidget {
         width: _width,
         height: _height,
         decoration: BoxDecoration(
-          color: value
-              ? AppColors.primary
-              : Color(0xFF78958E).withOpacity(0.4),
+          color: value ? AppColors.primary : Color(0xFF78958E).withOpacity(0.4),
           borderRadius: BorderRadius.circular(_height),
         ),
         child: AnimatedAlign(

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/services/auth_service.dart';
 import 'package:movixapp/features/auth/cubit/change_password/change_password_state.dart';
 
-class ChangePasswordCubit extends Cubit<ChangePasswordState>{
-  ChangePasswordCubit() :super(ChangePasswordInitial());
+class ChangePasswordCubit extends Cubit<ChangePasswordState> {
+  ChangePasswordCubit() : super(ChangePasswordInitial());
 
   @override
   void onChange(Change<ChangePasswordState> change) {
@@ -40,6 +40,4 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState>{
       emit(ChangePasswordFailure(e.toString()));
     }
   }
-
-
 }

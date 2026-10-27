@@ -18,9 +18,7 @@ void showCustomSnackBar(
       backgroundColor: isError ? Colors.redAccent : AppColors.primary,
       behavior: SnackBarBehavior.floating,
       duration: const Duration(seconds: 3),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   );
 }

@@ -14,6 +14,5 @@ class AppColors {
   static const Color warning = Color(0xffFFFF00);
   static const Color info = Color(0xff0000FF);
   //Additional Colors
-  static const Color InputFiledBackground =Color(0Xff102B27);
-
+  static const Color InputFiledBackground = Color(0Xff102B27);
 }

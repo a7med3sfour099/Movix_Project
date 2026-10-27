@@ -34,35 +34,32 @@ class CustomOutlinedButton extends StatelessWidget {
       onPressed: onPressed,
       child:
           child ??
-    SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          if (imageUrl != null && showIcon == true)
-            Positioned(
-              left: 0,
-              child: SvgImage(
-                path: imageUrl!,
-                size: 26,
-              ),
-            ),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (imageUrl != null && showIcon == true)
+                  Positioned(
+                    left: 0,
+                    child: SvgImage(path: imageUrl!, size: 26),
+                  ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Center(
-              child: CustomText(
-                text: text,
-                size: 20,
-                color: AppColors.secondary,
-                weight: FontWeight.w500,
-              ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Center(
+                    child: CustomText(
+                      text: text,
+                      size: 20,
+                      color: AppColors.secondary,
+                      weight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    ),
     );
   }
 }
