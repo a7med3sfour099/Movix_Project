@@ -13,6 +13,7 @@ class CustomOutlinedButton extends StatelessWidget {
     this.showIcon = true,
     this.child,
     this.imageUrl,
+    this.borderColor,
   });
 
   final String? imageUrl;
@@ -20,13 +21,14 @@ class CustomOutlinedButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool? showIcon;
   final Widget? child;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        side: BorderSide(color: AppColors.background, width: 2),
+        side: BorderSide(color:borderColor ?? AppColors.background, width: 2),
         minimumSize: Size(double.infinity, 50),
         elevation: 0,
         backgroundColor: Color(0xff141D1C),

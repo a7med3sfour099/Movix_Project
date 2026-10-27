@@ -15,6 +15,7 @@ import 'package:movixapp/features/auth/cubit/login_form_cubit.dart';
 import 'package:movixapp/features/auth/cubit/signup/auth_state.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
 import 'package:movixapp/features/home/views/home_screen.dart';
+import 'package:movixapp/core/services/guest_service.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -24,6 +25,7 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  bool isGuest = false;
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -101,9 +103,11 @@ class _LoginViewState extends State<LoginView> {
                           BlocConsumer<AuthCubit, AuthState>(
                             listener: (context, state) {
                               if (state is AuthSuccess) {
+                                GuestService.exitGuestMode();
                                 showCustomSnackBar(
                                   context,
                                   message: "Login Successful!",
+                                  
                                 );
                                 Navigator.pushAndRemoveUntil(
                                   context,
@@ -188,8 +192,63 @@ class _LoginViewState extends State<LoginView> {
                                   color: AppColors.primary,
                                 ),
                               ),
+                              
                             ],
                           ),
+                          Gap(15),
+CustomOutlinedButton(
+  text: 'Continue as Guest',
+  showIcon: false,
+  borderColor: AppColors.primary,
+//   onPressed: () {
+//   Navigator.pushAndRemoveUntil(
+//     context,
+//     MaterialPageRoute(
+//       builder: (context) => const HomeScreen(),
+//     ),
+//     (route) => false,
+//   );
+// },
+onPressed: () {
+  GuestService.enterGuestMode();
+
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const HomeScreen(),
+    ),
+    (route) => false,
+  );
+},
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(
+        Icons.person_outline,
+        color: AppColors.primary,
+        size: 24,
+      ),
+      Gap(8),
+      CustomText(
+        text: 'Continue as Guest',
+        size: 20,
+        color: AppColors.secondary,
+        weight: FontWeight.w500,
+      ),
+    ],
+  ),
+),
+Gap(8),
+Center(
+  child: CustomText(
+    text: 'Explore MOVIX without creating an account.',
+    size: 12,
+    color: AppColors.secondary,
+    weight: FontWeight.w400,
+  ),
+),
+Gap(15),
                         ],
                       ),
                     ),
