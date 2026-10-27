@@ -9,8 +9,6 @@ import 'package:gap/gap.dart';
 import 'package:movixapp/features/auth/widgets/password_req.dart';
 import 'package:movixapp/Widgets/custom_elevated_button.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
-import 'package:movixapp/features/auth/cubit/change_password/change_password_cubit.dart';
-import 'package:movixapp/features/auth/cubit/change_password/change_password_state.dart';
 
 class ResetPassword extends StatelessWidget {
   ResetPassword({super.key, required this.oobCode});
@@ -139,7 +137,7 @@ class ResetPassword extends StatelessWidget {
                         },
                         builder: (context, state) {
                           return CustomElevatedbutton(
-                            isLoading: state is ChangePasswordLoading,
+                            isLoading: state is ResetPasswordLoading,
                             text: "Reset Password",
                             size: 16,
                             onPressed: () => _submit(context),
