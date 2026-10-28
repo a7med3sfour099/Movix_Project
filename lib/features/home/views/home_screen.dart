@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movixapp/Widgets/custom_elevated_button.dart';
-import 'package:movixapp/features/auth/views/change_password_view.dart';
-import 'package:movixapp/features/auth/views/forget_password.dart';
+import 'package:movixapp/features/settings/views/settings_view.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,11 +13,11 @@ class HomeScreen extends StatelessWidget {
         children: [
           Center(
             child: CustomElevatedbutton(
-              text: 'Forget Password',
+              text: 'Setting',
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ForgetPassword()),
+                  MaterialPageRoute(builder: (context) => SettingsView()),
                 );
               },
             ),
