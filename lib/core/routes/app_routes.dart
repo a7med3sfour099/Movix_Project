@@ -10,7 +10,7 @@ class AppRoutes {
   static Map<String, WidgetBuilder> get routes => {
     '/home': (context) => const HomeScreen(),
     '/login': (context) => const LoginView(),
-    '/signup': (context) => const SignupView(),
+    '/sign-up': (context) => const SignupView(),
     '/forget-password': (context) => const ForgetPassword(),
     '/change-password': (context) => ChangePassword(),
     '/setting': (context) => const SettingsView(),

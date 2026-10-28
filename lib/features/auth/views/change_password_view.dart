@@ -43,12 +43,12 @@ class ChangePassword extends StatelessWidget {
         builder: (context) {
           return Scaffold(
             backgroundColor: AppColors.background,
-            appBar: const CustomAppbar(
+            appBar: CustomAppbar(
               title: "Change Password",
               back: true,
-              // onPressed: () {
-              //   Navigator.pop(context);
-              // },
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
             body: SafeArea(
               child: Padding(
