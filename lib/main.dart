@@ -1,16 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:movixapp/core/routes/app_routes.dart';
+import 'package:movixapp/core/routes/nav_key.dart';
 import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/core/services/app_navigation_service.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
-import 'package:movixapp/features/auth/views/reset_password_view.dart';
-import 'package:movixapp/features/home/views/home_screen.dart';
 import 'package:movixapp/firebase_options.dart';
-import 'package:movixapp/features/auth/views/signup_view.dart';
-import 'package:movixapp/features/auth/views/change_password_view.dart';
-import 'package:movixapp/features/settings/views/settings_view.dart';
-import 'package:movixapp/features/auth/views/forget_password.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 final AppLinkService appLinkService = AppLinkService();
@@ -37,20 +32,9 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, screenType) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-
-          /// Navigation issue
-          // navigatorKey: AppNavigationService.instance.navigatorKey,
-
-          home: SignupView(),
-          //home: LoginView(),
-          //home: SignupView(),
-          // home: LoginView(),
-          // home: HomeScreen(),
+          navigatorKey: NavKey.navigatorKey,
+          home: const LoginView(),
           routes: AppRoutes.routes,
-
-          // home: changePassword(),
-          // home: ForgetPassword(),
-          // home: SettingsView(),
         );
       },
     );
