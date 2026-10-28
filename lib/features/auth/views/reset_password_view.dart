@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
+import 'package:movixapp/core/services/app_navigation_service.dart';
 import 'package:movixapp/core/utils/email_validator.dart';
 import 'package:movixapp/features/auth/cubit/reset_password_cubit.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
@@ -39,7 +40,7 @@ class ResetPassword extends StatelessWidget {
         builder: (context) {
           return Scaffold(
             backgroundColor: AppColors.background,
-            appBar: const CustomAppbar(title: "Reset Password", back: true),
+            appBar: CustomAppbar(title: "Reset Password", back: false),
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(15),
@@ -84,8 +85,9 @@ class ResetPassword extends StatelessWidget {
                                 PasswordRequirement(
                                   text: "At least one number and one special character",
                                   isChecked:
-                                      RegExp(r'[0-9]')
-                                          .hasMatch(newPasswordController.text) &&
+                                      RegExp(
+                                        r'[0-9]',
+                                      ).hasMatch(newPasswordController.text) &&
                                       RegExp(r'[^a-zA-Z0-9]')
                                           .hasMatch(newPasswordController.text),
                                 ),
@@ -125,15 +127,28 @@ class ResetPassword extends StatelessWidget {
                         ),
                         const Gap(20),
                         BlocConsumer<ResetPasswordCubit, ResetPasswordState>(
-                          listener: (context, state) {
+                          listener: (context, state) async {
                             if (state is ResetPasswordSuccess) {
+                              await AppNavigationService.instance
+                                  .clearPasswordResetLink();
+                              if (!context.mounted) return;
                               showCustomSnackBar(
                                 context,
-                                message: "Password changed successfully!",
+                                message: "Password Reset successfully!",
                               );
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                "/login",
+                                (route) => false,
+                              );
+                              AppNavigationService.instance
+                                  .clearPasswordResetLink();
                               _clearFields();
                             } else if (state is ResetPasswordFailure) {
-                              showCustomSnackBar(context, message: state.message);
+                              showCustomSnackBar(
+                                context,
+                                message: state.message,
+                              );
                             }
                           },
                           builder: (context, state) {

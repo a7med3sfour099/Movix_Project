@@ -79,10 +79,14 @@ class ChangePassword extends StatelessWidget {
                             Spacer(),
                             InkWell(
                               onTap: () {
-                                Navigator.pushNamed(context, '/forgotPassword');
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  '/forget-password',
+                                );
+                                _clearFields();
                               },
                               child: const CustomText(
-                                text: 'Forgot Password?',
+                                text: 'Forget Password?',
                                 size: 12,
                                 color: AppColors.primary,
                                 weight: FontWeight.bold,
