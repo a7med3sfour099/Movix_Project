@@ -184,18 +184,30 @@ class SignupView extends StatelessWidget {
                             Gap((2.5.h).clamp(12.0, 20.0)),
                             BlocConsumer<AuthCubit, AuthState>(
                               listener: (context, state) {
+                                // if (state is AuthSuccess) {
+                                //   showCustomSnackBar(
+                                //     context,
+                                //     message: "Account created successfully!",
+                                //   );
+                                //   Navigator.pushReplacement(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder: (context) => const LoginView(),
+                                //     ),
+                                //   );
+                                // }
                                 if (state is AuthSuccess) {
-                                  showCustomSnackBar(
-                                    context,
-                                    message: "Account created successfully!",
-                                  );
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginView(),
-                                    ),
-                                  );
-                                }
+  showCustomSnackBar(
+    context,
+    message: "Account created! Please check your email to verify your account.",
+  );
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const LoginView(),
+    ),
+  );
+}
 
                                 if (state is AuthFailure) {
                                   showCustomSnackBar(

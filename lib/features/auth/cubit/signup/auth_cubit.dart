@@ -10,42 +10,112 @@ class AuthCubit extends Cubit<AuthState> {
 
   final AuthService _authService = authService.value;
   // Sign up
-  Future<void> signUp({
-    required String email,
-    required String password,
-    String? userName,
-  }) async {
-    emit(AuthLoading());
+//   Future<void> signUp({
+//     required String email,
+//     required String password,
+//     String? userName,
+//   }) async {
+//     emit(AuthLoading());
 
-    try {
-      await _authService.signUp(email: email.trim(), password: password);
+//     try {
+//       await _authService.signUp(
+//         email: email.trim(),
+//          password: password,
+         
+//       );
+// await _authService.sendEmailVerification();
+//       if (userName != null && userName.trim().isNotEmpty) {
+//         await _authService.updateUserName(userName: userName.trim());
+//       }
 
-      if (userName != null && userName.trim().isNotEmpty) {
-        await _authService.updateUserName(userName: userName.trim());
-      }
+//       if (isClosed) return;
+//       emit(AuthSuccess());
+//     } catch (error) {
+//       if (isClosed) return;
+//       emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+//     }
+//   }
 
-      if (isClosed) return;
-      emit(AuthSuccess());
-    } catch (error) {
-      if (isClosed) return;
-      emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+Future<void> signUp({
+  required String email,
+  required String password,
+  String? userName,
+}) async {
+  emit(AuthLoading());
+
+  try {
+    await _authService.signUp(
+      email: email.trim(),
+      password: password,
+    );
+
+    await _authService.sendEmailVerification();
+
+    if (userName != null && userName.trim().isNotEmpty) {
+      await _authService.updateUserName(
+        userName: userName.trim(),
+      );
     }
+
+    await _authService.signOut();
+
+    if (isClosed) return;
+    emit(AuthSuccess());
+  } catch (error) {
+    if (isClosed) return;
+    emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
   }
+}
+
 
   // Login
-  Future<void> login({required String email, required String password}) async {
-    emit(AuthLoading());
+  // Future<void> login({required String email, required String password}) async {
+  //   emit(AuthLoading());
 
-    try {
-      await _authService.signIn(email: email, password: password);
+  //   try {
+  //     await _authService.signIn(email: email, password: password);
+
+  //     if (isClosed) return;
+  //     emit(AuthSuccess());
+  //   } catch (error) {
+  //     if (isClosed) return;
+  //     emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+  //   }
+  // }
+  
+Future<void> login({
+  required String email,
+  required String password,
+}) async {
+  emit(AuthLoading());
+
+  try {
+    await _authService.signIn(
+      email: email,
+      password: password,
+    );
+
+    if (_authService.currentUser?.emailVerified != true) {
+      await _authService.signOut();
 
       if (isClosed) return;
-      emit(AuthSuccess());
-    } catch (error) {
-      if (isClosed) return;
-      emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+
+      emit(
+        AuthFailure(
+          'Please verify your email before logging in.',
+        ),
+      );
+      return;
     }
+
+    if (isClosed) return;
+    emit(AuthSuccess());
+  } catch (error) {
+    if (isClosed) return;
+    emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
   }
+}
+
 
   // Google Login
   Future<void> loginWithGoogle() async {
@@ -57,10 +127,6 @@ class AuthCubit extends Cubit<AuthState> {
       if (isClosed) return;
       emit(AuthSuccess());
     }
-    //  catch (error) {
-    //   if (isClosed) return;
-    //   emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
-    // }
     catch (error, stackTrace) {
       debugPrint('GOOGLE LOGIN ERROR: $error');
       debugPrintStack(stackTrace: stackTrace);

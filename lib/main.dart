@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           /// Navigation issue
           // navigatorKey: AppNavigationService.instance.navigatorKey,
-          //home: SignupView(),
+          home: SignupView(),
           //home: LoginView(),
           // home: changePassword(),
           // home: ForgetPassword(),

@@ -149,4 +149,14 @@ class AuthService {
 
     return await firebaseAuth.signInWithProvider(twitterProvider);
   }
+  /// Send email verification
+Future<void> sendEmailVerification() async {
+  final user = firebaseAuth.currentUser;
+
+  if (user == null) {
+    throw Exception('No user is currently signed in');
+  }
+
+  await user.sendEmailVerification();
+}
 }
