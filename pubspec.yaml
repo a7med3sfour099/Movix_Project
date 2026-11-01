@@ -11,29 +11,42 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_bloc: ^9.1.1
-  bloc: ^9.2.1
-  equatable: ^2.0.5
+
+  # UI
   image_picker: ^1.1.2
-  path_provider: ^2.1.4
-  path: ^1.9.0
-  sqflite: ^2.3.3
   material_symbols_icons: ^4.2815.0
   cupertino_icons: ^1.0.8
-  dio: ^5.11.1
+  ionicons: ^0.2.3
+  awesome_dialog: ^3.3.0
+  gap: ^3.0.1
+  flutter_svg: ^2.3.0
+  equatable: ^2.0.5
 
+
+  # State Management
+  bloc: ^9.2.1
+  flutter_bloc: ^9.1.1
+  path_provider: ^2.1.4
+  path: ^1.9.0
+
+  # Networking
+  dio: ^5.11.1
+  sqflite: ^2.3.3
+  google_sign_in: ^7.2.0
+  flutter_facebook_auth: ^7.3.2
+  app_links: ^7.2.2
+
+  # Firebase
   firebase_core: ^5.0.0
   firebase_auth: ^7.0.0
   cloud_firestore: ^7.0.0
   firebase_messaging: ^17.0.0
-  google_sign_in: ^7.2.0
-  flutter_facebook_auth: ^7.3.2
-  app_links: ^7.2.2
+
+  # Storage
   shared_preferences: ^2.5.6
-  gap: ^3.0.1
-  ionicons: ^0.2.3
-  awesome_dialog: ^3.3.0
-  flutter_svg: ^2.3.0
+  flutter_secure_storage: ^10.3.4
+
+  # Responsiveness
   responsive_sizer: ^3.3.1
   responsive_builder: ^0.7.1
 
