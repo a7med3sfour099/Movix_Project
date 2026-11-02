@@ -9,39 +9,14 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
 
   final AuthService _authService = authService.value;
-  // Sign up
-//   Future<void> signUp({
-//     required String email,
-//     required String password,
-//     String? userName,
-//   }) async {
-//     emit(AuthLoading());
 
-//     try {
-//       await _authService.signUp(
-//         email: email.trim(),
-//          password: password,
-         
-//       );
-// await _authService.sendEmailVerification();
-//       if (userName != null && userName.trim().isNotEmpty) {
-//         await _authService.updateUserName(userName: userName.trim());
-//       }
-
-//       if (isClosed) return;
-//       emit(AuthSuccess());
-//     } catch (error) {
-//       if (isClosed) return;
-//       emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
-//     }
-//   }
-
+// Sign up
 Future<void> signUp({
   required String email,
   required String password,
   String? userName,
 }) async {
-  emit(AuthLoading());
+  emit(AuthLoading(AuthMethod.email));
 
   try {
     await _authService.signUp(
@@ -67,27 +42,12 @@ Future<void> signUp({
   }
 }
 
-
-  // Login
-  // Future<void> login({required String email, required String password}) async {
-  //   emit(AuthLoading());
-
-  //   try {
-  //     await _authService.signIn(email: email, password: password);
-
-  //     if (isClosed) return;
-  //     emit(AuthSuccess());
-  //   } catch (error) {
-  //     if (isClosed) return;
-  //     emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
-  //   }
-  // }
-  
+// Login
 Future<void> login({
   required String email,
   required String password,
 }) async {
-  emit(AuthLoading());
+  emit(AuthLoading(AuthMethod.email));
 
   try {
     await _authService.signIn(
@@ -119,7 +79,7 @@ Future<void> login({
 
   // Google Login
   Future<void> loginWithGoogle() async {
-    emit(AuthLoading());
+    emit(AuthLoading(AuthMethod.google));
 
     try {
       await _authService.signInWithGoogle();
@@ -138,7 +98,7 @@ Future<void> login({
 
   // Logout
   Future<void> logout() async {
-    emit(AuthLoading());
+    emit(AuthLoading(AuthMethod.email));
 
     try {
       await _authService.signOut();
@@ -153,7 +113,7 @@ Future<void> login({
 
   // Facebook Login
   Future<void> loginWithFacebook() async {
-    emit(AuthLoading());
+    emit(AuthLoading(AuthMethod.facebook));
 
     try {
       await _authService.signInWithFacebook();
@@ -171,7 +131,7 @@ Future<void> login({
 
   // Twitter / X Login
   Future<void> loginWithTwitter() async {
-    emit(AuthLoading());
+    emit(AuthLoading(AuthMethod.twitter));
 
     try {
       await _authService.signInWithTwitter();
@@ -186,4 +146,17 @@ Future<void> login({
       emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
     }
   }
+
+  // Guest Login
+Future<void> enterGuestMode() async {
+  emit(AuthGuestLoading());
+
+  await Future.delayed(
+    const Duration(milliseconds: 1500),
+  );
+
+  if (isClosed) return;
+
+  emit(AuthGuest());
+}
 }

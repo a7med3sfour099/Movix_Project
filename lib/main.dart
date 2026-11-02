@@ -6,6 +6,10 @@ import 'package:movixapp/core/routes/app_routes.dart';
 import 'package:movixapp/core/routes/nav_key.dart';
 import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/core/services/app_navigation_service.dart';
+import 'package:movixapp/features/auth/cubit/login_form_cubit.dart';
+import 'package:movixapp/features/auth/cubit/signup/auth_cubit.dart';
+import 'package:movixapp/features/auth/cubit/signup/signup_form_cubit.dart';
+import 'package:movixapp/features/auth/cubit/signup/signup_password_cubit.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/home/cubit/home_tab_cubit.dart';
 import 'package:movixapp/features/profile/cubit/profile_cubit.dart';
@@ -34,6 +38,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => AuthCubit()),
+        BlocProvider(create: (context) => LoginFormCubit()),
+        BlocProvider(create: (context) => SignupFormCubit()),
+        BlocProvider(create: (context) => SignupPasswordCubit()),
         BlocProvider(create: (context) => ProfileCubit()..loadImage()),
         BlocProvider(create: (context) => HomeTabCubit()),
         BlocProvider(create: (context) => BottomBarCubit()),

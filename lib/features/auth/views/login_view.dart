@@ -12,231 +12,256 @@ import 'package:movixapp/features/auth/cubit/signup/auth_cubit.dart';
 import 'package:movixapp/features/auth/cubit/login_form_cubit.dart';
 import 'package:movixapp/features/auth/cubit/signup/auth_state.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
-import 'package:movixapp/core/services/guest_service.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
-  bool isGuest = false;
-  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
-        BlocProvider<LoginFormCubit>(create: (_) => LoginFormCubit()),
-      ],
-      child: Builder(
-        builder: (context) {
-          final formCubit = context.read<LoginFormCubit>();
-
-          return GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              backgroundColor: AppColors.background,
-              appBar: CustomAppbar(title: 'Login'),
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Form(
-                      key: formCubit.formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Image.asset(
-                              'assets/auth_assets/login_icon.png',
-                              height: 161,
-                              width: 161,
-                            ),
-                          ),
-                          CustomTextfield(
-                            textFieldName: 'Email',
-                            hint: 'Enter your email',
-                            isPass: false,
-                            controller: formCubit.emailController,
-                            keyboard: TextInputType.emailAddress,
-                            validator: validateEmail,
-                            icon: Icons.email_outlined,
-                          ),
-                          Gap(15),
-                          CustomTextfield(
-                            textFieldName: 'Password',
-                            hint: 'Password',
-                            isPass: true,
-                            controller: formCubit.passController,
-                            textInputAction: TextInputAction.done,
-                            icon: Icons.lock_outlined,
-                          ),
-                          Gap(15),
-                          Row(
-                            children: [
-                              Spacer(),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/forget-password',
-                                  );
-                                },
-                                child: CustomText(
-                                  text: 'Forgot Password?',
-                                  size: 16,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Gap(15),
-                          BlocConsumer<AuthCubit, AuthState>(
-                            listener: (context, state) {
-                              if (state is AuthSuccess) {
-                                GuestService.exitGuestMode();
-                                showCustomSnackBar(
-                                  context,
-                                  message: "Login Successful!",
-                                );
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  '/home',
-                                  (route) => false,
-                                );
-                              }
-
-                              if (state is AuthFailure) {
-                                showCustomSnackBar(
-                                  context,
-                                  message: state.message,
-                                );
-                              }
-                            },
-                            builder: (context, state) {
-                              /// loading issue logic
-                              return CustomElevatedbutton(
-                                text: 'Login',
-                                isLoading: state is AuthLoading,
-                                onPressed: () {
-                                  if (formCubit.formKey.currentState!
-                                      .validate()) {
-                                    context.read<AuthCubit>().login(
-                                      email: formCubit.emailController.text
-                                          .trim(),
-                                      password: formCubit.passController.text,
-                                    );
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                          Gap(15),
-                          CustomOutlinedButton(
-                            imageUrl:
-                                'assets/auth_assets/google-icon-logo-svg.svg',
-                            text: 'Continue with Google',
-                            onPressed: () {
-                              context.read<AuthCubit>().loginWithGoogle();
-                            },
-                          ),
-                          Gap(15),
-                          CustomOutlinedButton(
-                            imageUrl: 'assets/auth_assets/facebook-svg.svg',
-                            text: 'Continue with Facebook',
-                            onPressed: () {
-                              context.read<AuthCubit>().loginWithFacebook();
-                            },
-                          ),
-                          Gap(15),
-                          CustomOutlinedButton(
-                            imageUrl: 'assets/auth_assets/twitter-x-svg.svg',
-                            text: 'Continue with X',
-                            onPressed: () {
-                              context.read<AuthCubit>().loginWithTwitter();
-                            },
-                          ),
-                          Gap(15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomText(
-                                text: 'Don\'t have an account?',
-                                size: 16,
-                                color: AppColors.secondary,
-                              ),
-                              Gap(5),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/sign-up',
-                                  );
-                                },
-                                child: CustomText(
-                                  text: 'Sign Up',
-                                  size: 16,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Gap(15),
-                          CustomOutlinedButton(
-                            text: 'Continue as Guest',
-                            showIcon: false,
-                            borderColor: AppColors.primary,
-                            onPressed: () {
-                              GuestService.enterGuestMode();
-
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                '/home',
-                                (route) => false,
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.person_outline,
-                                  color: AppColors.primary,
-                                  size: 24,
-                                ),
-                                Gap(8),
-                                CustomText(
-                                  text: 'Continue as Guest',
-                                  size: 20,
-                                  color: AppColors.secondary,
-                                  weight: FontWeight.w500,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Gap(8),
-                          Center(
-                            child: CustomText(
-                              text:
-                                  'Explore MOVIX without creating an account.',
-                              size: 12,
-                              color: AppColors.secondary,
-                              weight: FontWeight.w400,
-                            ),
-                          ),
-                          Gap(15),
-                        ],
+    final formCubit = context.read<LoginFormCubit>();
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: AppColors.background,
+        appBar: CustomAppbar(title: 'Login'),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: formCubit.formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        'assets/auth_assets/login_icon.png',
+                        height: 161,
+                        width: 161,
                       ),
                     ),
-                  ),
+                    CustomTextfield(
+                      textFieldName: 'Email',
+                      hint: 'Enter your email',
+                      isPass: false,
+                      controller: formCubit.emailController,
+                      keyboard: TextInputType.emailAddress,
+                      validator: validateEmail,
+                      icon: Icons.email_outlined,
+                    ),
+                    Gap(15),
+                    CustomTextfield(
+                      textFieldName: 'Password',
+                      hint: 'Password',
+                      isPass: true,
+                      controller: formCubit.passController,
+                      textInputAction: TextInputAction.done,
+                      icon: Icons.lock_outlined,
+                    ),
+                    Gap(15),
+                    Row(
+                      children: [
+                        Spacer(),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/forget-password');
+                          },
+                          child: CustomText(
+                            text: 'Forgot Password?',
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Gap(15),
+                    BlocConsumer<AuthCubit, AuthState>(
+                      listener: (context, state) {
+                        if (state is AuthSuccess) {
+                          showCustomSnackBar(
+                            context,
+                            message: "Login Successful!",
+                          );
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/home',
+                            (route) => false,
+                          );
+                        }
+
+                        if (state is AuthFailure) {
+                          showCustomSnackBar(context, message: state.message);
+                        }
+                      },
+                      builder: (context, state) {
+                        /// Check if the current state is AuthLoading to determine if the login process is ongoing
+                        final isLoading = state is AuthLoading;
+
+                        final isEmailLoading =
+                            state is AuthLoading &&
+                            state.authMethod == AuthMethod.email;
+
+                        final isGoogleLoading =
+                            state is AuthLoading &&
+                            state.authMethod == AuthMethod.google;
+
+                        final isFacebookLoading =
+                            state is AuthLoading &&
+                            state.authMethod == AuthMethod.facebook;
+
+                        final isTwitterLoading =
+                            state is AuthLoading &&
+                            state.authMethod == AuthMethod.twitter;
+
+                        return Column(
+                          children: [
+                            CustomElevatedbutton(
+                              text: 'Login',
+                              isLoading: isEmailLoading,
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      if (formCubit.formKey.currentState!
+                                          .validate()) {
+                                        context.read<AuthCubit>().login(
+                                          email: formCubit.emailController.text
+                                              .trim(),
+                                          password:
+                                              formCubit.passController.text,
+                                        );
+                                      }
+                                    },
+                            ),
+                            Gap(15),
+                            CustomOutlinedButton(
+                              imageUrl:
+                                  'assets/auth_assets/google-icon-logo-svg.svg',
+                              text: 'Continue with Google',
+                              isLoading: isGoogleLoading,
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      context
+                                          .read<AuthCubit>()
+                                          .loginWithGoogle();
+                                    },
+                            ),
+                            Gap(15),
+                            CustomOutlinedButton(
+                              imageUrl: 'assets/auth_assets/facebook-svg.svg',
+                              text: 'Continue with Facebook',
+                              isLoading: isFacebookLoading,
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      context
+                                          .read<AuthCubit>()
+                                          .loginWithFacebook();
+                                    },
+                            ),
+                            Gap(15),
+                            CustomOutlinedButton(
+                              imageUrl: 'assets/auth_assets/twitter-x-svg.svg',
+                              text: 'Continue with X',
+                              isLoading: isTwitterLoading,
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      context
+                                          .read<AuthCubit>()
+                                          .loginWithTwitter();
+                                    },
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    Gap(15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomText(
+                          text: 'Don\'t have an account?',
+                          size: 16,
+                          color: AppColors.secondary,
+                        ),
+                        Gap(5),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(context, '/sign-up');
+                          },
+                          child: CustomText(
+                            text: 'Sign Up',
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Gap(15),
+                    BlocBuilder<AuthCubit, AuthState>(
+                      builder: (context, state) {
+                        return CustomOutlinedButton(
+                          text: 'Continue as Guest',
+                          showIcon: false,
+                          borderColor: state is AuthGuestLoading
+                              ? AppColors.background
+                              : AppColors.primary,
+                          isLoading: state is AuthGuestLoading,
+                          onPressed:
+                              state is AuthLoading || state is AuthGuestLoading
+                              ? null
+                              : () async {
+                                  await context
+                                      .read<AuthCubit>()
+                                      .enterGuestMode();
+
+                                  if (!context.mounted) return;
+
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/home',
+                                    (route) => false,
+                                  );
+                                },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.person_outline,
+                                color: AppColors.primary,
+                                size: 24,
+                              ),
+                              Gap(8),
+                              CustomText(
+                                text: 'Continue as Guest',
+                                size: 20,
+                                color: AppColors.secondary,
+                                weight: FontWeight.w500,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    Gap(8),
+                    Center(
+                      child: CustomText(
+                        text: 'Explore MOVIX without creating an account.',
+                        size: 12,
+                        color: AppColors.secondary,
+                        weight: FontWeight.w400,
+                      ),
+                    ),
+                    Gap(15),
+                  ],
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
