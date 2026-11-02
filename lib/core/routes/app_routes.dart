@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movixapp/features/auth/views/change_password_view.dart';
 import 'package:movixapp/features/auth/views/forget_password.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
+import 'package:movixapp/features/auth/views/reset_password_view.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
 import 'package:movixapp/features/home/screens/home_screen.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
@@ -12,6 +13,11 @@ class AppRoutes {
     '/login': (context) => const LoginView(),
     '/sign-up': (context) => const SignupView(),
     '/forget-password': (context) => const ForgetPassword(),
+    '/reset-password': (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      final oobCode = args is String ? args : '';
+      return ResetPassword(oobCode: oobCode);
+    },
     '/change-password': (context) => ChangePassword(),
     '/setting': (context) => const SettingsView(),
   };

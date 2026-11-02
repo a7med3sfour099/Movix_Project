@@ -12,12 +12,34 @@ import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
 import 'package:movixapp/features/auth/cubit/change_password/change_password_cubit.dart';
 import 'package:movixapp/features/auth/cubit/change_password/change_password_state.dart';
 
-class ChangePassword extends StatelessWidget {
-  ChangePassword({super.key});
+class ChangePassword extends StatefulWidget {
+  const ChangePassword({super.key});
+
+  @override
+  State<ChangePassword> createState() => _ChangePasswordState();
+}
+
+class _ChangePasswordState extends State<ChangePassword> {
   final _formKey = GlobalKey<FormState>();
-  final currentPasswordController = TextEditingController();
-  final newPasswordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  late final TextEditingController currentPasswordController;
+  late final TextEditingController newPasswordController;
+  late final TextEditingController confirmPasswordController;
+
+  @override
+  void initState() {
+    super.initState();
+    currentPasswordController = TextEditingController();
+    newPasswordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    currentPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   void _submit(BuildContext context) {
     if (_formKey.currentState!.validate()) {

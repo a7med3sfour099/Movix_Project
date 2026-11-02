@@ -11,12 +11,32 @@ import 'package:movixapp/features/auth/widgets/password_req.dart';
 import 'package:movixapp/Widgets/custom_elevated_button.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
 
-class ResetPassword extends StatelessWidget {
-  ResetPassword({super.key, required this.oobCode});
+class ResetPassword extends StatefulWidget {
+  const ResetPassword({super.key, required this.oobCode});
   final String oobCode;
+
+  @override
+  State<ResetPassword> createState() => _ResetPasswordState();
+}
+
+class _ResetPasswordState extends State<ResetPassword> {
   final _formKey = GlobalKey<FormState>();
-  final newPasswordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  late final TextEditingController newPasswordController;
+  late final TextEditingController confirmPasswordController;
+
+  @override
+  void initState() {
+    super.initState();
+    newPasswordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   void _submit(BuildContext context) {
     if (_formKey.currentState!.validate()) {
@@ -35,12 +55,22 @@ class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ResetPasswordCubit(oobCode: oobCode),
+      create: (_) => ResetPasswordCubit(oobCode: widget.oobCode),
       child: Builder(
         builder: (context) {
           return Scaffold(
             backgroundColor: AppColors.background,
-            appBar: CustomAppbar(title: "Reset Password", back: false),
+            appBar: CustomAppbar(
+              title: "Reset Password",
+              back: true,
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login',
+                  (route) => false,
+                );
+              },
+            ),
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(15),
