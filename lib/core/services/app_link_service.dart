@@ -20,27 +20,23 @@ class AppLinkService {
   }
 
   void _handleUri(Uri uri, void Function(String oobCode) onPasswordResetLink) {
-    // Firebase wrap the actual action URL inside the "link" parameter.
-    
     debugPrint('Incoming URI: $uri');
 
+    // Firebase or custom links may wrap the actual action URL inside the "link" parameter.
     final nestedLink = uri.queryParameters['link'];
     final actionUri = nestedLink != null ? Uri.tryParse(nestedLink) : uri;
 
-    if (actionUri == null) {
-      debugPrint('Could not parse action URI');
-      return;}
+    final targetUri = actionUri ?? uri;
 
-    final mode = actionUri.queryParameters['mode'];
-    final oobCode = actionUri.queryParameters['oobCode'];
+    final mode = targetUri.queryParameters['mode'] ?? uri.queryParameters['mode'];
+    final oobCode = targetUri.queryParameters['oobCode'] ?? uri.queryParameters['oobCode'];
 
     debugPrint('Action mode: $mode');
-  debugPrint('Has oobCode: ${oobCode != null && oobCode.isNotEmpty}');
+    debugPrint('Has oobCode: ${oobCode != null && oobCode.isNotEmpty}');
 
-    if (mode == 'resetPassword' && oobCode != null && oobCode.isNotEmpty) {
+    if ((mode == 'resetPassword' || mode == null) && oobCode != null && oobCode.isNotEmpty) {
       onPasswordResetLink(oobCode);
-    }
-    else {
+    } else {
       debugPrint('This URI is not a valid password reset link');
     }
   }
