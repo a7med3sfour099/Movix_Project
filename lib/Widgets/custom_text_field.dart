@@ -4,8 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 
-class CustomTextfield extends StatefulWidget {
-  const CustomTextfield({
+class CustomTextfield extends StatelessWidget {
+  CustomTextfield({
     super.key,
     required this.hint,
     required this.isPass,
@@ -16,7 +16,7 @@ class CustomTextfield extends StatefulWidget {
     this.onChanged,
     this.textInputAction,
     this.icon,
-  });
+  }) : _obscureText = ValueNotifier<bool>(isPass);
 
   final String hint;
   final bool isPass;
@@ -28,30 +28,7 @@ class CustomTextfield extends StatefulWidget {
   final IconData? icon;
   final String textFieldName;
 
-  @override
-  State<CustomTextfield> createState() => _CustomTextfieldState();
-}
-
-class _CustomTextfieldState extends State<CustomTextfield> {
-  late bool _obscureText;
-
-  @override
-  void initState() {
-    super.initState();
-    _obscureText = widget.isPass;
-  }
-
-  @override
-  void didUpdateWidget(covariant CustomTextfield oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.isPass != widget.isPass) {
-      _obscureText = widget.isPass;
-    }
-  }
-
-  void _togglePasswordVisibility() {
-    setState(() => _obscureText = !_obscureText);
-  }
+  final ValueNotifier<bool> _obscureText;
 
   @override
   Widget build(BuildContext context) {
@@ -59,80 +36,104 @@ class _CustomTextfieldState extends State<CustomTextfield> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomText(
-          text: widget.textFieldName,
+          text: textFieldName,
           size: 20,
           color: AppColors.secondary,
           weight: FontWeight.w500,
         ),
-        Gap(12),
+        const Gap(12),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: TextFormField(
-            onChanged: widget.onChanged,
-            textInputAction: widget.textInputAction,
-            maxLines: 1,
-            style: const TextStyle(color: AppColors.secondary),
-            keyboardType: widget.isPass
-                ? TextInputType.visiblePassword
-                : widget.keyboard,
-            controller: widget.controller,
-            cursorColor: AppColors.primary,
-            cursorHeight: 20,
-            validator: widget.validator,
-            obscureText: _obscureText,
-            decoration: InputDecoration(
-              prefixIcon: widget.icon != null
-                  ? SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Icon(
-                        widget.icon,
-                        color: AppColors.secondary,
-                        size: 22,
-                      ),
-                    )
-                  : null,
-              suffixIcon: widget.isPass
-                  ? IconButton(
-                      onPressed: _togglePasswordVisibility,
-                      tooltip: _obscureText ? 'Show password' : 'Hide password',
-                      icon: Icon(
-                        _obscureText
-                            ? CupertinoIcons.eye_slash_fill
-                            : CupertinoIcons.eye_fill,
-                        color: AppColors.secondary,
-                      ),
-                    )
-                  : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppColors.primary, width: 1),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppColors.background, width: 1.5),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppColors.primary, width: 2),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppColors.error,
-                  width: 1.5,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _obscureText,
+            builder: (context, obscureText, child) {
+              return TextFormField(
+                onChanged: onChanged,
+                textInputAction: textInputAction,
+                maxLines: 1,
+                style: const TextStyle(color: AppColors.secondary),
+                keyboardType: isPass
+                    ? TextInputType.visiblePassword
+                    : keyboard,
+                controller: controller,
+                cursorColor: AppColors.primary,
+                cursorHeight: 20,
+                validator: validator,
+                obscureText: obscureText,
+                decoration: InputDecoration(
+                  prefixIcon: icon != null
+                      ? SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: Icon(
+                            icon,
+                            color: AppColors.secondary,
+                            size: 22,
+                          ),
+                        )
+                      : null,
+                  suffixIcon: isPass
+                      ? IconButton(
+                          onPressed: () {
+                            _obscureText.value = !_obscureText.value;
+                          },
+                          tooltip: obscureText ? 'Show password' : 'Hide password',
+                          icon: Icon(
+                            obscureText
+                                ? CupertinoIcons.eye_slash_fill
+                                : CupertinoIcons.eye_fill,
+                            color: AppColors.secondary,
+                          ),
+                        )
+                      : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 1,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: AppColors.background,
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: AppColors.error,
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: AppColors.error,
+                      width: 2,
+                    ),
+                  ),
+                  hintText: hint,
+                  labelStyle: const TextStyle(
+                    color: AppColors.secondary,
+                    fontSize: 18,
+                  ),
+                  hintStyle: TextStyle(
+                    color: AppColors.secondary.withOpacity(0.6),
+                  ),
+                  fillColor: AppColors.InputFiledBackground,
+                  filled: true,
                 ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.error, width: 2),
-              ),
-              hintText: widget.hint,
-              labelStyle: TextStyle(color: AppColors.secondary, fontSize: 18),
-              hintStyle: TextStyle(color: AppColors.secondary.withOpacity(0.6)),
-              fillColor: AppColors.InputFiledBackground,
-              filled: true,
-            ),
+              );
+            },
           ),
         ),
       ],

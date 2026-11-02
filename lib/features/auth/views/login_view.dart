@@ -96,7 +96,7 @@ class LoginView extends StatelessWidget {
                       },
                       builder: (context, state) {
                         /// Check if the current state is AuthLoading to determine if the login process is ongoing
-                        final isLoading = state is AuthLoading;
+                        final isAnyLoading = state is AuthLoading || state is AuthGuestLoading;
 
                         final isEmailLoading =
                             state is AuthLoading &&
@@ -119,7 +119,7 @@ class LoginView extends StatelessWidget {
                             CustomElevatedbutton(
                               text: 'Login',
                               isLoading: isEmailLoading,
-                              onPressed: isLoading
+                              onPressed: isAnyLoading
                                   ? null
                                   : () {
                                       if (formCubit.formKey.currentState!
@@ -139,7 +139,7 @@ class LoginView extends StatelessWidget {
                                   'assets/auth_assets/google-icon-logo-svg.svg',
                               text: 'Continue with Google',
                               isLoading: isGoogleLoading,
-                              onPressed: isLoading
+                              onPressed: isAnyLoading
                                   ? null
                                   : () {
                                       context
@@ -152,7 +152,7 @@ class LoginView extends StatelessWidget {
                               imageUrl: 'assets/auth_assets/facebook-svg.svg',
                               text: 'Continue with Facebook',
                               isLoading: isFacebookLoading,
-                              onPressed: isLoading
+                              onPressed: isAnyLoading
                                   ? null
                                   : () {
                                       context
@@ -165,7 +165,7 @@ class LoginView extends StatelessWidget {
                               imageUrl: 'assets/auth_assets/twitter-x-svg.svg',
                               text: 'Continue with X',
                               isLoading: isTwitterLoading,
-                              onPressed: isLoading
+                              onPressed: isAnyLoading
                                   ? null
                                   : () {
                                       context
