@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movixapp/core/routes/nav_key.dart';
 import 'package:movixapp/features/auth/views/reset_password_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppNavigationService {
   AppNavigationService._();
@@ -13,25 +13,27 @@ class AppNavigationService {
   String? _pendingOobCode;
   String? _lastHandledOobCode;
 
-  static const String _completedKey = 'password_reset_completed';
-
   Future<void> handlePasswordResetLink(String oobCode) async {
     // Avoid navigating twice for the same reset link.
     if (oobCode == _lastHandledOobCode) return;
-
-    final pref = await SharedPreferences.getInstance();
-    if (pref.getBool(_completedKey) == true) {
-      navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        '/login',
-        (route) => false,
-      );
-      return;
-    }
 
     final navigator = navigatorKey.currentState;
 
     if (navigator == null) {
       _pendingOobCode = oobCode;
+      return;
+    }
+
+    try {
+      final email = await FirebaseAuth.instance.verifyPasswordResetCode(
+        oobCode,
+      );
+      debugPrint('Password reset code is valid for email: $email');
+    } on FirebaseAuthException catch (e) {
+      _lastHandledOobCode = oobCode;
+      _pendingOobCode = null;
+      navigator.pushNamedAndRemoveUntil('/login', (route) => false);
+      debugPrint('Error verifying password reset code: ${e.message}');
       return;
     }
 
@@ -52,7 +54,5 @@ class AppNavigationService {
 
   Future<void> clearPasswordResetLink() async {
     _pendingOobCode = null;
-    final pref = await SharedPreferences.getInstance();
-    await pref.setBool(_completedKey, true);
   }
 }

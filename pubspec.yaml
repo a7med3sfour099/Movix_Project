@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  tmdb_flutter: ^0.1.0
 
 
   # UI
