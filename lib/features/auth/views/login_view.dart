@@ -5,12 +5,11 @@ import 'package:movixapp/Widgets/custom_outlined_button.dart';
 import 'package:movixapp/Widgets/custom_text.dart';
 import 'package:movixapp/Widgets/custom_text_field.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
-import 'package:movixapp/core/utils/email_validator.dart';
+import 'package:movixapp/core/utils/auth_validators.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movixapp/features/auth/cubit/signup/auth_cubit.dart';
-import 'package:movixapp/features/auth/cubit/login_form_cubit.dart';
-import 'package:movixapp/features/auth/cubit/signup/auth_state.dart';
+import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
+import 'package:movixapp/features/auth/cubit/auth_state.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
 
 class LoginView extends StatelessWidget {
@@ -18,7 +17,7 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formCubit = context.read<LoginFormCubit>();
+    final cubit = context.read<AuthCubit>();
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -30,7 +29,7 @@ class LoginView extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Form(
-                key: formCubit.formKey,
+                key: cubit.loginFormKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -45,9 +44,9 @@ class LoginView extends StatelessWidget {
                       textFieldName: 'Email',
                       hint: 'Enter your email',
                       isPass: false,
-                      controller: formCubit.emailController,
+                      controller: cubit.emailController,
                       keyboard: TextInputType.emailAddress,
-                      validator: validateEmail,
+                      validator: AuthValidators.validateEmail,
                       icon: Icons.email_outlined,
                     ),
                     Gap(15),
@@ -55,7 +54,7 @@ class LoginView extends StatelessWidget {
                       textFieldName: 'Password',
                       hint: 'Password',
                       isPass: true,
-                      controller: formCubit.passController,
+                      controller: cubit.loginPasswordController,
                       textInputAction: TextInputAction.done,
                       icon: Icons.lock_outlined,
                     ),
@@ -122,13 +121,13 @@ class LoginView extends StatelessWidget {
                               onPressed: isAnyLoading
                                   ? null
                                   : () {
-                                      if (formCubit.formKey.currentState!
+                                      if (cubit.loginFormKey.currentState!
                                           .validate()) {
                                         context.read<AuthCubit>().login(
-                                          email: formCubit.emailController.text
+                                          email: cubit.emailController.text
                                               .trim(),
                                           password:
-                                              formCubit.passController.text,
+                                              cubit.loginPasswordController.text,
                                         );
                                       }
                                     },

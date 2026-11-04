@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/network/firebase_error_handler.dart';
 import 'package:movixapp/core/services/auth_service.dart';
@@ -9,6 +10,34 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
 
   final AuthService _authService = authService.value;
+
+  final signupFormKey = GlobalKey<FormState>();
+  final loginFormKey = GlobalKey<FormState>();
+
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final signupPasswordController = TextEditingController();
+  final loginPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+
+    @override
+  Future<void> close() {
+    nameController.dispose();
+    emailController.dispose();
+    signupPasswordController.dispose();
+    loginPasswordController.dispose();
+    confirmPasswordController.dispose();
+
+    return super.close();
+  }
+// Update password fields
+void updatePasswordFields({
+  required String password,
+  required String confirmPassword,
+}) {
+  emit(AuthPasswordChanged(password: password, confirmPassword: confirmPassword));
+}
 
 // Sign up
 Future<void> signUp({

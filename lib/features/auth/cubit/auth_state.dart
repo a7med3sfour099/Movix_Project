@@ -18,6 +18,12 @@ class AuthGuest extends AuthState {}
 
 class AuthGuestLoading extends AuthState {}
 
+class AuthPasswordChanged extends AuthState {
+  final String password;
+  final String confirmPassword;
+  AuthPasswordChanged({required this.password, required this.confirmPassword});
+}
+
 class AuthSuccess extends AuthState {}
 
 class AuthFailure extends AuthState {

@@ -21,6 +21,7 @@ dependencies:
   awesome_dialog: ^3.3.0
   gap: ^3.0.1
   flutter_svg: ^2.3.0
+  lottie: ^3.8.2
   equatable: ^2.0.5
 
 
