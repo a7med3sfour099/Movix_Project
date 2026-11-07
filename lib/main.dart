@@ -7,6 +7,8 @@ import 'package:movixapp/core/routes/nav_key.dart';
 import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/core/services/app_navigation_service.dart';
 import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
+import 'package:movixapp/features/auth/cubit/change_password_cubit.dart';
+import 'package:movixapp/features/auth/cubit/forget_password_cubit.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/home/cubit/home_tab_cubit.dart';
 import 'package:movixapp/features/profile/cubit/profile_cubit.dart';

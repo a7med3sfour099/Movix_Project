@@ -7,13 +7,13 @@ class AppLinkService {
   Future<void> init({
     required void Function(String oobCode) onPasswordResetLink,
   }) async {
-    // Handle a link that opened the app from a terminated state.
+    // The initial link that opened the app from a terminated state.
     final initialUri = await _appLinks.getInitialLink();
     if (initialUri != null) {
       _handleUri(initialUri, onPasswordResetLink);
     }
 
-    // Handle links received while the app is already running.
+    // The app link stream emits links received while the app is already running.
     _appLinks.uriLinkStream.listen((uri) {
       _handleUri(uri, onPasswordResetLink);
     });

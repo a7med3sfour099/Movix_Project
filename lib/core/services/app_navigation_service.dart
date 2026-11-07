@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movixapp/core/routes/nav_key.dart';
-import 'package:movixapp/features/auth/views/reset_password_view.dart';
 
 class AppNavigationService {
   AppNavigationService._();
@@ -12,16 +11,20 @@ class AppNavigationService {
 
   String? _pendingOobCode;
   String? _lastHandledOobCode;
+  bool _isVerifying = false;
 
   Future<void> handlePasswordResetLink(String oobCode) async {
     final navigator = navigatorKey.currentState;
 
-    if (oobCode == _lastHandledOobCode) return;
+    if (_isVerifying || oobCode == _lastHandledOobCode) return;
 
     if (navigator == null) {
       _pendingOobCode = oobCode;
       return;
     }
+
+    _isVerifying = true;
+    _lastHandledOobCode = oobCode;
 
     /// Verify the password reset code with Firebase Authentication
     /// To ensure that the code is valid and corresponds to a user account.(Emulator)
@@ -32,18 +35,23 @@ class AppNavigationService {
       debugPrint('Password reset code is valid for email: $email');
       _lastHandledOobCode = oobCode;
     } on FirebaseAuthException catch (e) {
-      _lastHandledOobCode = oobCode;
+      // _lastHandledOobCode = oobCode;
       _pendingOobCode = null;
+      _isVerifying = false;
       navigator.pushNamedAndRemoveUntil('/login', (route) => false);
       debugPrint('Error verifying password reset code: ${e.message}');
+      return;
+    } catch (e) {
+      _pendingOobCode = null;
+      _isVerifying = false;
+      debugPrint('Error verifying password reset code: $e');
       return;
     }
 
     _pendingOobCode = null;
+    _isVerifying = false;
 
-    navigator.push(
-      MaterialPageRoute<void>(builder: (_) => ResetPassword(oobCode: oobCode)),
-    );
+    navigator.pushNamed('/reset-password', arguments: oobCode);
   }
 
   Future<void> handlePendingPasswordResetLink() async {

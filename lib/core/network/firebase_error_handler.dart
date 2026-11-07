@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseErrorHandler {
@@ -43,6 +42,12 @@ class FirebaseErrorHandler {
 
         case 'credential-already-in-use':
           return 'This credential is already linked to another account.';
+
+        case 'account-exists-with-different-credential':
+          return 'This credential is already linked to another account.';
+
+        case 'guest-user':
+          return 'You are currently logged in as a guest. Please log in with your account to perform this action.';
 
         default:
           return 'Authentication failed. Please try again.';
