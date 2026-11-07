@@ -24,7 +24,11 @@ class AuthPasswordChanged extends AuthState {
   AuthPasswordChanged({required this.password, required this.confirmPassword});
 }
 
-class AuthSuccess extends AuthState {}
+class AuthLoginSuccess extends AuthState {}
+
+class AuthSignupSuccess extends AuthState {}
+
+class AuthSocialLoginSuccess extends AuthState {}
 
 class AuthFailure extends AuthState {
   final String message;

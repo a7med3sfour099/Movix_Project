@@ -10,7 +10,6 @@ import 'package:movixapp/features/auth/widgets/password_req.dart';
 import 'package:movixapp/Widgets/custom_elevated_button.dart';
 import 'package:movixapp/Widgets/custom_text_button.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
-import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
 import 'package:movixapp/features/auth/cubit/auth_state.dart';
@@ -56,7 +55,7 @@ class SignupView extends StatelessWidget {
                       CustomTextfield(
                         hint: "example@example",
                         isPass: false,
-                        controller: cubit.emailController,
+                        controller: cubit.signupEmailController,
                         icon: Icons.email_outlined,
                         textFieldName: 'Email',
                         validator: AuthValidators.validateEmail,
@@ -67,7 +66,7 @@ class SignupView extends StatelessWidget {
                       CustomTextfield(
                         hint: "Enter your Password",
                         isPass: true,
-                        controller: cubit.signupPasswordController,
+                        controller: cubit.passwordController,
                         icon: Icons.lock_outlined,
                         textFieldName: 'Password',
                         validator: AuthValidators.validateStrongPassword,
@@ -86,7 +85,7 @@ class SignupView extends StatelessWidget {
                         builder: (context, state) {
                           final cubit = context.read<AuthCubit>();
                           return PasswordChecklist(
-                            password: cubit.signupPasswordController.text,
+                            password: cubit.passwordController.text,
                           );
                         },
                       ),
@@ -101,14 +100,14 @@ class SignupView extends StatelessWidget {
                         textFieldName: 'Confirm your password',
                         onChanged: (value) {
                           context.read<AuthCubit>().updatePasswordFields(
-                            password: cubit.signupPasswordController.text,
+                            password: cubit.passwordController.text,
                             confirmPassword: value,
                           );
                         },
                         validator: (value) {
                           return AuthValidators.validateConfirmPassword(
                             value,
-                            cubit.signupPasswordController.text,
+                            cubit.confirmPasswordController.text,
                           );
                         },
                       ),
@@ -116,7 +115,6 @@ class SignupView extends StatelessWidget {
                       /// Password match checklist
                       BlocBuilder<AuthCubit, AuthState>(
                         builder: (context, state) {
-                          final cubit = context.read<AuthCubit>();
                           return PasswordRequirement(
                             text: "Password must match",
                             isChecked:
@@ -124,7 +122,7 @@ class SignupView extends StatelessWidget {
                                     .confirmPasswordController
                                     .text
                                     .isNotEmpty &&
-                                cubit.signupPasswordController.text ==
+                                cubit.passwordController.text ==
                                     cubit.confirmPasswordController.text,
                           );
                         },
@@ -134,18 +132,16 @@ class SignupView extends StatelessWidget {
                       /// Sign up button
                       BlocConsumer<AuthCubit, AuthState>(
                         listener: (context, state) {
-                          if (state is AuthSuccess) {
+                          if (state is AuthSignupSuccess) {
                             showCustomSnackBar(
                               context,
                               message:
                                   "Account created! Please check your email to verify your account.",
                             );
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginView(),
-                              ),
-                            );
+                            final email =cubit.signupEmailController.text.trim();
+                            cubit.clearControllers(clearLoginEmail: false);
+                            cubit.loginEmailController.text = email;
+                            Navigator.pushReplacementNamed(context, '/login');
                           }
 
                           if (state is AuthFailure) {
@@ -165,8 +161,8 @@ class SignupView extends StatelessWidget {
                                   .validate()) {
                                 context.read<AuthCubit>().signUp(
                                   userName: cubit.nameController.text,
-                                  email: cubit.emailController.text,
-                                  password: cubit.signupPasswordController.text,
+                                  email: cubit.signupEmailController.text,
+                                  password: cubit.passwordController.text,
                                 );
                               }
                             },

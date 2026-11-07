@@ -15,96 +15,93 @@ class AuthCubit extends Cubit<AuthState> {
   final loginFormKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final signupPasswordController = TextEditingController();
-  final loginPasswordController = TextEditingController();
+  final signupEmailController = TextEditingController();
+  final loginEmailController = TextEditingController();
+  final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-
-    @override
+  @override
   Future<void> close() {
     nameController.dispose();
-    emailController.dispose();
-    signupPasswordController.dispose();
-    loginPasswordController.dispose();
+    signupEmailController.dispose();
+    loginEmailController.dispose();
+    passwordController.dispose();
     confirmPasswordController.dispose();
 
     return super.close();
   }
-// Update password fields
-void updatePasswordFields({
-  required String password,
-  required String confirmPassword,
-}) {
-  emit(AuthPasswordChanged(password: password, confirmPassword: confirmPassword));
-}
 
-// Sign up
-Future<void> signUp({
-  required String email,
-  required String password,
-  String? userName,
-}) async {
-  emit(AuthLoading(AuthMethod.email));
-
-  try {
-    await _authService.signUp(
-      email: email.trim(),
-      password: password,
-    );
-
-    await _authService.sendEmailVerification();
-
-    if (userName != null && userName.trim().isNotEmpty) {
-      await _authService.updateUserName(
-        userName: userName.trim(),
-      );
+  // Clear all controllers
+  void clearControllers ({bool clearLoginEmail = true}) {
+    nameController.clear();
+    signupEmailController.clear();
+    if (clearLoginEmail) {
+      loginEmailController.clear();
     }
-
-    await _authService.signOut();
-
-    if (isClosed) return;
-    emit(AuthSuccess());
-  } catch (error) {
-    if (isClosed) return;
-    emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+    passwordController.clear();
+    confirmPasswordController.clear();
   }
-}
 
-// Login
-Future<void> login({
-  required String email,
-  required String password,
-}) async {
-  emit(AuthLoading(AuthMethod.email));
-
-  try {
-    await _authService.signIn(
-      email: email,
-      password: password,
+  // Update password fields
+  void updatePasswordFields({
+    required String password,
+    required String confirmPassword,
+  }) {
+    emit(
+      AuthPasswordChanged(password: password, confirmPassword: confirmPassword),
     );
+  }
 
-    if (_authService.currentUser?.emailVerified != true) {
+  // Sign up
+  Future<void> signUp({
+    required String email,
+    required String password,
+    String? userName,
+  }) async {
+    emit(AuthLoading(AuthMethod.email));
+
+    try {
+      await _authService.signUp(email: email.trim(), password: password);
+
+      await _authService.sendEmailVerification();
+
+      if (userName != null && userName.trim().isNotEmpty) {
+        await _authService.updateUserName(userName: userName.trim());
+      }
+
       await _authService.signOut();
 
       if (isClosed) return;
-
-      emit(
-        AuthFailure(
-          'Please verify your email before logging in.',
-        ),
-      );
-      return;
+      emit(AuthSignupSuccess());
+    } catch (error) {
+      if (isClosed) return;
+      emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
     }
-
-    if (isClosed) return;
-    emit(AuthSuccess());
-  } catch (error) {
-    if (isClosed) return;
-    emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
   }
-}
 
+  // Login
+  Future<void> login({required String email, required String password}) async {
+    emit(AuthLoading(AuthMethod.email));
+
+    try {
+      await _authService.signIn(email: email, password: password);
+
+      if (_authService.currentUser?.emailVerified != true) {
+        await _authService.signOut();
+
+        if (isClosed) return;
+
+        emit(AuthFailure('Please verify your email before logging in.'));
+        return;
+      }
+
+      if (isClosed) return;
+      emit(AuthLoginSuccess());
+    } catch (error) {
+      if (isClosed) return;
+      emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+    }
+  }
 
   // Google Login
   Future<void> loginWithGoogle() async {
@@ -114,9 +111,8 @@ Future<void> login({
       await _authService.signInWithGoogle();
 
       if (isClosed) return;
-      emit(AuthSuccess());
-    }
-    catch (error, stackTrace) {
+      emit(AuthSocialLoginSuccess());
+    } catch (error, stackTrace) {
       debugPrint('GOOGLE LOGIN ERROR: $error');
       debugPrintStack(stackTrace: stackTrace);
 
@@ -148,7 +144,7 @@ Future<void> login({
       await _authService.signInWithFacebook();
 
       if (isClosed) return;
-      emit(AuthSuccess());
+      emit(AuthSocialLoginSuccess());
     } catch (error, stackTrace) {
       debugPrint('FACEBOOK LOGIN ERROR: $error');
       debugPrintStack(stackTrace: stackTrace);
@@ -166,7 +162,7 @@ Future<void> login({
       await _authService.signInWithTwitter();
 
       if (isClosed) return;
-      emit(AuthSuccess());
+      emit(AuthSocialLoginSuccess());
     } catch (error, stackTrace) {
       debugPrint('TWITTER LOGIN ERROR: $error');
       debugPrintStack(stackTrace: stackTrace);
@@ -177,15 +173,13 @@ Future<void> login({
   }
 
   // Guest Login
-Future<void> enterGuestMode() async {
-  emit(AuthGuestLoading());
+  Future<void> enterGuestMode() async {
+    emit(AuthGuestLoading());
 
-  await Future.delayed(
-    const Duration(milliseconds: 1500),
-  );
+    await Future.delayed(const Duration(milliseconds: 1500));
 
-  if (isClosed) return;
+    if (isClosed) return;
 
-  emit(AuthGuest());
-}
+    emit(AuthGuest());
+  }
 }

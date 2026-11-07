@@ -33,6 +33,7 @@ class LoginView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    /// Login Icon
                     Center(
                       child: Image.asset(
                         'assets/auth_assets/login_icon.png',
@@ -40,25 +41,31 @@ class LoginView extends StatelessWidget {
                         width: 161,
                       ),
                     ),
+
+                    /// Email fields
                     CustomTextfield(
                       textFieldName: 'Email',
                       hint: 'Enter your email',
                       isPass: false,
-                      controller: cubit.emailController,
+                      controller: cubit.loginEmailController,
                       keyboard: TextInputType.emailAddress,
                       validator: AuthValidators.validateEmail,
                       icon: Icons.email_outlined,
                     ),
                     Gap(15),
+
+                    /// Password field
                     CustomTextfield(
                       textFieldName: 'Password',
                       hint: 'Password',
                       isPass: true,
-                      controller: cubit.loginPasswordController,
+                      controller: cubit.passwordController,
                       textInputAction: TextInputAction.done,
                       icon: Icons.lock_outlined,
                     ),
                     Gap(15),
+
+                    /// Forgot Password
                     Row(
                       children: [
                         Spacer(),
@@ -75,13 +82,16 @@ class LoginView extends StatelessWidget {
                       ],
                     ),
                     Gap(15),
+
+                    /// Login button
                     BlocConsumer<AuthCubit, AuthState>(
                       listener: (context, state) {
-                        if (state is AuthSuccess) {
+                        if (state is AuthLoginSuccess) {
                           showCustomSnackBar(
                             context,
                             message: "Login Successful!",
                           );
+                          cubit.clearControllers();
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             '/home',
@@ -90,12 +100,13 @@ class LoginView extends StatelessWidget {
                         }
 
                         if (state is AuthFailure) {
-                          showCustomSnackBar(context, message: state.message);
+                          showCustomSnackBar(context, message: state.message, isError: true);
                         }
                       },
                       builder: (context, state) {
                         /// Check if the current state is AuthLoading to determine if the login process is ongoing
-                        final isAnyLoading = state is AuthLoading || state is AuthGuestLoading;
+                        final isAnyLoading =
+                            state is AuthLoading || state is AuthGuestLoading;
 
                         final isEmailLoading =
                             state is AuthLoading &&
@@ -124,10 +135,10 @@ class LoginView extends StatelessWidget {
                                       if (cubit.loginFormKey.currentState!
                                           .validate()) {
                                         context.read<AuthCubit>().login(
-                                          email: cubit.emailController.text
+                                          email: cubit.loginEmailController.text
                                               .trim(),
                                           password:
-                                              cubit.loginPasswordController.text,
+                                              cubit.passwordController.text,
                                         );
                                       }
                                     },
@@ -177,6 +188,8 @@ class LoginView extends StatelessWidget {
                       },
                     ),
                     Gap(15),
+
+                    /// Don't have an account go to sign up
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -199,6 +212,8 @@ class LoginView extends StatelessWidget {
                       ],
                     ),
                     Gap(15),
+
+                    /// Continue as guest
                     BlocBuilder<AuthCubit, AuthState>(
                       builder: (context, state) {
                         return CustomOutlinedButton(
