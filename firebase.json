@@ -21,9 +21,9 @@
   },
   "hosting": {
     "public": "hosting",
+    "appAssociation": "AUTO",
     "ignore": [
       "firebase.json",
-      "**/.*",
       "**/node_modules/**"
     ]
   }
