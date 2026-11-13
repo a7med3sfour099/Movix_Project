@@ -86,7 +86,7 @@ class LoginView extends StatelessWidget {
                     /// Login button
                     BlocConsumer<AuthCubit, AuthState>(
                       listener: (context, state) {
-                        if (state is AuthLoginSuccess) {
+                        if (state is AuthLoginSuccess||state is AuthSocialLoginSuccess) {
                           showCustomSnackBar(
                             context,
                             message: "Login Successful!",
