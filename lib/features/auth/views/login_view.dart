@@ -62,6 +62,7 @@ class LoginView extends StatelessWidget {
                       controller: cubit.passwordController,
                       textInputAction: TextInputAction.done,
                       icon: Icons.lock_outlined,
+                      validator: AuthValidators.loginPassword,
                     ),
                     Gap(15),
 
