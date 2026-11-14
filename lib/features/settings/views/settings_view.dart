@@ -7,6 +7,8 @@ import 'package:movixapp/features/settings/widgets/settings_switch_tile.dart';
 import 'package:movixapp/features/settings/widgets/logout_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/features/settings/cubit/settings_cubit.dart';
+import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
+import 'package:movixapp/features/auth/cubit/auth_state.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -65,17 +67,36 @@ class SettingsView extends StatelessWidget {
                 _tileGap,
                 SettingsTile(title: "Terms & Conditions", onTap: () {}),
                 SizedBox(height: 15),
-                Center(
-                  child: LogoutButton(
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        '/login',
-                        (route) => false,
-                      );
-                    },
-                  ),
-                ),
+                // Center(
+                //   child: LogoutButton(
+                //     onPressed: () {
+                //       Navigator.pushNamedAndRemoveUntil(
+                //         context,
+                //         '/login',
+                //         (route) => false,
+                //       );
+                //     },
+                //   ),
+                // ),
+                BlocBuilder<AuthCubit, AuthState>(
+  builder: (context, state) {
+    if (state is AuthGuest) {
+      return const SizedBox.shrink();
+    }
+
+    return Center(
+      child: LogoutButton(
+        onPressed: () {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/login',
+            (route) => false,
+          );
+        },
+      ),
+    );
+  },
+),
               ],
             ),
           ),
