@@ -75,6 +75,37 @@ class MoviesApi {
     return items;
   }
 
+  /// One page of results, for lists that load more while scrolling.
+  Future<({List<MediaItem> items, bool hasMore})> getPage(
+    String path,
+    String type, {
+    int page = 1,
+    Map<String, dynamic>? params,
+  }) async {
+    await loadGenres();
+    final response = await dio.get(
+      path,
+      queryParameters: {...?params, 'page': page, 'include_adult': false},
+    );
+    final items = <MediaItem>[];
+    for (final raw in response.data['results'] as List) {
+      if (raw['media_type'] == 'person') continue;
+      if (raw['poster_path'] == null) continue;
+      items.add(MediaItem.fromJson(raw, type));
+    }
+    final totalPages = (response.data['total_pages'] as int?) ?? 1;
+    // TMDB only serves the first 500 pages.
+    return (items: items, hasMore: page < totalPages && page < 500);
+  }
+
+  Future<Map<int, String>> getGenresFor(String type) async {
+    final response = await dio.get('/genre/$type/list');
+    return {
+      for (final g in response.data['genres'] as List)
+        g['id'] as int: g['name'] as String,
+    };
+  }
+
   Future<List<MediaItem>> getTrending(String window) =>
       getList('/trending/all/$window', 'movie');
 

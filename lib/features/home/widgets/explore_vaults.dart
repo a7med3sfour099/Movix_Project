@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/movies/cubit/counts_cubit.dart';
+import 'package:movixapp/features/movies/screens/catalog_screen.dart';
 
 class ExploreVaults extends StatelessWidget {
   const ExploreVaults({super.key});
@@ -58,9 +59,19 @@ class ExploreVaults extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  vaultCard(Symbols.movie, 'Movies', moviesText),
+                  vaultCard(
+                    Symbols.movie,
+                    'Movies',
+                    moviesText,
+                    onTap: () => open(context, 'Movies', 'movie'),
+                  ),
                   const SizedBox(width: 12),
-                  vaultCard(Symbols.tv, 'Tv Shows', tvText),
+                  vaultCard(
+                    Symbols.tv,
+                    'Tv Shows',
+                    tvText,
+                    onTap: () => open(context, 'Tv Shows', 'tv'),
+                  ),
                   const SizedBox(width: 12),
                   vaultCard(Symbols.person, 'Actors', actorsText),
                 ],
@@ -72,8 +83,24 @@ class ExploreVaults extends StatelessWidget {
     );
   }
 
-  Widget vaultCard(IconData icon, String name, String items) {
-    return Container(
+  void open(BuildContext context, String title, String type) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CatalogScreen(title: title, type: type),
+      ),
+    );
+  }
+
+  Widget vaultCard(
+    IconData icon,
+    String name,
+    String items, {
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       width: 160,
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
@@ -108,6 +135,7 @@ class ExploreVaults extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

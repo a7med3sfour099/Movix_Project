@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/bottom_bar_cubit.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
+import 'package:movixapp/features/library/screens/library_screen.dart';
+import 'package:movixapp/features/profile/screens/profile_screen.dart';
+import 'package:movixapp/features/search/screens/search_screen.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({super.key});
@@ -15,6 +18,35 @@ class BottomBar extends StatelessWidget {
   ];
 
   static const names = ['Discover', 'Search', 'Library', 'Profile'];
+
+  static Widget _pageFor(int index) {
+    switch (index) {
+      case 1:
+        return const SearchScreen();
+      case 2:
+        return const LibraryScreen();
+      default:
+        return const ProfileScreen();
+    }
+  }
+
+  /// Switches tab: goes back to Home, then opens the tab's page on top of it.
+  static void open(BuildContext context, int index) {
+    final cubit = context.read<BottomBarCubit>();
+    final navigator = Navigator.of(context);
+    if (index != 0 && cubit.state == index) return;
+
+    cubit.selectItem(index);
+    navigator.popUntil((route) => route.isFirst);
+    if (index == 0) return;
+
+    navigator
+        .push(MaterialPageRoute(builder: (_) => _pageFor(index)))
+        .then((_) {
+      // Back to Home (e.g. with the back button) -> Discover is selected again.
+      if (cubit.state == index) cubit.selectItem(0);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +83,7 @@ class BottomBar extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
-      onTap: () => context.read<BottomBarCubit>().selectItem(index),
+      onTap: () => open(context, index),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         child: Column(

@@ -9,12 +9,14 @@ class SectionContainer extends StatelessWidget {
   final String title;
   final Future<List<MediaItem>> Function() fetch;
   final bool upcoming;
+  final VoidCallback? onSeeMore;
 
   const SectionContainer({
     super.key,
     required this.title,
     required this.fetch,
     this.upcoming = false,
+    this.onSeeMore,
   });
 
   @override
@@ -71,7 +73,7 @@ class SectionContainer extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: () {},
+          onTap: onSeeMore,
           child: const Text(
             'See More',
             style: TextStyle(
