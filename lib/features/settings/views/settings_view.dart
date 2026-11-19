@@ -5,6 +5,7 @@ import 'package:movixapp/features/settings/styles/settings_text_styles.dart';
 import 'package:movixapp/features/settings/widgets/settings_tile.dart';
 import 'package:movixapp/features/settings/widgets/settings_switch_tile.dart';
 import 'package:movixapp/features/settings/widgets/logout_button.dart';
+import 'package:movixapp/features/settings/widgets/logout_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/features/settings/cubit/settings_cubit.dart';
 import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
@@ -102,10 +103,9 @@ class SettingsView extends StatelessWidget {
     return Center(
       child: LogoutButton(
         onPressed: () {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/login',
-            (route) => false,
+          showDialog(
+            context: context,
+            builder: (dialogContext) => const LogoutDialog(),
           );
         },
       ),
