@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:movixapp/core/bottom_bar.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import '../cubit/profile_cubit.dart';
 
@@ -12,6 +13,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      bottomNavigationBar: const BottomBar(),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0B1512),
         foregroundColor: Colors.white,

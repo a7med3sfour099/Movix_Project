@@ -7,8 +7,14 @@ import 'package:movixapp/features/movies/data/movies_api.dart';
 class MediaCard extends StatelessWidget {
   final MediaItem item;
   final bool upcoming;
+  final double width;
 
-  const MediaCard({super.key, required this.item, this.upcoming = false});
+  const MediaCard({
+    super.key,
+    required this.item,
+    this.upcoming = false,
+    this.width = 150,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +26,7 @@ class MediaCard extends StatelessWidget {
     final genre = MoviesApi.genres[item.genreId] ?? '';
 
     return SizedBox(
-      width: 150,
+      width: width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
