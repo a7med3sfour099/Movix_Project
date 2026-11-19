@@ -7,8 +7,13 @@ import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
 /// Two-column grid of media cards. Needs a [MediaGridCubit] above it.
 class MediaGridView extends StatelessWidget {
   final String emptyMessage;
+  final bool upcoming;
 
-  const MediaGridView({super.key, this.emptyMessage = 'Nothing here yet'});
+  const MediaGridView({
+    super.key,
+    this.emptyMessage = 'Nothing here yet',
+    this.upcoming = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +75,7 @@ class MediaGridView extends StatelessWidget {
                     itemCount: state.items.length,
                     itemBuilder: (context, index) => MediaCard(
                       item: state.items[index],
+                      upcoming: upcoming,
                       width: double.infinity,
                     ),
                   ),

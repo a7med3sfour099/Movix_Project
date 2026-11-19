@@ -109,20 +109,23 @@ class MoviesApi {
   Future<List<MediaItem>> getTrending(String window) =>
       getList('/trending/all/$window', 'movie');
 
-  Future<List<MediaItem>> getUpcoming() async {
+  static Map<String, dynamic> upcomingParams() {
     final now = DateTime.now();
     final end = now.add(const Duration(days: 270));
     String fmt(DateTime d) => d.toIso8601String().substring(0, 10);
+    return {
+      'primary_release_date.gte': fmt(now),
+      'primary_release_date.lte': fmt(end),
+      'with_release_type': '2|3',
+      'sort_by': 'popularity.desc',
+    };
+  }
 
+  Future<List<MediaItem>> getUpcoming() async {
     final items = await getList(
       '/discover/movie',
       'movie',
-      params: {
-        'primary_release_date.gte': fmt(now),
-        'primary_release_date.lte': fmt(end),
-        'with_release_type': '2|3',
-        'sort_by': 'popularity.desc',
-      },
+      params: upcomingParams(),
       pages: 4,
     );
     items.sort((a, b) => a.date.compareTo(b.date));

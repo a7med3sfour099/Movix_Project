@@ -15,12 +15,16 @@ class MediaListScreen extends StatelessWidget {
   final String type;
   final Map<String, dynamic>? params;
 
+  /// Shows the "COMING SOON" overlay on every card and only upcoming movies.
+  final bool upcoming;
+
   const MediaListScreen({
     super.key,
     required this.title,
     required this.path,
     this.type = 'movie',
     this.params,
+    this.upcoming = false,
   });
 
   @override
@@ -29,7 +33,12 @@ class MediaListScreen extends StatelessWidget {
       create: (_) {
         final api = MoviesApi();
         return MediaGridCubit(
-          (page) => api.getPage(path, type, page: page, params: params),
+          (page) => api.getPage(
+            path,
+            type,
+            page: page,
+            params: upcoming ? MoviesApi.upcomingParams() : params,
+          ),
         )..load();
       },
       child: Scaffold(
@@ -75,7 +84,7 @@ class MediaListScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const Expanded(child: MediaGridView()),
+              Expanded(child: MediaGridView(upcoming: upcoming)),
             ],
           ),
         ),

@@ -29,14 +29,106 @@ class HomeScreen extends StatelessWidget {
     String title,
     String path, {
     String type = 'movie',
+    bool upcoming = false,
   }) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MediaListScreen(title: title, path: path, type: type),
+        builder: (_) => MediaListScreen(
+          title: title,
+          path: path,
+          type: type,
+          upcoming: upcoming,
+        ),
       ),
     );
   }
+
+  static const _allSections = [
+    _SectionDef('Trending Today', '/trending/all/day', 'movie'),
+    _SectionDef('Trending This Week', '/trending/all/week', 'movie'),
+    _SectionDef('Discover', '/discover/movie', 'movie'),
+    _SectionDef('Top Movies', '/movie/top_rated', 'movie'),
+    _SectionDef('Top TV Shows', '/tv/top_rated', 'tv'),
+    _SectionDef('Popular Movies', '/movie/popular', 'movie'),
+    _SectionDef('Popular TV Shows', '/tv/popular', 'tv'),
+    _SectionDef('Now Playing', '/movie/now_playing', 'movie'),
+    _SectionDef('Upcoming', '/discover/movie', 'movie', upcoming: true),
+  ];
+
+  static const _movieSections = [
+    _SectionDef('Trending Today', '/trending/movie/day', 'movie'),
+    _SectionDef('Trending This Week', '/trending/movie/week', 'movie'),
+    _SectionDef('Discover', '/discover/movie', 'movie'),
+    _SectionDef('Top Movies', '/movie/top_rated', 'movie'),
+    _SectionDef('Popular Movies', '/movie/popular', 'movie'),
+    _SectionDef('Now Playing', '/movie/now_playing', 'movie'),
+    _SectionDef('Upcoming', '/discover/movie', 'movie', upcoming: true),
+  ];
+
+  static const _tvSections = [
+    _SectionDef('Trending Today', '/trending/tv/day', 'tv'),
+    _SectionDef('Trending This Week', '/trending/tv/week', 'tv'),
+    _SectionDef('Top TV Shows', '/tv/top_rated', 'tv'),
+    _SectionDef('Popular TV Shows', '/tv/popular', 'tv'),
+    _SectionDef('On The Air', '/tv/on_the_air', 'tv'),
+    _SectionDef('Airing Today', '/tv/airing_today', 'tv'),
+  ];
+
+  /// Everything under the tabs. Tabs: 0 All, 1 Movies, 2 TV Shows, 3 Actors.
+  Widget _content(BuildContext context, int tab) {
+    if (tab == 3) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 80),
+        child: Center(
+          child: Text(
+            'Actors are coming soon',
+            style: TextStyle(color: Color(0xFF7C8B85), fontSize: 15),
+          ),
+        ),
+      );
+    }
+
+    final sections = switch (tab) {
+      1 => _movieSections,
+      2 => _tvSections,
+      _ => _allSections,
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (tab == 0) ...[
+          const HeroSection(),
+          const SizedBox(height: 24),
+        ],
+        if (tab == 0) ...[
+          const ExploreVaults(),
+          const SizedBox(height: 24),
+        ],
+        for (final s in sections) ...[
+          SectionContainer(
+            // Key per tab so each tab loads its own data.
+            key: ValueKey('$tab-${s.title}'),
+            title: s.title,
+            upcoming: s.upcoming,
+            fetch: s.upcoming
+                ? () => MoviesApi().getUpcoming()
+                : () => MoviesApi().getList(s.path, s.type),
+            onSeeMore: () => _openList(
+              context,
+              s.title,
+              s.path,
+              type: s.type,
+              upcoming: s.upcoming,
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ],
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -103,62 +195,9 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20),
-                const HeroSection(),
-                const SizedBox(height: 24),
-                const ExploreVaults(),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Trending Today',
-                  onSeeMore: () => _openList(context, 'Trending Today', '/trending/all/day'),
-                  fetch: () => MoviesApi().getTrending('day'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Trending This Week',
-                  onSeeMore: () => _openList(context, 'Trending This Week', '/trending/all/week'),
-                  fetch: () => MoviesApi().getTrending('week'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Discover',
-                  onSeeMore: () => _openList(context, 'Discover', '/discover/movie'),
-                  fetch: () => MoviesApi().getList('/discover/movie', 'movie'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Top Movies',
-                  onSeeMore: () => _openList(context, 'Top Movies', '/movie/top_rated'),
-                  fetch: () => MoviesApi().getList('/movie/top_rated', 'movie'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Top TV Shows',
-                  onSeeMore: () => _openList(context, 'Top TV Shows', '/tv/top_rated', type: 'tv'),
-                  fetch: () => MoviesApi().getList('/tv/top_rated', 'tv'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Popular Movies',
-                  onSeeMore: () => _openList(context, 'Popular Movies', '/movie/popular'),
-                  fetch: () => MoviesApi().getList('/movie/popular', 'movie'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Popular TV Shows',
-                  onSeeMore: () => _openList(context, 'Popular TV Shows', '/tv/popular', type: 'tv'),
-                  fetch: () => MoviesApi().getList('/tv/popular', 'tv'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Now Playing',
-                  onSeeMore: () => _openList(context, 'Now Playing', '/movie/now_playing'),
-                  fetch: () => MoviesApi().getList('/movie/now_playing', 'movie'),
-                ),
-                const SizedBox(height: 24),
-                SectionContainer(
-                  title: 'Upcoming',
-                  upcoming: true,
-                  fetch: () => MoviesApi().getUpcoming(),
+                BlocBuilder<HomeTabCubit, int>(
+                  builder: (context, selectedTab) =>
+                      _content(context, selectedTab),
                 ),
               ],
             ),
@@ -167,4 +206,13 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SectionDef {
+  final String title;
+  final String path;
+  final String type;
+  final bool upcoming;
+
+  const _SectionDef(this.title, this.path, this.type, {this.upcoming = false});
 }

@@ -45,7 +45,7 @@ class HeroSection extends StatelessWidget {
     final greenLine = [
       if (movie.year.isNotEmpty) 'PREMIERE ${movie.year}',
       movie.time,
-    ].where((part) => part.isNotEmpty).join(' â€¢ ').toUpperCase();
+    ].where((part) => part.isNotEmpty).join(' \u2022 ').toUpperCase();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

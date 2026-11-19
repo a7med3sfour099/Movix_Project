@@ -37,11 +37,17 @@ class BottomBar extends StatelessWidget {
     if (index != 0 && cubit.state == index) return;
 
     cubit.selectItem(index);
-    navigator.popUntil((route) => route.isFirst);
-    if (index == 0) return;
+    if (index == 0) {
+      navigator.popUntil((route) => route.isFirst);
+      return;
+    }
 
+    // Replace everything above Home in one step (no pop-then-push flicker).
     navigator
-        .push(MaterialPageRoute(builder: (_) => _pageFor(index)))
+        .pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => _pageFor(index)),
+      (route) => route.isFirst,
+    )
         .then((_) {
       // Back to Home (e.g. with the back button) -> Discover is selected again.
       if (cubit.state == index) cubit.selectItem(0);
