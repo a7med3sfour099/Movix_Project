@@ -68,7 +68,12 @@ class SettingsView extends StatelessWidget {
                   },
                 ),
                 _tileGap,
-                SettingsTile(title: "Privacy Policy", onTap: () {}),
+                SettingsTile(
+                  title: "Privacy Policy",
+                  onTap: () {
+                    Navigator.pushNamed(context, '/privacy-policy');
+                  },
+                ),
                 _tileGap,
                 SettingsTile(title: "Terms & Conditions", onTap: () {}),
                 SizedBox(height: 15),
