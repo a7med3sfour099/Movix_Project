@@ -61,7 +61,12 @@ class SettingsView extends StatelessWidget {
                 SizedBox(height: 20),
                 Text("About", style: SettingsTextStyles.sectionTitle),
                 _tileGap,
-                SettingsTile(title: "About App", onTap: () {}),
+                SettingsTile(
+                  title: "About App",
+                  onTap: () {
+                    Navigator.pushNamed(context, '/about-us');
+                  },
+                ),
                 _tileGap,
                 SettingsTile(title: "Privacy Policy", onTap: () {}),
                 _tileGap,

@@ -8,6 +8,7 @@ import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/auth/views/reset_password_view.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
 import 'package:movixapp/features/home/screens/home_screen.dart';
+import 'package:movixapp/features/settings/views/about_us_view.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
 
 class AppRoutes {
@@ -29,5 +30,6 @@ class AppRoutes {
       child: const ChangePassword(),
     ),
     '/setting': (context) => const SettingsView(),
+    '/about-us': (context) => const AboutUsView(),
   };
 }
