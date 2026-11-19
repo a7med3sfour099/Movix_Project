@@ -17,6 +17,22 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 final AppLinkService appLinkService = AppLinkService();
 
+/// Page changes happen instantly, so there is no flash between screens.
+class NoTransitionBuilder extends PageTransitionsBuilder {
+  const NoTransitionBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return child;
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -47,6 +63,16 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             navigatorKey: NavKey.navigatorKey,
+            theme: ThemeData(
+              scaffoldBackgroundColor: const Color(0xFF0B1512),
+              canvasColor: const Color(0xFF0B1512),
+              pageTransitionsTheme: const PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: NoTransitionBuilder(),
+                  TargetPlatform.iOS: NoTransitionBuilder(),
+                },
+              ),
+            ),
             home: const LoginView(),
             routes: AppRoutes.routes,
           );
