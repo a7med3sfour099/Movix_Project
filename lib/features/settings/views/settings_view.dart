@@ -75,7 +75,12 @@ class SettingsView extends StatelessWidget {
                   },
                 ),
                 _tileGap,
-                SettingsTile(title: "Terms & Conditions", onTap: () {}),
+                SettingsTile(
+                  title: "Terms & Conditions",
+                  onTap: () {
+                    Navigator.pushNamed(context, '/terms-and-conditions');
+                  },
+                ),
                 SizedBox(height: 15),
                 // Center(
                 //   child: LogoutButton(

@@ -11,6 +11,7 @@ import 'package:movixapp/features/home/screens/home_screen.dart';
 import 'package:movixapp/features/settings/views/about_us_view.dart';
 import 'package:movixapp/features/settings/views/privacy_policy_view.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
+import 'package:movixapp/features/settings/views/terms_and_conditions_view.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> get routes => {
@@ -33,5 +34,6 @@ class AppRoutes {
     '/setting': (context) => const SettingsView(),
     '/about-us': (context) => const AboutUsView(),
     '/privacy-policy': (context) => const PrivacyPolicyView(),
+    '/terms-and-conditions': (context) => const TermsAndConditionsView(),
   };
 }

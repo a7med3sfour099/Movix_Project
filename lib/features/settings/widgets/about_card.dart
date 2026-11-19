@@ -4,12 +4,14 @@ import 'package:movixapp/core/constants/app_colors.dart';
 class AboutCard extends StatelessWidget {
   const AboutCard({
     super.key,
-    required this.icon,
+    this.icon,
+    this.leadingText,
     required this.title,
     required this.content,
   });
 
-  final IconData icon;
+  final IconData? icon;
+  final String? leadingText;
   final String title;
   final String content;
 
@@ -36,11 +38,23 @@ class AboutCard extends StatelessWidget {
               color: const Color(0xFF2D3735),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: AppColors.primary,
-            ),
+            child: leadingText != null
+                ? Center(
+                    child: Text(
+                      leadingText!,
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'JakartaSans',
+                      ),
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    size: 18,
+                    color: AppColors.primary,
+                  ),
           ),
           const SizedBox(width: 12),
           Expanded(
