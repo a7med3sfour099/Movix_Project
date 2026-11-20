@@ -9,6 +9,7 @@ import '../widgets/hero_section.dart';
 import '../widgets/explore_vaults.dart';
 import '../widgets/section_container.dart';
 import 'package:movixapp/core/bottom_bar.dart';
+import 'package:movixapp/features/search/screens/search_screen.dart';
 import 'package:movixapp/features/actors/data/actors_api.dart';
 import 'package:movixapp/features/actors/screens/actors_catalog_screen.dart';
 import 'package:movixapp/features/actors/widgets/actor_section.dart';
@@ -202,7 +203,16 @@ class HomeScreen extends StatelessWidget {
                         SearchBarField(
                           hint: hints[selectedTab],
                           onChanged: (text) {},
-                          onSubmitted: (text) {},
+                          onSubmitted: (text) {
+                            if (text.trim().isEmpty) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    SearchScreen(initialQuery: text.trim()),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 16),
                         HomeTabs(

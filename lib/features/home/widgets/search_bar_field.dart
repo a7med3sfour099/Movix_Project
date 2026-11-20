@@ -6,17 +6,20 @@ class SearchBarField extends StatelessWidget {
   final String hint;
   final ValueChanged<String> onChanged;
   final ValueChanged<String> onSubmitted;
+  final TextEditingController? controller;
 
   const SearchBarField({
     super.key,
     required this.hint,
     required this.onChanged,
     required this.onSubmitted,
+    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: TextInputAction.search,
