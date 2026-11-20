@@ -8,12 +8,21 @@ class SearchBarField extends StatelessWidget {
   final ValueChanged<String> onSubmitted;
   final TextEditingController? controller;
 
+  // Automatically focuses the field and opens the keyboard.
+  final bool autofocus;
+// Opens the Search screen when tapped instead of allowing text input.
+  final bool readOnly;
+  final VoidCallback? onTap;
+
   const SearchBarField({
     super.key,
     required this.hint,
     required this.onChanged,
     required this.onSubmitted,
     this.controller,
+    this.autofocus = false,
+    this.readOnly = false,
+    this.onTap,
   });
 
   @override
@@ -22,6 +31,12 @@ class SearchBarField extends StatelessWidget {
       controller: controller,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
+      autofocus: autofocus,
+      readOnly: readOnly,
+      onTap: onTap,
+      // No cursor / selection handles on the Home bar, it is only a button
+      showCursor: !readOnly,
+      enableInteractiveSelection: !readOnly,
       textInputAction: TextInputAction.search,
       cursorColor: HomeHeader.greenColor,
       style: const TextStyle(color: Colors.white, fontSize: 15),

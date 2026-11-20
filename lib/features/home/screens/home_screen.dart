@@ -9,7 +9,7 @@ import '../widgets/hero_section.dart';
 import '../widgets/explore_vaults.dart';
 import '../widgets/section_container.dart';
 import 'package:movixapp/core/bottom_bar.dart';
-import 'package:movixapp/features/search/screens/search_screen.dart';
+import 'package:movixapp/features/search/data/search_filters.dart';
 import 'package:movixapp/features/actors/data/actors_api.dart';
 import 'package:movixapp/features/actors/screens/actors_catalog_screen.dart';
 import 'package:movixapp/features/actors/widgets/actor_section.dart';
@@ -29,12 +29,12 @@ class HomeScreen extends StatelessWidget {
   ];
 
   void _openList(
-    BuildContext context,
-    String title,
-    String path, {
-    String type = 'movie',
-    bool upcoming = false,
-  }) {
+      BuildContext context,
+      String title,
+      String path, {
+        String type = 'movie',
+        bool upcoming = false,
+      }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -202,17 +202,22 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         SearchBarField(
                           hint: hints[selectedTab],
-                          onChanged: (text) {},
-                          onSubmitted: (text) {
-                            if (text.trim().isEmpty) return;
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    SearchScreen(initialQuery: text.trim()),
-                              ),
-                            );
-                          },
+                          // Looks like a field, but a tap opens the Search page
+                          // (blurred Home behind it, keyboard already open).
+                          readOnly: true,
+                          onChanged: (_) {},
+                          onSubmitted: (_) {},
+                          onTap: () => BottomBar.open(
+                            context,
+                            1,
+                            // Actors tab searches everything until the
+                            // "people" type is added to SearchType.
+                            searchType: switch (selectedTab) {
+                              1 => SearchType.movies,
+                              2 => SearchType.tv,
+                              _ => SearchType.all,
+                            },
+                          ),
                         ),
                         const SizedBox(height: 16),
                         HomeTabs(

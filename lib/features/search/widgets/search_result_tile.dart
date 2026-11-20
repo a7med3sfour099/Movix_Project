@@ -10,7 +10,10 @@ import 'package:movixapp/features/search/data/search_result.dart';
 class SearchResultTile extends StatelessWidget {
   final SearchResult result;
 
-  const SearchResultTile({super.key, required this.result});
+  /// Called when the row is tapped (used to save the history).
+  final VoidCallback? onOpen;
+
+  const SearchResultTile({super.key, required this.result, this.onOpen});
 
   String get _badge {
     if (result.type == 'tv') return 'TV Show';
@@ -28,6 +31,7 @@ class SearchResultTile extends StatelessWidget {
   }
 
   void _open(BuildContext context) {
+    onOpen?.call();
     final Widget screen = result.isPerson
         ? ActorProfileScreen(id: result.id)
         : MediaDetailsScreen(id: result.id, type: result.type);
@@ -57,7 +61,7 @@ class SearchResultTile extends StatelessWidget {
                 children: [
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: HomeHeader.greenColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(6),
@@ -162,12 +166,12 @@ class SearchResultTile extends StatelessWidget {
       child: result.image == null
           ? placeholder
           : Image.network(
-              result.image!,
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => placeholder,
-            ),
+        result.image!,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => placeholder,
+      ),
     );
   }
 }
