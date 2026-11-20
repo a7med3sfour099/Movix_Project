@@ -5,6 +5,7 @@ import 'package:movixapp/core/bottom_bar_cubit.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/library/screens/library_screen.dart';
 import 'package:movixapp/features/profile/screens/profile_screen.dart';
+import 'package:movixapp/features/search/data/search_filters.dart';
 import 'package:movixapp/features/search/screens/search_screen.dart';
 
 class BottomBar extends StatelessWidget {
@@ -19,19 +20,26 @@ class BottomBar extends StatelessWidget {
 
   static const names = ['Discover', 'Search', 'Library', 'Profile'];
 
-  static Widget _pageFor(int index) {
+  static Route<void> _routeFor(int index, SearchType searchType) {
     switch (index) {
       case 1:
-        return const SearchScreen();
+        return MaterialPageRoute<void>(
+          builder: (_) => const SearchScreen(),
+        );
       case 2:
-        return const LibraryScreen();
+        return MaterialPageRoute<void>(builder: (_) => const LibraryScreen());
       default:
-        return const ProfileScreen();
+        return MaterialPageRoute<void>(builder: (_) => const ProfileScreen());
     }
   }
 
   /// Switches tab: goes back to Home, then opens the tab's page on top of it.
-  static void open(BuildContext context, int index) {
+  /// [searchType] is only used when opening Search.
+  static void open(
+      BuildContext context,
+      int index, {
+        SearchType searchType = SearchType.all,
+      }) {
     final cubit = context.read<BottomBarCubit>();
     final navigator = Navigator.of(context);
     if (index != 0 && cubit.state == index) return;
@@ -45,8 +53,8 @@ class BottomBar extends StatelessWidget {
     // Replace everything above Home in one step (no pop-then-push flicker).
     navigator
         .pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => _pageFor(index)),
-      (route) => route.isFirst,
+      _routeFor(index, searchType),
+          (route) => route.isFirst,
     )
         .then((_) {
       // Back to Home (e.g. with the back button) -> Discover is selected again.

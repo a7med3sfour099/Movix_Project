@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -8,9 +7,11 @@ import 'package:movixapp/Widgets/custom_back_button.dart';
 import 'package:movixapp/core/bottom_bar.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/home/widgets/search_bar_field.dart';
+import 'package:movixapp/features/search/cubit/history_cubit.dart';
 import 'package:movixapp/features/search/cubit/search_cubit.dart';
 import 'package:movixapp/features/search/data/search_api.dart';
 import 'package:movixapp/features/search/data/search_filters.dart';
+import 'package:movixapp/features/search/data/search_result.dart';
 import 'package:movixapp/features/search/widgets/search_result_tile.dart';
 import 'package:movixapp/features/search/widgets/search_sheets.dart';
 
@@ -27,6 +28,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _api = SearchApi();
   late final SearchCubit _cubit;
+  late final HistoryCubit _history;
   late final TextEditingController _controller;
   Timer? _debounce;
 
@@ -34,6 +36,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _cubit = SearchCubit(_api);
+    _history = HistoryCubit();
     _controller = TextEditingController(text: widget.initialQuery);
     if (widget.initialQuery.trim().isNotEmpty) {
       _cubit.search(widget.initialQuery);
@@ -45,6 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
     _debounce?.cancel();
     _controller.dispose();
     _cubit.close();
+    _history.close();
     super.dispose();
   }
 
@@ -59,6 +63,21 @@ class _SearchScreenState extends State<SearchScreen> {
   void _onSubmitted(String text) {
     _debounce?.cancel();
     _cubit.search(text);
+    _history.addSearch(text);
+  }
+
+  // Tap on a history chip: search for that text again.
+  void _useSearch(String text) {
+    _controller.text = text;
+    _controller.selection = TextSelection.collapsed(offset: text.length);
+    _debounce?.cancel();
+    _cubit.search(text);
+  }
+
+  // Tap on a result: save the search text and the item.
+  void _onOpened(SearchResult result) {
+    _history.addSearch(_cubit.state.query);
+    _history.addViewed(result);
   }
 
   Future<void> _openFilters(SearchState state) async {
@@ -67,6 +86,7 @@ class _SearchScreenState extends State<SearchScreen> {
       current: state.filters,
       api: _api,
     );
+
     if (result != null) _cubit.applyFilters(result);
   }
 
@@ -227,9 +247,100 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  // Shown when the search box is empty.
+  Widget _historyView() {
+    return BlocBuilder<HistoryCubit, HistoryState>(
+      bloc: _history,
+      builder: (context, history) {
+        if (history.searches.isEmpty && history.viewed.isEmpty) {
+          return _message(
+            Symbols.search,
+            'Search for movies, TV shows and actors',
+          );
+        }
+
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          children: [
+            if (history.searches.isNotEmpty) ...[
+              _historyTitle('Search History', _history.clearSearches),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: history.searches.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) =>
+                      _historyChip(history.searches[index]),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+            if (history.viewed.isNotEmpty) ...[
+              _historyTitle('Recently Viewed', _history.clearViewed),
+              const SizedBox(height: 10),
+              for (final item in history.viewed) ...[
+                SearchResultTile(
+                  result: item,
+                  onOpen: () => _history.addViewed(item),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _historyTitle(String text, VoidCallback onClear) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        InkWell(
+          onTap: onClear,
+          customBorder: const CircleBorder(),
+          child: const Padding(
+            padding: EdgeInsets.all(6),
+            child: Icon(Symbols.delete, color: Color(0xFF9AA8A2), size: 22),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _historyChip(String text) {
+    return InkWell(
+      onTap: () => _useSearch(text),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1B2823),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(color: Colors.white, fontSize: 13),
+        ),
+      ),
+    );
+  }
+
   Widget _body(SearchState state) {
     if (state.query.isEmpty) {
-      return _message(Symbols.search, 'Search for movies, TV shows and actors');
+      return _historyView();
     }
 
     if (state.loading) {
@@ -268,7 +379,10 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
       itemCount: items.length,
       separatorBuilder: (_, _) => const SizedBox(height: 10),
-      itemBuilder: (context, index) => SearchResultTile(result: items[index]),
+      itemBuilder: (context, index) => SearchResultTile(
+        result: items[index],
+        onOpen: () => _onOpened(items[index]),
+      ),
     );
   }
 }
