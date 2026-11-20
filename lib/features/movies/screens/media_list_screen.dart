@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/bottom_bar.dart';
-import 'package:movixapp/features/home/widgets/home_header.dart';
+import 'package:movixapp/Widgets/custom_back_button.dart';
 import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
 import 'package:movixapp/features/movies/data/movies_api.dart';
 import 'package:movixapp/features/movies/widgets/media_grid_view.dart';
+import 'package:movixapp/Widgets/custom_back_button.dart';
 
 /// Used for: Popular Movies, Popular TV Shows, Top Movies, Top TV Shows,
 /// Trending, Discover, Now Playing ("See More" from the home sections).
@@ -51,23 +51,7 @@ class MediaListScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: Row(
                   children: [
-                    InkWell(
-                      onTap: () => Navigator.maybePop(context),
-                      customBorder: const CircleBorder(),
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: HomeHeader.darkColor,
-                        ),
-                        child: const Icon(
-                          Symbols.arrow_back,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
+                    const CustomBackButton(),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(

@@ -6,6 +6,7 @@ import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
 import 'package:movixapp/features/movies/data/movies_api.dart';
 import 'package:movixapp/features/movies/widgets/media_grid_view.dart';
+import 'package:movixapp/Widgets/custom_back_button.dart';
 
 enum CatalogSort { popular, topRated, newest }
 
@@ -101,14 +102,24 @@ class _CatalogScreenState extends State<CatalogScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                child: Text(
-                  widget.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Row(
+                  children: [
+                    const CustomBackButton(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(

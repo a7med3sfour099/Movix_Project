@@ -9,6 +9,9 @@ import '../widgets/hero_section.dart';
 import '../widgets/explore_vaults.dart';
 import '../widgets/section_container.dart';
 import 'package:movixapp/core/bottom_bar.dart';
+import 'package:movixapp/features/actors/data/actors_api.dart';
+import 'package:movixapp/features/actors/screens/actors_catalog_screen.dart';
+import 'package:movixapp/features/actors/widgets/actor_section.dart';
 import 'package:movixapp/features/movies/screens/media_list_screen.dart';
 import 'package:movixapp/features/movies/cubit/counts_cubit.dart';
 import 'package:movixapp/features/movies/data/movies_api.dart';
@@ -74,18 +77,37 @@ class HomeScreen extends StatelessWidget {
     _SectionDef('On The Air', '/tv/on_the_air', 'tv'),
     _SectionDef('Airing Today', '/tv/airing_today', 'tv'),
   ];
+  static const _actorSections = [
+    _SectionDef('Popular Actors', ActorsApi.popularPath, 'person'),
+    _SectionDef('Trending Today', ActorsApi.trendingDayPath, 'person'),
+    _SectionDef('Trending This Week', ActorsApi.trendingWeekPath, 'person'),
+  ];
 
+  void _openActors(BuildContext context, String title, String path) {
+    final sort = ActorSort.values.firstWhere((s) => s.path == path);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ActorsCatalogScreen(title: title, initialSort: sort),
+      ),
+    );
+  }
   /// Everything under the tabs. Tabs: 0 All, 1 Movies, 2 TV Shows, 3 Actors.
   Widget _content(BuildContext context, int tab) {
     if (tab == 3) {
-      return const Padding(
-        padding: EdgeInsets.only(top: 80),
-        child: Center(
-          child: Text(
-            'Actors are coming soon',
-            style: TextStyle(color: Color(0xFF7C8B85), fontSize: 15),
-          ),
-        ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final s in _actorSections) ...[
+            ActorSection(
+              key: ValueKey('actors-${s.title}'),
+              title: s.title,
+              path: s.path,
+              onSeeMore: () => _openActors(context, s.title, s.path),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ],
       );
     }
 

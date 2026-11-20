@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   tmdb_flutter: ^0.1.0
 
+  #youtube_player
+  youtube_player_iframe: ^5.2.0
 
   # UI
   image_picker: ^1.1.2

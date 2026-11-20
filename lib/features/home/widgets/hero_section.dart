@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/movies/cubit/hero_cubit.dart';
 import 'package:movixapp/features/movies/data/movie_details.dart';
+import 'package:movixapp/features/details/screens/media_details_screen.dart';
 
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key});
@@ -31,7 +32,7 @@ class HeroSection extends StatelessWidget {
               ),
             );
           }
-          return heroCard(state.movie!);
+          return heroCard(context, state.movie!);
         },
       ),
     );
@@ -41,7 +42,7 @@ class HeroSection extends StatelessWidget {
     return SizedBox(height: 260, child: Center(child: message));
   }
 
-  Widget heroCard(Movie movie) {
+  Widget heroCard(BuildContext context, Movie movie) {
     final greenLine = [
       if (movie.year.isNotEmpty) 'PREMIERE ${movie.year}',
       movie.time,
@@ -100,7 +101,7 @@ class HeroSection extends StatelessWidget {
         const SizedBox(height: 14),
         Row(
           children: [
-            Expanded(child: trailerButton()),
+            Expanded(child: trailerButton(context, movie)),
             const SizedBox(width: 10),
             saveButton(),
           ],
@@ -165,9 +166,14 @@ class HeroSection extends StatelessWidget {
     );
   }
 
-  Widget trailerButton() {
+  Widget trailerButton(BuildContext context, Movie movie) {
     return ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MediaDetailsScreen(id: movie.id, type: 'movie'),
+        ),
+      ),
       icon: const Icon(Symbols.play_arrow, size: 22, fill: 1),
       label: const Text(
         'Watch Trailer',
