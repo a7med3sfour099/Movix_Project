@@ -38,13 +38,14 @@ class CustomElevatedbutton extends StatelessWidget {
                 color: AppColors.background,
               ),
             )
-          : CustomText(
-              text: text,
-              size: size,
-              color: AppColors.background,
-              weight: FontWeight.bold,
-              textAlign: TextAlign.center,
-            ),
+          : child ??
+              CustomText(
+                text: text,
+                size: size,
+                color: AppColors.background,
+                weight: FontWeight.bold,
+                textAlign: TextAlign.center,
+              ),
     );
   }
 }
