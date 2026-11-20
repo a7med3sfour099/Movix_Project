@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/movies/cubit/counts_cubit.dart';
 import 'package:movixapp/features/movies/screens/catalog_screen.dart';
+import 'package:movixapp/features/actors/screens/actors_catalog_screen.dart';
 
 class ExploreVaults extends StatelessWidget {
   const ExploreVaults({super.key});
@@ -72,8 +73,12 @@ class ExploreVaults extends StatelessWidget {
                     tvText,
                     onTap: () => open(context, 'Tv Shows', 'tv'),
                   ),
-                  const SizedBox(width: 12),
-                  vaultCard(Symbols.person, 'Actors', actorsText),
+                  vaultCard(
+                Symbols.person,
+                'Actors',
+                actorsText,
+                onTap: () => openActors(context),
+              ),
                 ],
               ),
             ),
@@ -91,7 +96,12 @@ class ExploreVaults extends StatelessWidget {
       ),
     );
   }
-
+  void openActors(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ActorsCatalogScreen()),
+    );
+  }
   Widget vaultCard(
     IconData icon,
     String name,
