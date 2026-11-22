@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,13 +8,15 @@ import 'package:movixapp/core/routes/nav_key.dart';
 import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/core/services/app_navigation_service.dart';
 import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
-import 'package:movixapp/features/auth/cubit/change_password_cubit.dart';
-import 'package:movixapp/features/auth/cubit/forget_password_cubit.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/home/cubit/home_tab_cubit.dart';
+import 'package:movixapp/features/home/screens/home_screen.dart';
 import 'package:movixapp/features/profile/cubit/profile_cubit.dart';
 import 'package:movixapp/firebase_options.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:movixapp/features/Errors/offline_error_view.dart';
+import 'package:movixapp/core/network/internet_cubit.dart';
+import 'package:movixapp/core/constants/app_colors.dart';
 
 final AppLinkService appLinkService = AppLinkService();
 
@@ -39,6 +42,9 @@ void main() async {
   await appLinkService.init(
     onPasswordResetLink: AppNavigationService.instance.handlePasswordResetLink,
   );
+   const tmdbToken = String.fromEnvironment('TMDB_TOKEN');
+  if (tmdbToken.isNotEmpty) {
+  }
   runApp(const MyApp());
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -57,6 +63,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ProfileCubit()..loadImage()),
         BlocProvider(create: (context) => HomeTabCubit()),
         BlocProvider(create: (context) => BottomBarCubit()),
+        BlocProvider(create: (context) => InternetCubit(),),
       ],
       child: ResponsiveSizer(
         builder: (context, orientation, screenType) {
@@ -64,8 +71,8 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             navigatorKey: NavKey.navigatorKey,
             theme: ThemeData(
-              scaffoldBackgroundColor: const Color(0xFF0B1512),
-              canvasColor: const Color(0xFF0B1512),
+                scaffoldBackgroundColor: AppColors.background,
+              canvasColor: AppColors.background,
               pageTransitionsTheme: const PageTransitionsTheme(
                 builders: {
                   TargetPlatform.android: NoTransitionBuilder(),
@@ -73,8 +80,37 @@ class MyApp extends StatelessWidget {
                 },
               ),
             ),
-            home: const LoginView(),
-            routes: AppRoutes.routes,
+             builder: (context, child) {
+return BlocBuilder<InternetCubit, InternetState>(
+  builder: (context, state) {
+    return Stack(
+      children: [
+        child ?? const SizedBox.shrink(),
+        if (!state.isConnected)
+          const Positioned.fill(
+            child: OfflineErrorView(),
+          ),
+      ],
+    );
+  },
+);
+ },
+   home: StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                final user = snapshot.data;
+                if (user != null && user.emailVerified) {
+                  return const HomeScreen();
+                }
+                return const LoginView();
+              },
+            ),
+             routes: AppRoutes.routes,
           );
         },
       ),
