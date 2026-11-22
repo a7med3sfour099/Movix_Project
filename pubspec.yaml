@@ -53,6 +53,7 @@ dependencies:
   # Responsiveness
   responsive_sizer: ^3.3.1
   responsive_builder: ^0.7.1
+  internet_connection_checker_plus: ^3.1.2
 
 dev_dependencies:
   flutter_test:
