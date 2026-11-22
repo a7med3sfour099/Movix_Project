@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:flutter/foundation.dart';
+
 class InternetState {
   final bool isConnected;
   final bool isLoading;
@@ -31,8 +32,7 @@ class InternetCubit extends Cubit<InternetState> {
   InternetCubit() : super(const InternetState()) {
     _checkInitialConnection();
 
-    _subscription =
-        InternetConnection().onStatusChange.listen((status) {
+    _subscription = InternetConnection().onStatusChange.listen((status) {
       if (status == InternetStatus.disconnected) {
         emit(state.copyWith(isConnected: false));
       }
@@ -41,63 +41,44 @@ class InternetCubit extends Cubit<InternetState> {
 
   late final StreamSubscription<InternetStatus> _subscription;
 
-  // Future<void> _checkInitialConnection() async {
-  //   final connected =
-  //       await InternetConnection().hasInternetAccess;
+  Future<void> _checkInitialConnection() async {
+    await Future.delayed(const Duration(seconds: 3));
 
-  //   if (!isClosed) {
-  //     emit(state.copyWith(isConnected: connected));
-  //   }
-  // }
+    final connected = await InternetConnection().hasInternetAccess;
 
-// Future<void> _checkInitialConnection() async {
-//   final connected =
-//       await InternetConnection().hasInternetAccess;
+    debugPrint('Initial Internet Check: $connected');
 
-//   debugPrint('Initial Internet Check: $connected');
-
-//   if (!isClosed) {
-//     emit(state.copyWith(isConnected: connected));
-//   }
-// }
-Future<void> _checkInitialConnection() async {
-  await Future.delayed(const Duration(seconds: 3));
-
-  final connected =
-      await InternetConnection().hasInternetAccess;
-
-  debugPrint('Initial Internet Check: $connected');
-
-  if (!isClosed) {
-    emit(state.copyWith(isConnected: connected));
+    if (!isClosed) {
+      emit(state.copyWith(isConnected: connected));
+    }
   }
-}
+
   Future<void> checkConnection() async {
-    emit(state.copyWith(
-      isLoading: true,
-      clearError: true,
-    ));
+    emit(state.copyWith(isLoading: true, clearError: true));
 
     try {
-      final connected =
-          await InternetConnection().hasInternetAccess;
-await Future.delayed(const Duration(seconds: 3));
+      final connected = await InternetConnection().hasInternetAccess;
+      await Future.delayed(const Duration(seconds: 3));
       if (isClosed) return;
 
       if (connected) {
         emit(const InternetState(isConnected: true));
       } else {
-        emit(const InternetState(
-          isConnected: false,
-          errorMessage: 'No internet connection. Please try again.',
-        ));
+        emit(
+          const InternetState(
+            isConnected: false,
+            errorMessage: 'No internet connection. Please try again.',
+          ),
+        );
       }
     } catch (_) {
       if (!isClosed) {
-        emit(const InternetState(
-          isConnected: false,
-          errorMessage: 'Something went wrong. Please try again.',
-        ));
+        emit(
+          const InternetState(
+            isConnected: false,
+            errorMessage: 'Something went wrong. Please try again.',
+          ),
+        );
       }
     }
   }
