@@ -11,12 +11,15 @@ import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/home/cubit/home_tab_cubit.dart';
 import 'package:movixapp/features/home/screens/home_screen.dart';
+import 'package:movixapp/features/onboarding/data/onboarding_prefs.dart';
+import 'package:movixapp/features/onboarding/screens/onboarding_screen.dart';
 import 'package:movixapp/features/profile/cubit/profile_cubit.dart';
 import 'package:movixapp/firebase_options.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:movixapp/features/Errors/offline_error_view.dart';
 import 'package:movixapp/core/network/internet_cubit.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
+
 
 final AppLinkService appLinkService = AppLinkService();
 
@@ -45,7 +48,9 @@ void main() async {
    const tmdbToken = String.fromEnvironment('TMDB_TOKEN');
   if (tmdbToken.isNotEmpty) {
   }
-  runApp(const MyApp());
+
+  final onboardingSeen = await OnboardingPrefs.isSeen();
+  runApp(MyApp(onboardingSeen: onboardingSeen));
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
     AppNavigationService.instance.handlePendingPasswordResetLink();
@@ -53,7 +58,9 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool onboardingSeen;
+
+  const MyApp({super.key, required this.onboardingSeen});
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +114,7 @@ return BlocBuilder<InternetCubit, InternetState>(
                 if (user != null && user.emailVerified) {
                   return const HomeScreen();
                 }
+                if (!onboardingSeen) return const OnboardingScreen();
                 return const LoginView();
               },
             ),
