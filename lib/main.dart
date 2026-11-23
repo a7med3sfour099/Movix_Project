@@ -19,8 +19,6 @@ import 'package:movixapp/core/network/internet_cubit.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 
 final AppLinkService appLinkService = AppLinkService();
-
-/// Page changes happen instantly, so there is no flash between screens.
 class NoTransitionBuilder extends PageTransitionsBuilder {
   const NoTransitionBuilder();
 
@@ -60,7 +58,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthCubit()),
-        BlocProvider(create: (context) => ProfileCubit()..loadImage()),
+        BlocProvider(create: (context) => ProfileCubit()),
         BlocProvider(create: (context) => HomeTabCubit()),
         BlocProvider(create: (context) => BottomBarCubit()),
         BlocProvider(create: (context) => InternetCubit(),),
