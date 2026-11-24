@@ -19,7 +19,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:movixapp/features/Errors/offline_error_view.dart';
 import 'package:movixapp/core/network/internet_cubit.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
-
+import 'package:movixapp/features/splash/screens/splash_screen.dart';
 
 final AppLinkService appLinkService = AppLinkService();
 
@@ -48,6 +48,8 @@ void main() async {
    const tmdbToken = String.fromEnvironment('TMDB_TOKEN');
   if (tmdbToken.isNotEmpty) {
   }
+  const resetOnboarding = bool.fromEnvironment('RESET_ONBOARDING');
+  if (resetOnboarding) await OnboardingPrefs.reset();
 
   final onboardingSeen = await OnboardingPrefs.isSeen();
   runApp(MyApp(onboardingSeen: onboardingSeen));
@@ -101,8 +103,8 @@ return BlocBuilder<InternetCubit, InternetState>(
     );
   },
 );
- },
-   home: StreamBuilder<User?>(
+ }, home: SplashScreen(
+      next: StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -118,6 +120,7 @@ return BlocBuilder<InternetCubit, InternetState>(
                 return const LoginView();
               },
             ),
+          ),
              routes: AppRoutes.routes,
           );
         },
