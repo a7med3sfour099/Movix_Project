@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/bottom_bar_cubit.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
-import 'package:movixapp/features/library/screens/library_screen.dart';
+import 'package:movixapp/features/library/views/library_view.dart';
 import 'package:movixapp/features/profile/screens/profile_screen.dart';
 import 'package:movixapp/features/search/data/search_filters.dart';
 import 'package:movixapp/features/search/screens/search_screen.dart';
@@ -27,7 +27,7 @@ class BottomBar extends StatelessWidget {
           builder: (_) => const SearchScreen(),
         );
       case 2:
-        return MaterialPageRoute<void>(builder: (_) => const LibraryScreen());
+        return MaterialPageRoute<void>(builder: (_) => const LibraryView());
       default:
         return MaterialPageRoute<void>(builder: (_) => const ProfileScreen());
     }
