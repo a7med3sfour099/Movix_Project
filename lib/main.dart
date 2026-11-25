@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/bottom_bar_cubit.dart';
 import 'package:movixapp/core/network/env_config.dart';
@@ -16,6 +17,7 @@ import 'package:movixapp/features/home/screens/home_screen.dart';
 import 'package:movixapp/features/onboarding/data/onboarding_prefs.dart';
 import 'package:movixapp/features/onboarding/screens/onboarding_screen.dart';
 import 'package:movixapp/features/profile/cubit/profile_cubit.dart';
+import 'package:movixapp/features/library/cubit/library_cubit.dart';
 import 'package:movixapp/firebase_options.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:movixapp/features/Errors/offline_error_view.dart';
@@ -41,6 +43,10 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await appLinkService.init(
     onPasswordResetLink: AppNavigationService.instance.handlePasswordResetLink,
@@ -71,6 +77,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ProfileCubit()),
         BlocProvider(create: (context) => HomeTabCubit()),
         BlocProvider(create: (context) => BottomBarCubit()),
+        BlocProvider(create: (context) => LibraryCubit()),
         BlocProvider(create: (context) => InternetCubit(),),
       ],
       child: ResponsiveSizer(
