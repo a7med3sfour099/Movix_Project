@@ -39,10 +39,7 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: CustomAppbar(
-        title: 'Profile',
-        back: true,
-      ),
+      appBar: CustomAppbar(title: 'Profile', back: false),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -87,8 +84,9 @@ class ProfileScreen extends StatelessWidget {
                           width: 106,
                           height: 106,
                           padding: const EdgeInsets.all(3),
-                          decoration:
-                              const BoxDecoration(shape: BoxShape.circle),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
                           child: ClipOval(
                             child: imagePath == ''
                                 ? const Icon(
@@ -146,6 +144,11 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.movie_outlined,
                         count: '0',
                         subtitle: 'Movies',
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          '/history',
+                          arguments: 'movie',
+                        ),
                       ),
                       Gap(12),
                       ProfileStatCard(
@@ -153,6 +156,11 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.tv_outlined,
                         count: '0',
                         subtitle: 'Series',
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          '/history',
+                          arguments: 'tv',
+                        ),
                       ),
                     ],
                   ),
