@@ -60,6 +60,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -74,3 +75,7 @@ flutter:
     - family: "JakartaSans"
       fonts:
         - asset: assets/fonts/PlusJakartaSans-VariableFont_wght.ttf
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon/app_icon.png"
