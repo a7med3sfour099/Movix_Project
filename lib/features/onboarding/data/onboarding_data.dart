@@ -1,6 +1,6 @@
 import 'package:movixapp/features/details/data/details_api.dart';
 import 'package:movixapp/features/details/data/media_details.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 import 'package:movixapp/features/movies/data/movies_api.dart';
 
 /// The real movies shown in the onboarding illustrations.

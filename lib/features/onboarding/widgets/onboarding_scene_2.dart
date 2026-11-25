@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/features/details/data/media_details.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 import 'package:movixapp/features/movies/data/movies_api.dart';
 import 'package:movixapp/features/onboarding/data/onboarding_data.dart';
 import 'package:movixapp/features/onboarding/widgets/onboarding_parts.dart';

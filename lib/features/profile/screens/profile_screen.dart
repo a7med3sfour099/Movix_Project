@@ -8,9 +8,9 @@ import 'package:movixapp/core/bottom_bar.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/services/auth_service.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
+import 'package:movixapp/features/profile/Widgets/profile_Stats_card.dart';
 import 'package:movixapp/features/profile/Widgets/profile_section.dart';
 import '../cubit/profile_cubit.dart';
-import 'package:movixapp/features/profile/widgets/profile_stats_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
