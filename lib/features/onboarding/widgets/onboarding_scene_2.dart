@@ -282,7 +282,8 @@ class _TrendingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final type = item.type == 'tv' ? 'Series' : 'Movie';
-    final genre = MoviesApi.genres[item.genreId];
+    final genre =
+        OnboardingData.genreNames[item.genreId] ?? MoviesApi.genres[item.genreId];
     final subtitle = genre == null ? type : '$type \u00b7 $genre';
 
     return Row(

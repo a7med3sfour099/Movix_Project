@@ -38,10 +38,19 @@ class MediaGridView extends StatelessWidget {
             ),
           );
         }
-        if (state.items.isEmpty) {
+        final items = state.visible;
+        if (items.isEmpty) {
+          // Still loading more pages that may contain the search text.
+          if (state.query.isNotEmpty && (state.hasMore || state.loadingMore)) {
+            return const Center(
+              child: CircularProgressIndicator(color: HomeHeader.greenColor),
+            );
+          }
           return Center(
             child: Text(
-              emptyMessage,
+              state.query.isNotEmpty
+                  ? 'No results for "${state.query}"'
+                  : emptyMessage,
               style: const TextStyle(color: Color(0xFF7C8B85)),
             ),
           );
@@ -72,9 +81,9 @@ class MediaGridView extends StatelessWidget {
                       // poster (2:3) + text lines under it
                       mainAxisExtent: cellWidth * 1.5 + 56,
                     ),
-                    itemCount: state.items.length,
+                    itemCount: items.length,
                     itemBuilder: (context, index) => MediaCard(
-                      item: state.items[index],
+                      item: items[index],
                       upcoming: upcoming,
                       width: double.infinity,
                     ),

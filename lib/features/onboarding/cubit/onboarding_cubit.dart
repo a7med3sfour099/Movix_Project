@@ -21,19 +21,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   final PageController pageController = PageController();
 
-  OnboardingCubit() : super(const OnboardingState()) {
-    _loadData();
-  }
+  // The onboarding data is fixed (images from assets), so it is ready at once.
+  OnboardingCubit() : super(OnboardingState(data: OnboardingData.preset));
 
   bool get isLastPage => state.currentPage == pageCount - 1;
-
-  Future<void> _loadData() async {
-    final data = await OnboardingData.load();
-
-    if (!isClosed && data != null) {
-      emit(state.copyWith(data: data));
-    }
-  }
 
   void pageChanged(int index) {
     if (index != state.currentPage) {

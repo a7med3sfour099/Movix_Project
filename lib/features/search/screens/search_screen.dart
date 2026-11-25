@@ -32,6 +32,9 @@ class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _controller;
   Timer? _debounce;
 
+  /// How long to wait after the last typed letter before searching.
+  static const _searchDelay = Duration(seconds: 3);
+
   @override
   void initState() {
     super.initState();
@@ -55,7 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void _onChanged(String text) {
     _debounce?.cancel();
     // Wait until the user stops typing before calling the API.
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    _debounce = Timer(_searchDelay, () {
       _cubit.search(text);
     });
   }
@@ -339,7 +342,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _body(SearchState state) {
-    if (state.query.isEmpty) {
+    // Empty box and no filters: history. Empty box + filters: their results.
+    if (state.query.isEmpty && !state.browsing) {
       return _historyView();
     }
 

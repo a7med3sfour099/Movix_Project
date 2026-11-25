@@ -33,7 +33,7 @@ class GlassCard extends StatelessWidget {
   }
 }
 
-/// A network image with rounded corners.
+/// An image with rounded corners (from the app assets or the network).
 /// If the url is missing or fails, a dark green box is shown instead.
 class PosterImage extends StatelessWidget {
   final String? url;
@@ -57,6 +57,12 @@ class PosterImage extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       child: url == null
           ? fallback
+          : url!.startsWith('assets/')
+          ? Image.asset(
+        url!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => fallback,
+      )
           : Image.network(
         url!,
         fit: BoxFit.cover,

@@ -48,6 +48,7 @@ void main() async {
    const tmdbToken = String.fromEnvironment('TMDB_TOKEN');
   if (tmdbToken.isNotEmpty) {
   }
+
   const resetOnboarding = bool.fromEnvironment('RESET_ONBOARDING');
   if (resetOnboarding) await OnboardingPrefs.reset();
 

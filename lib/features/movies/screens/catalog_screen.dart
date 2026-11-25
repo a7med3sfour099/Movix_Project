@@ -129,7 +129,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     _chip(_genreLabel, selected: true, onTap: _openGenreSheet),
                     const SizedBox(width: 10),
                     _chip(
-                      'Filter',
+                      'Sort',
                       icon: Symbols.tune,
                       selected: false,
                       highlighted: _sort != CatalogSort.popular,
