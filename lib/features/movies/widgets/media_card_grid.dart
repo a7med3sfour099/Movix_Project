@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movixapp/features/home/widgets/media_card.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 
 /// Two-column grid of [MediaCard]s that sits inside another scroll view
 /// (e.g. the Movies / TV Shows tabs on the actor profile).

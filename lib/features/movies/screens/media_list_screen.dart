@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/bottom_bar.dart';
 import 'package:movixapp/Widgets/custom_back_button.dart';
-import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
-import 'package:movixapp/features/movies/data/movies_api.dart';
+import 'package:movixapp/core/data/media_repository.dart';
+import 'package:movixapp/features/home/cubit/media_grid_cubit.dart';
+// import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
+// import 'package:movixapp/features/movies/data/movies_api.dart';
 import 'package:movixapp/features/movies/widgets/media_grid_view.dart';
-import 'package:movixapp/Widgets/custom_back_button.dart';
 
 /// Used for: Popular Movies, Popular TV Shows, Top Movies, Top TV Shows,
 /// Trending, Discover, Now Playing ("See More" from the home sections).
@@ -30,17 +31,28 @@ class MediaListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      // create: (_) {
+      //   final api = MoviesApi();
+      //   return MediaGridCubit(
+      //     (page) => api.getPage(
+      //       path,
+      //       type,
+      //       page: page,
+      //       params: upcoming ? MoviesApi.upcomingParams() : params,
+      //     ),
+      //   )..load();
+      // },
       create: (_) {
-        final api = MoviesApi();
+final repo = MediaRepository.instance;
         return MediaGridCubit(
-          (page) => api.getPage(
+          (page) => repo.getPage(
             path,
             type,
             page: page,
-            params: upcoming ? MoviesApi.upcomingParams() : params,
+            params: upcoming ? MediaRepository.upcomingParams() : params,
           ),
         )..load();
-      },
+},
       child: Scaffold(
         backgroundColor: const Color(0xFF0B1512),
         bottomNavigationBar: const BottomBar(),

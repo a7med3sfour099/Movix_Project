@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:movixapp/core/api_config.dart';
-import 'movie_details.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
+import '../../home/data/movie_details.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 
 class MoviesApi {
   final dio = Dio(
