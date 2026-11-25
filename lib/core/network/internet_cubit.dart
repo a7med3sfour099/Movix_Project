@@ -31,13 +31,6 @@ class InternetState {
 class InternetCubit extends Cubit<InternetState> {
   InternetCubit() : super(const InternetState()) {
     _checkInitialConnection();
-
-    // _subscription = InternetConnection().onStatusChange.listen((status) {
-    //   if (status == InternetStatus.disconnected) {
-    //     emit(state.copyWith(isConnected: false));
-    //   }
-    // }
-    // );
     _subscription = InternetConnection().onStatusChange.listen((status) {
   if (status == InternetStatus.disconnected) {
     emit(state.copyWith(
