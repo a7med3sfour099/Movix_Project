@@ -47,32 +47,45 @@ class UnderlineTabs extends StatelessWidget {
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              tabs[index],
-              style: TextStyle(
-                color: selected ? HomeHeader.greenColor : const Color(0xFFB4C2BC),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            if (count != null) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: HomeHeader.darkColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '$count',
-                  style: const TextStyle(color: Color(0xFFDBE5E2), fontSize: 13),
-                ),
-              ),
-            ],
-          ],
+  mainAxisAlignment: MainAxisAlignment.center,
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    Flexible(
+      child: Text(
+        tabs[index],
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: selected
+              ? HomeHeader.greenColor
+              : const Color(0xFFB4C2BC),
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
         ),
+      ),
+    ),
+    if (count != null) ...[
+      const SizedBox(width: 6),
+      Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 2,
+        ),
+        decoration: BoxDecoration(
+          color: HomeHeader.darkColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          '$count',
+          style: const TextStyle(
+            color: Color(0xFFDBE5E2),
+            fontSize: 13,
+          ),
+        ),
+      ),
+    ],
+  ],
+),
       ),
     );
   }
