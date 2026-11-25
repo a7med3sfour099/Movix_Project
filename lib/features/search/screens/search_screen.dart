@@ -32,8 +32,6 @@ class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _controller;
   Timer? _debounce;
 
-  /// How long to wait after the last typed letter before searching.
-  static const _searchDelay = Duration(seconds: 3);
 
   @override
   void initState() {
@@ -58,7 +56,9 @@ class _SearchScreenState extends State<SearchScreen> {
   void _onChanged(String text) {
     _debounce?.cancel();
     // Wait until the user stops typing before calling the API.
-    _debounce = Timer(_searchDelay, () {
+    // An empty box has nothing to wait for, so it is applied at once.
+    final delay = text.trim().isEmpty ? Duration.zero : searchDelay;
+    _debounce = Timer(delay, () {
       _cubit.search(text);
     });
   }

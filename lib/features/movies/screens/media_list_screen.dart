@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -37,6 +39,7 @@ class MediaListScreen extends StatefulWidget {
 class _MediaListScreenState extends State<MediaListScreen> {
   late final MediaGridCubit _cubit;
   final _controller = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -54,9 +57,24 @@ class _MediaListScreenState extends State<MediaListScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     _cubit.close();
     super.dispose();
+  }
+
+  // Wait until the user stops typing before searching the list.
+  void _onChanged(String text) {
+    _debounce?.cancel();
+    // An empty box has nothing to wait for, so it is applied at once.
+    final delay = text.trim().isEmpty ? Duration.zero : searchDelay;
+    _debounce = Timer(delay, () => _cubit.setQuery(text));
+  }
+
+  // The keyboard search button searches right away.
+  void _onSubmitted(String text) {
+    _debounce?.cancel();
+    _cubit.setQuery(text);
   }
 
   void _openSort() {
@@ -145,8 +163,8 @@ class _MediaListScreenState extends State<MediaListScreen> {
                       child: SearchBarField(
                         controller: _controller,
                         hint: 'Search in ${widget.title}',
-                        onChanged: _cubit.setQuery,
-                        onSubmitted: _cubit.setQuery,
+                        onChanged: _onChanged,
+                        onSubmitted: _onSubmitted,
                       ),
                     ),
                     const SizedBox(width: 10),

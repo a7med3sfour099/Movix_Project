@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'home_header.dart';
 
+/// How long every search in the app waits after the last typed letter
+/// before it starts searching. Change it here to change it everywhere.
+const searchDelay = Duration(seconds: 3);
+
 class SearchBarField extends StatelessWidget {
   final String hint;
   final ValueChanged<String> onChanged;
