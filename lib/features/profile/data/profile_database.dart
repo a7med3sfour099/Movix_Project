@@ -24,12 +24,20 @@ class ProfileDatabase {
         ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
-          await db.execute(
-            'ALTER TABLE profile ADD COLUMN user_id TEXT',
-          );
-        }
-      },
+  if (oldVersion < 2) {
+    final columns = await db.rawQuery('PRAGMA table_info(profile)');
+
+    final hasUserId = columns.any(
+      (column) => column['name'] == 'user_id',
+    );
+
+    if (!hasUserId) {
+      await db.execute(
+        'ALTER TABLE profile ADD COLUMN user_id TEXT',
+      );
+    }
+  }
+},
     );
   }
   Future<String> getImagePath() async {
