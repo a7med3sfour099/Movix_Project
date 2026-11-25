@@ -6,6 +6,8 @@ import 'package:movixapp/features/details/data/media_details.dart';
 import 'package:movixapp/features/home/data/media_item.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/library/cubit/library_cubit.dart';
+import 'package:movixapp/features/details/widgets/rating_dialog.dart';
+import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
 
 extension MediaDetailsX on MediaDetails {
   MediaItem toMediaItem() {
@@ -46,10 +48,19 @@ class MediaActionBar extends StatelessWidget {
             child: _ActionButton(
               icon: Symbols.star,
               label: 'Rate Now',
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Rating feature coming soon')),
+              onTap: () async {
+                final rating = await showDialog<int>(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (_) => RatingDialog(mediaType: details.type),
                 );
+
+                if (rating != null && context.mounted) {
+                  showCustomSnackBar(
+                    context,
+                    message: 'Selected rating: $rating / 5',
+                  );
+                }
               },
             ),
           ),
@@ -75,7 +86,9 @@ class MediaActionBar extends StatelessWidget {
                       confirmColor: const Color(0xFF990000),
                       onConfirm: () {
                         Navigator.of(dialogContext).pop();
-                        libraryCubit.removeFromWatchlist(details.toMediaItem());
+                        libraryCubit.removeFromWatchlist(
+                          details.toMediaItem(),
+                        );
                       },
                     ),
                   );
@@ -107,7 +120,9 @@ class MediaActionBar extends StatelessWidget {
                       confirmColor: const Color(0xFF990000),
                       onConfirm: () {
                         Navigator.of(dialogContext).pop();
-                        libraryCubit.removeFromFavorites(details.toMediaItem());
+                        libraryCubit.removeFromFavorites(
+                          details.toMediaItem(),
+                        );
                       },
                     ),
                   );
@@ -123,8 +138,9 @@ class MediaActionBar extends StatelessWidget {
               icon: Symbols.check_circle,
               label: 'Watched',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Marked as watched')),
+                showCustomSnackBar(
+                  context,
+                  message: 'Marked as watched',
                 );
               },
             ),
@@ -151,6 +167,7 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected ? const Color(0xFF0B1512) : HomeHeader.greenColor;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
