@@ -4,7 +4,7 @@ import 'package:movixapp/Widgets/media_poster.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/services/genres_service.dart';
 import 'package:movixapp/features/actors/screens/actor_profile_screen.dart';
-import 'package:movixapp/features/details/screens/media_details_screen.dart';
+import 'package:movixapp/features/details/views/media_details_view.dart';
 import 'package:movixapp/features/home/data/media_item.dart';
 
 class MediaCard extends StatelessWidget {
@@ -25,7 +25,7 @@ class MediaCard extends StatelessWidget {
   void _open(BuildContext context) {
     final Widget screen = item.type == 'person'
         ? ActorProfileScreen(id: item.id)
-        : MediaDetailsScreen(id: item.id, type: item.type);
+        : MediaDetailsView(id: item.id, type: item.type);
     Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 

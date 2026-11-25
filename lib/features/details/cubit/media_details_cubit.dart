@@ -1,14 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/features/details/data/details_api.dart';
-import 'package:movixapp/features/details/data/media_details.dart';
-
-class MediaDetailsState {
-  final bool loading;
-  final String? error;
-  final MediaDetails? details;
-
-  const MediaDetailsState({this.loading = false, this.error, this.details});
-}
+import 'media_details_state.dart';
 
 class MediaDetailsCubit extends Cubit<MediaDetailsState> {
   final String type;
