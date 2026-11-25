@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
-import 'package:movixapp/features/details/screens/media_details_screen.dart';
+import 'package:movixapp/features/details/views/media_details_view.dart';
 import 'package:movixapp/features/home/data/movie_details.dart';
 
 class HeroActionButtons extends StatelessWidget {
@@ -33,7 +33,7 @@ class _TrailerButton extends StatelessWidget {
       onPressed: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => MediaDetailsScreen(id: movie.id, type: 'movie'),
+          builder: (_) => MediaDetailsView(id: movie.id, type: 'movie'),
         ),
       ),
       icon: const Icon(Symbols.play_arrow, size: 22, fill: 1),

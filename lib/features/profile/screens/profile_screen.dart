@@ -8,6 +8,7 @@ import 'package:movixapp/core/bottom_bar.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/services/auth_service.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
+import 'package:movixapp/features/library/cubit/library_cubit.dart';
 import 'package:movixapp/features/profile/Widgets/profile_Stats_card.dart';
 import 'package:movixapp/features/profile/Widgets/profile_section.dart';
 import '../cubit/profile_cubit.dart';
@@ -18,11 +19,31 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = authService.value.currentUser;
+    final libraryState = context.watch<LibraryCubit>().state;
+    final watchlistMovies = libraryState.watchlist
+        .where((i) => i.type != 'tv')
+        .length
+        .toString();
+    final watchlistTv = libraryState.watchlist
+        .where((i) => i.type == 'tv')
+        .length
+        .toString();
+    final favoriteMovies = libraryState.favorites
+        .where((i) => i.type != 'tv')
+        .length
+        .toString();
+    final favoriteTv = libraryState.favorites
+        .where((i) => i.type == 'tv')
+        .length
+        .toString();
+
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: CustomAppbar(title: 'Profile',
-      back: true,),
-      body: Padding(
+      appBar: CustomAppbar(
+        title: 'Profile',
+        back: true,
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(15.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -66,7 +87,8 @@ class ProfileScreen extends StatelessWidget {
                           width: 106,
                           height: 106,
                           padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          decoration:
+                              const BoxDecoration(shape: BoxShape.circle),
                           child: ClipOval(
                             child: imagePath == ''
                                 ? const Icon(
@@ -107,8 +129,10 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             Gap(12),
-            CustomText(text: currentUser?.displayName ?? 'User'
-            , weight: FontWeight.bold),
+            CustomText(
+              text: currentUser?.displayName ?? 'User',
+              weight: FontWeight.bold,
+            ),
             Gap(15),
             Align(
               alignment: Alignment.centerLeft,
@@ -120,14 +144,14 @@ class ProfileScreen extends StatelessWidget {
                       ProfileStatCard(
                         title: 'Total Watched Movies',
                         icon: Icons.movie_outlined,
-                        count: '-',
+                        count: '0',
                         subtitle: 'Movies',
                       ),
                       Gap(12),
                       ProfileStatCard(
                         title: 'Total Watched TV Shows',
                         icon: Icons.tv_outlined,
-                        count: '-',
+                        count: '0',
                         subtitle: 'Series',
                       ),
                     ],
@@ -139,14 +163,14 @@ class ProfileScreen extends StatelessWidget {
                       ProfileStatCard(
                         title: 'Movies in watchlist',
                         icon: Icons.bookmark_border,
-                        count: '-',
+                        count: watchlistMovies,
                         subtitle: 'Saved',
                       ),
                       Gap(12),
                       ProfileStatCard(
                         title: 'Tv Shows in watchlist',
                         icon: Icons.bookmark_border,
-                        count: '-',
+                        count: watchlistTv,
                         subtitle: 'saved',
                       ),
                     ],
@@ -158,14 +182,14 @@ class ProfileScreen extends StatelessWidget {
                       ProfileStatCard(
                         title: 'Favorite \nmovies',
                         icon: Icons.favorite,
-                        count: '-',
+                        count: favoriteMovies,
                         subtitle: 'curated',
                       ),
                       Gap(12),
                       ProfileStatCard(
                         title: 'favorite tv shows',
                         icon: Icons.favorite,
-                        count: '-',
+                        count: favoriteTv,
                         subtitle: 'curated',
                       ),
                     ],

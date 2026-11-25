@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/features/actors/screens/actor_profile_screen.dart';
-import 'package:movixapp/features/details/screens/media_details_screen.dart';
+import 'package:movixapp/features/details/views/media_details_view.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/movies/data/movies_api.dart';
 import 'package:movixapp/features/search/data/search_result.dart';
@@ -34,7 +34,7 @@ class SearchResultTile extends StatelessWidget {
     onOpen?.call();
     final Widget screen = result.isPerson
         ? ActorProfileScreen(id: result.id)
-        : MediaDetailsScreen(id: result.id, type: result.type);
+        : MediaDetailsView(id: result.id, type: result.type);
     Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 
