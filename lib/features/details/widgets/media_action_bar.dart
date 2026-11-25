@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:movixapp/Widgets/are_you_sure_dialog.dart';
 import 'package:movixapp/features/details/data/media_details.dart';
 import 'package:movixapp/features/home/data/media_item.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
@@ -58,7 +59,30 @@ class MediaActionBar extends StatelessWidget {
               icon: Symbols.bookmark,
               label: 'Watchlist',
               selected: isInWatchlist,
-              onTap: () => libraryCubit.toggleWatchlist(details.toMediaItem()),
+              onTap: () {
+                if (isInWatchlist) {
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) => AreYouSureDialog(
+                      title: 'Remove from watchlist?',
+                      description:
+                          'Are you sure you want to remove this movie from your watchlist? It will no longer appear in your saved library.',
+                      icon: Symbols.bookmark,
+                      iconColor: const Color(0xFFE53935),
+                      iconBackgroundColor: const Color(0xFF331718),
+                      confirmText: 'Remove',
+                      confirmIcon: Symbols.delete,
+                      confirmColor: const Color(0xFF990000),
+                      onConfirm: () {
+                        Navigator.of(dialogContext).pop();
+                        libraryCubit.removeFromWatchlist(details.toMediaItem());
+                      },
+                    ),
+                  );
+                } else {
+                  libraryCubit.toggleWatchlist(details.toMediaItem());
+                }
+              },
             ),
           ),
           const SizedBox(width: 8),
@@ -67,7 +91,30 @@ class MediaActionBar extends StatelessWidget {
               icon: Symbols.favorite,
               label: 'Favorite',
               selected: isFavorite,
-              onTap: () => libraryCubit.toggleFavorite(details.toMediaItem()),
+              onTap: () {
+                if (isFavorite) {
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) => AreYouSureDialog(
+                      title: 'Remove from favorites?',
+                      description:
+                          'Are you sure you want to remove this movie from your favorites? It will no longer appear in your saved library.',
+                      icon: Symbols.favorite,
+                      iconColor: const Color(0xFFE53935),
+                      iconBackgroundColor: const Color(0xFF331718),
+                      confirmText: 'Remove',
+                      confirmIcon: Symbols.delete,
+                      confirmColor: const Color(0xFF990000),
+                      onConfirm: () {
+                        Navigator.of(dialogContext).pop();
+                        libraryCubit.removeFromFavorites(details.toMediaItem());
+                      },
+                    ),
+                  );
+                } else {
+                  libraryCubit.toggleFavorite(details.toMediaItem());
+                }
+              },
             ),
           ),
           const SizedBox(width: 8),
