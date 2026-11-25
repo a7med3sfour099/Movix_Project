@@ -11,6 +11,7 @@ import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
 import 'package:movixapp/features/profile/cubit/edit_profile_cubit.dart';
 import 'package:movixapp/features/profile/cubit/edit_profile_state.dart';
+import 'package:movixapp/features/profile/cubit/profile_cubit.dart';
 
 class EditProfileView extends StatelessWidget {
   const EditProfileView({super.key});
@@ -43,8 +44,11 @@ class EditProfileView extends StatelessWidget {
                       child: BlocBuilder<EditProfileCubit, EditProfileState>(
                         builder: (context, state) {
                           return InkWell(
-                            onTap: () {
-                              context.read<EditProfileCubit>().changeImage();
+                            onTap: () async {
+                              await context.read<EditProfileCubit>().changeImage();
+                              if (context.mounted) {
+                                context.read<ProfileCubit>().loadImage();
+                              }
                             },
                             customBorder: const CircleBorder(),
                             child: Stack(
@@ -213,6 +217,9 @@ class EditProfileView extends StatelessWidget {
                                   context.read<EditProfileCubit>().saveProfile(
                                         nameController.text,
                                         onSuccess: () {
+                                          context
+                                              .read<ProfileCubit>()
+                                              .loadImage();
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
