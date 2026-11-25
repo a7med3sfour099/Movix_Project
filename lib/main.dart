@@ -3,10 +3,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/bottom_bar_cubit.dart';
+import 'package:movixapp/core/network/env_config.dart';
 import 'package:movixapp/core/routes/app_routes.dart';
 import 'package:movixapp/core/routes/nav_key.dart';
 import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/core/services/app_navigation_service.dart';
+import 'package:movixapp/core/services/genres_service.dart';
 import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/home/cubit/home_tab_cubit.dart';
@@ -43,9 +45,8 @@ void main() async {
   await appLinkService.init(
     onPasswordResetLink: AppNavigationService.instance.handlePasswordResetLink,
   );
-   const tmdbToken = String.fromEnvironment('TMDB_TOKEN');
-  if (tmdbToken.isNotEmpty) {
-  }
+  await EnvConfig.init();
+  GenresService.instance.ensureLoaded();
   const resetOnboarding = bool.fromEnvironment('RESET_ONBOARDING');
   if (resetOnboarding) await OnboardingPrefs.reset();
 

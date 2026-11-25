@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_header.dart';
+import 'package:movixapp/core/constants/app_colors.dart';
 
 class HomeTabs extends StatelessWidget {
   final List<String> tabs;
@@ -36,15 +36,17 @@ class HomeTabs extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? HomeHeader.greenColor : HomeHeader.darkColor,
+          color: isSelected ? AppColors.primary : AppColors.quaternary,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           tabs[index],
           style: TextStyle(
-            color: isSelected ? const Color(0xFF0B1512) : const Color(0xFF9AA8A2),
+            color: isSelected
+                ? AppColors.background
+                : AppColors.secondary.withOpacity(0.6),
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),

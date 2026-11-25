@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movixapp/core/constants/api_endpoints.dart';
+import 'package:movixapp/core/data/media_repository.dart';
+import 'package:movixapp/features/home/cubit/count_cubit.dart';
+import 'package:movixapp/features/home/cubit/count_state.dart';
 import '../../profile/cubit/profile_cubit.dart';
 import '../cubit/home_tab_cubit.dart';
 import '../widgets/home_header.dart';
@@ -14,8 +18,6 @@ import 'package:movixapp/features/actors/data/actors_api.dart';
 import 'package:movixapp/features/actors/screens/actors_catalog_screen.dart';
 import 'package:movixapp/features/actors/widgets/actor_section.dart';
 import 'package:movixapp/features/movies/screens/media_list_screen.dart';
-import 'package:movixapp/features/movies/cubit/counts_cubit.dart';
-import 'package:movixapp/features/movies/data/movies_api.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -29,12 +31,12 @@ class HomeScreen extends StatelessWidget {
   ];
 
   void _openList(
-      BuildContext context,
-      String title,
-      String path, {
-        String type = 'movie',
-        bool upcoming = false,
-      }) {
+    BuildContext context,
+    String title,
+    String path, {
+    String type = 'movie',
+    bool upcoming = false,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -49,34 +51,44 @@ class HomeScreen extends StatelessWidget {
   }
 
   static const _allSections = [
-    _SectionDef('Trending Today', '/trending/all/day', 'movie'),
-    _SectionDef('Trending This Week', '/trending/all/week', 'movie'),
-    _SectionDef('Discover', '/discover/movie', 'movie'),
-    _SectionDef('Top Movies', '/movie/top_rated', 'movie'),
-    _SectionDef('Top TV Shows', '/tv/top_rated', 'tv'),
-    _SectionDef('Popular Movies', '/movie/popular', 'movie'),
-    _SectionDef('Popular TV Shows', '/tv/popular', 'tv'),
-    _SectionDef('Now Playing', '/movie/now_playing', 'movie'),
-    _SectionDef('Upcoming', '/discover/movie', 'movie', upcoming: true),
+    _SectionDef('Trending Today', ApiEndpoints.trendingAllDay, 'movie'),
+    _SectionDef('Trending This Week', ApiEndpoints.trendingAllWeek, 'movie'),
+    _SectionDef('Discover', ApiEndpoints.discoverMovies, 'movie'),
+    _SectionDef('Top Movies', ApiEndpoints.topRatedMovies, 'movie'),
+    _SectionDef('Top TV Shows', ApiEndpoints.topRatedTvShows, 'tv'),
+    _SectionDef('Popular Movies', ApiEndpoints.popularMovies, 'movie'),
+    _SectionDef('Popular TV Shows', ApiEndpoints.popularTvShows, 'tv'),
+    _SectionDef('Now Playing', ApiEndpoints.nowPlayingMovies, 'movie'),
+    _SectionDef(
+      'Upcoming',
+      ApiEndpoints.upcomingMovies,
+      'movie',
+      upcoming: true,
+    ),
   ];
 
   static const _movieSections = [
-    _SectionDef('Trending Today', '/trending/movie/day', 'movie'),
-    _SectionDef('Trending This Week', '/trending/movie/week', 'movie'),
-    _SectionDef('Discover', '/discover/movie', 'movie'),
-    _SectionDef('Top Movies', '/movie/top_rated', 'movie'),
-    _SectionDef('Popular Movies', '/movie/popular', 'movie'),
-    _SectionDef('Now Playing', '/movie/now_playing', 'movie'),
-    _SectionDef('Upcoming', '/discover/movie', 'movie', upcoming: true),
+    _SectionDef('Trending Today', ApiEndpoints.trendingAllDay, 'movie'),
+    _SectionDef('Trending This Week', ApiEndpoints.trendingAllWeek, 'movie'),
+    _SectionDef('Discover', ApiEndpoints.discoverMovies, 'movie'),
+    _SectionDef('Top Movies', ApiEndpoints.topRatedMovies, 'movie'),
+    _SectionDef('Popular Movies', ApiEndpoints.popularMovies, 'movie'),
+    _SectionDef('Now Playing', ApiEndpoints.nowPlayingMovies, 'movie'),
+    _SectionDef(
+      'Upcoming',
+      ApiEndpoints.upcomingMovies,
+      'movie',
+      upcoming: true,
+    ),
   ];
 
   static const _tvSections = [
-    _SectionDef('Trending Today', '/trending/tv/day', 'tv'),
-    _SectionDef('Trending This Week', '/trending/tv/week', 'tv'),
-    _SectionDef('Top TV Shows', '/tv/top_rated', 'tv'),
-    _SectionDef('Popular TV Shows', '/tv/popular', 'tv'),
-    _SectionDef('On The Air', '/tv/on_the_air', 'tv'),
-    _SectionDef('Airing Today', '/tv/airing_today', 'tv'),
+    _SectionDef('Trending Today', ApiEndpoints.trendingTvDay, 'tv'),
+    _SectionDef('Trending This Week', ApiEndpoints.trendingTvWeek, 'tv'),
+    _SectionDef('Top TV Shows', ApiEndpoints.topRatedTvShows, 'tv'),
+    _SectionDef('Popular TV Shows', ApiEndpoints.popularTvShows, 'tv'),
+    _SectionDef('On The Air', ApiEndpoints.onTheAirTvShows, 'tv'),
+    _SectionDef('Airing Today', ApiEndpoints.airingTodayTvShows, 'tv'),
   ];
   static const _actorSections = [
     _SectionDef('Popular Actors', ActorsApi.popularPath, 'person'),
@@ -93,6 +105,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
   /// Everything under the tabs. Tabs: 0 All, 1 Movies, 2 TV Shows, 3 Actors.
   Widget _content(BuildContext context, int tab) {
     if (tab == 3) {
@@ -121,23 +134,20 @@ class HomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (tab == 0) ...[
-          const HeroSection(),
-          const SizedBox(height: 24),
-        ],
-        if (tab == 0) ...[
-          const ExploreVaults(),
-          const SizedBox(height: 24),
-        ],
+        if (tab == 0) ...[const HeroSection(), const SizedBox(height: 24)],
+        if (tab == 0) ...[const ExploreVaults(), const SizedBox(height: 24)],
         for (final s in sections) ...[
           SectionContainer(
-            // Key per tab so each tab loads its own data.
             key: ValueKey('$tab-${s.title}'),
             title: s.title,
             upcoming: s.upcoming,
             fetch: s.upcoming
-                ? () => MoviesApi().getUpcoming()
-                : () => MoviesApi().getList(s.path, s.type),
+                ? MediaRepository.instance.getUpcoming
+                : () => MediaRepository.instance.getList(
+                    s.path,
+                    s.type,
+                    pages: 1,
+                  ),
             onSeeMore: () => _openList(
               context,
               s.title,
@@ -152,13 +162,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => CountsCubit()..loadCounts(),
       child: Scaffold(
-        backgroundColor: const Color(0xFF0B1512),
         bottomNavigationBar: const BottomBar(),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -190,17 +198,24 @@ class HomeScreen extends StatelessWidget {
                     var movies = 'Movies';
                     var tvShows = 'TV Shows';
                     var actors = 'Actors';
-                    if (!counts.loading && counts.error == null) {
-                      all = 'All (${counts.movies + counts.tvShows + counts.actors})';
-                      movies = 'Movies (${counts.movies})';
-                      tvShows = 'TV Shows (${counts.tvShows})';
-                      actors = 'Actors (${counts.actors})';
+                    // if (!counts.loading && counts.error == null) {
+                    //   // all = 'All (${counts.movies + counts.tvShows + counts.actors})';
+                    //   movies = 'Movies (${counts.movies})';
+                    //   tvShows = 'TV Shows (${counts.tvShows})';
+                    //   actors = 'Actors (${counts.actors})';
+                    // }
+
+                    if (counts is CountsLoaded) {
+                      all = 'All (${_formatCount(counts.total)})';
+                      movies = 'Movies (${_formatCount(counts.movies)})';
+                      tvShows = 'TV Shows (${_formatCount(counts.tvShows)})';
+                      actors = 'Actors (${_formatCount(counts.actors)})';
                     }
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SearchBarField(
+                        CustomSearchBar(
                           hint: hints[selectedTab],
                           // Looks like a field, but a tap opens the Search page
                           // (blurred Home behind it, keyboard already open).
@@ -243,6 +258,15 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatCount(int count) {
+  if (count >= 1000) {
+    final k = count / 1000;
+    final suffix = count >= 20000 ? '+' : '';
+    return '${k.toStringAsFixed(k.truncateToDouble() == k ? 0 : 1)}K$suffix';
+  }
+  return '$count';
 }
 
 class _SectionDef {

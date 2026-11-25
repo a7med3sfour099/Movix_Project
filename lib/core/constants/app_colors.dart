@@ -4,9 +4,12 @@ class AppColors {
   // Brand Colors
   static const Color primary = Color(0xFF4EDEA3);
   static const Color background = Color(0xff0C1514);
+  static const Color root = Color(0xFF08130F);
 
   // Secondary
   static const Color secondary = Color(0xffDBE5E2);
+  static const Color tertiary = Color(0xFF7C8B85);
+  static const Color quaternary = Color(0xFF0F1F1A);
 
   // Status
   static const Color error = Color(0xffFF0000);

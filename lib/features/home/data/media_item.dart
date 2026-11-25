@@ -1,4 +1,4 @@
-import 'package:movixapp/core/api_config.dart';
+import 'package:movixapp/core/network/tmdb_config.dart';
 import 'package:movixapp/core/rating_calc.dart';
 
 class MediaItem {
@@ -32,7 +32,7 @@ class MediaItem {
     final genreId = genres.isEmpty ? null : genres[0] as int;
 
     final path = json['poster_path'] ?? json['profile_path'];
-    final image = path == null ? null : '${ApiConfig.imageBaseUrl}/w342$path';
+    final image = path == null ? null : TmdbConfig.posterUrl(path as String, size: 'w342');
 
     return MediaItem(
       id: json['id'],

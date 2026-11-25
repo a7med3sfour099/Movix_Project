@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/Widgets/media_poster.dart';
+import 'package:movixapp/core/constants/app_colors.dart';
+import 'package:movixapp/core/services/genres_service.dart';
 import 'package:movixapp/features/actors/screens/actor_profile_screen.dart';
 import 'package:movixapp/features/details/screens/media_details_screen.dart';
-import 'package:movixapp/features/home/widgets/home_header.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
-import 'package:movixapp/features/movies/data/movies_api.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 
 class MediaCard extends StatelessWidget {
   final MediaItem item;
 
-  // Shows the COMING SOON style Future releases get it automatically
   final bool upcoming;
   final double width;
-
-// Opens the item's details screen by default
   final VoidCallback? onTap;
 
   const MediaCard({
@@ -39,7 +36,8 @@ class MediaCard extends StatelessWidget {
       typeName,
       if (item.year.isNotEmpty) item.year,
     ].join(' \u2022 ');
-    final genre = MoviesApi.genres[item.genreId] ?? '';
+    // final genre = MoviesApi.genres[item.genreId] ?? '';
+    final genre = GenresService.instance.nameFor(item.genreId) ?? '';
     final banner = (upcoming || MediaPoster.isUnreleased(item.date))
         ? MediaPoster.bannerFor(item.date)
         : null;
@@ -66,7 +64,7 @@ class MediaCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: HomeHeader.greenColor,
+                color: AppColors.primary,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
@@ -86,7 +84,11 @@ class MediaCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Icon(Symbols.chevron_right, size: 16, color: Color(0xFFB4C2BC)),
+                const Icon(
+                  Symbols.chevron_right,
+                  size: 16,
+                  color: Color(0xFFB4C2BC),
+                ),
               ],
             ),
           ],
@@ -126,12 +128,12 @@ class MediaCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Symbols.star, size: 12, fill: 1, color: HomeHeader.greenColor),
+          const Icon(Symbols.star, size: 12, fill: 1, color: AppColors.primary),
           const SizedBox(width: 3),
           Text(
             rating,
             style: const TextStyle(
-              color: HomeHeader.greenColor,
+              color: AppColors.primary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
