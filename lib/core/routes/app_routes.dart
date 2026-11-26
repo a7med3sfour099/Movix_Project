@@ -7,6 +7,7 @@ import 'package:movixapp/features/auth/views/forget_password_view.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/auth/views/reset_password_view.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
+import 'package:movixapp/features/calendar/views/calendar_view.dart';
 import 'package:movixapp/features/home/screens/home_screen.dart';
 import 'package:movixapp/features/profile/views/edit_profile_view.dart';
 import 'package:movixapp/features/settings/views/about_us_view.dart';
@@ -39,5 +40,6 @@ class AppRoutes {
     '/about-us': (context) => const AboutUsView(),
     '/privacy-policy': (context) => const PrivacyPolicyView(),
     '/terms-and-conditions': (context) => const TermsAndConditionsView(),
+    '/calendar': (context) => const CalendarView(),
   };
 }
