@@ -5,8 +5,6 @@ import 'package:movixapp/features/home/cubit/media_grid_state.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/home/widgets/media_card.dart';
 
-// import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
-
 /// Two-column grid of media cards. Needs a [MediaGridCubit] above it.
 class MediaGridView extends StatelessWidget {
   final String emptyMessage;
@@ -21,33 +19,6 @@ class MediaGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MediaGridCubit, MediaGridState>(
-      // builder: (context, state) {
-      // if (state.loading) {
-      //   return const Center(
-      //     child: CircularProgressIndicator(color: HomeHeader.greenColor),
-      //   );
-      // }
-      // if (state.error != null) {
-      //   return Center(
-      //     child: Column(
-      //       mainAxisSize: MainAxisSize.min,
-      //       children: [
-      //         Text(state.error!, style: const TextStyle(color: Colors.white)),
-      //         TextButton(
-      //           onPressed: () => context.read<MediaGridCubit>().load(),
-      //           child: const Text('Try again'),
-      //         ),
-      //       ],
-      //     ),
-      //   );
-      // }
-      // if (state.items.isEmpty) {
-      //   return Center(
-      //     child: Text(
-      //       emptyMessage,
-      //       style: const TextStyle(color: Color(0xFF7C8B85)),
-      //     ),
-
       builder: (context, state) {
         return switch (state) {
           MediaGridInitial() || MediaGridLoading() => const Center(
@@ -74,7 +45,6 @@ class MediaGridView extends StatelessWidget {
   Widget _buildLoaded(BuildContext context, MediaGridLoaded state) {
     final items = state.visible;
     if (items.isEmpty) {
-      // Still loading more pages that may contain the search text.
       if (state.query.isNotEmpty && (state.hasMore || state.loadingMore)) {
         return const Center(
           child: CircularProgressIndicator(color: HomeHeader.greenColor),
@@ -119,7 +89,6 @@ class MediaGridView extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: spacing,
                   mainAxisSpacing: 16,
-                  // poster (2:3) + text lines under it
                   mainAxisExtent: cellWidth * 1.5 + 56,
                 ),
                 itemCount: items.length,

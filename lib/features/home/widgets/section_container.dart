@@ -10,7 +10,6 @@ import 'package:movixapp/features/home/data/media_item.dart';
 
 class SectionContainer extends StatelessWidget {
   final String title;
-  // final Future<List<MediaItem>> Function() fetch;
   final Future<Result<List<MediaItem>>> Function() fetch;
   final bool upcoming;
   final VoidCallback? onSeeMore;

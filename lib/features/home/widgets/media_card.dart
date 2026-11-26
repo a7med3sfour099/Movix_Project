@@ -36,9 +36,10 @@ class MediaCard extends StatelessWidget {
       typeName,
       if (item.year.isNotEmpty) item.year,
     ].join(' \u2022 ');
-    // final genre = MoviesApi.genres[item.genreId] ?? '';
     final genre = GenresService.instance.nameFor(item.genreId) ?? '';
-    final banner = (upcoming || MediaPoster.isUnreleased(item.date))
+    // Only titles that really are not out yet get the banner.
+    final banner = (MediaPoster.isUnreleased(item.date) ||
+            (upcoming && item.date.isEmpty))
         ? MediaPoster.bannerFor(item.date)
         : null;
 

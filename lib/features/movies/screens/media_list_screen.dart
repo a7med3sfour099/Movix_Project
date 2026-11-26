@@ -47,14 +47,14 @@ class _MediaListScreenState extends State<MediaListScreen> {
     super.initState();
     final repo = MediaRepository.instance;
     _cubit = MediaGridCubit(
-      (page) => repo.getPage(
-        widget.path,
-        widget.type,
-        page: page,
-        params: widget.upcoming
-            ? MediaRepository.upcomingParams()
-            : widget.params,
-      ),
+      (page) => widget.upcoming
+          ? repo.getUpcomingPage(page)
+          : repo.getPage(
+              widget.path,
+              widget.type,
+              page: page,
+              params: widget.params,
+            ),
     )..load();
   }
 

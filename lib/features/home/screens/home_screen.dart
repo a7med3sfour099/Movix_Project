@@ -193,24 +193,10 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 BlocBuilder<HomeTabCubit, int>(
                   builder: (context, selectedTab) {
-                    final counts = context.watch<CountsCubit>().state;
-                    var all = 'All';
-                    var movies = 'Movies';
-                    var tvShows = 'TV Shows';
-                    var actors = 'Actors';
-                    // if (!counts.loading && counts.error == null) {
-                    //   // all = 'All (${counts.movies + counts.tvShows + counts.actors})';
-                    //   movies = 'Movies (${counts.movies})';
-                    //   tvShows = 'TV Shows (${counts.tvShows})';
-                    //   actors = 'Actors (${counts.actors})';
-                    // }
-
-                    if (counts is CountsLoaded) {
-                      all = 'All (${_formatCount(counts.total)})';
-                      movies = 'Movies (${_formatCount(counts.movies)})';
-                      tvShows = 'TV Shows (${_formatCount(counts.tvShows)})';
-                      actors = 'Actors (${_formatCount(counts.actors)})';
-                    }
+                    const all = 'All';
+                    const movies = 'Movies';
+                    const tvShows = 'TV Shows';
+                    const actors = 'Actors';
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,15 +244,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatCount(int count) {
-  if (count >= 1000) {
-    final k = count / 1000;
-    final suffix = count >= 20000 ? '+' : '';
-    return '${k.toStringAsFixed(k.truncateToDouble() == k ? 0 : 1)}K$suffix';
-  }
-  return '$count';
 }
 
 class _SectionDef {

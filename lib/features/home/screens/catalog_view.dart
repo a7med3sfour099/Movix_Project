@@ -102,11 +102,14 @@ class _CatalogView extends StatelessWidget {
           bloc: GenresService.instance,
           builder: (context, allGenres) {
             final typedGenres = GenresService.instance.forType(type);
-            final genreLabel = filter.genreId == null
+            final picked = filter.genreIds;
+            final genreLabel = picked.isEmpty
                 ? (typedGenres.isEmpty
                     ? 'All Genres'
                     : 'All Genres (${typedGenres.length})')
-                : typedGenres[filter.genreId] ?? 'Genre';
+                : picked.length == 1
+                    ? typedGenres[picked.first] ?? 'Genre'
+                    : '${picked.length} Genres';
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -178,6 +181,9 @@ class _CatalogView extends StatelessWidget {
 
   void _openGenreSheet(BuildContext context, Map<int, String> genres) {
     final filterCubit = context.read<CatalogFilterCubit>();
+    // The picks stay a draft until the user taps Apply.
+    final draft = Set<int>.of(filterCubit.state.genreIds);
+
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: HomeHeader.darkColor,
@@ -186,54 +192,80 @@ class _CatalogView extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (sheetContext) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _sheetTitle('Genres'),
-                const SizedBox(height: 12),
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _genreChoice(
-                          sheetContext,
-                          'All',
-                          null,
-                          filterCubit,
+        return StatefulBuilder(
+          builder: (_, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _sheetTitle('Genres'),
+                    const SizedBox(height: 12),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _genreChoice(
+                              'All',
+                              selected: draft.isEmpty,
+                              onTap: () => setSheetState(draft.clear),
+                            ),
+                            for (final g in genres.entries)
+                              _genreChoice(
+                                g.value,
+                                selected: draft.contains(g.key),
+                                onTap: () => setSheetState(() {
+                                  if (!draft.remove(g.key)) draft.add(g.key);
+                                }),
+                              ),
+                          ],
                         ),
-                        for (final g in genres.entries)
-                          _genreChoice(sheetContext, g.value, g.key, filterCubit),
-                      ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(sheetContext);
+                          filterCubit.applyGenres(draft);
+                          _reloadGrid(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.background,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          'Apply',
+                          style: TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
   Widget _genreChoice(
-    BuildContext sheetContext,
-    String name,
-    int? id,
-    CatalogFilterCubit filterCubit,
-  ) {
-    final selected = filterCubit.state.genreId == id;
+    String name, {
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
-      onTap: () {
-        Navigator.pop(sheetContext);
-        filterCubit.selectGenre(id);
-        _reloadGrid(sheetContext);
-      },
+      onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
