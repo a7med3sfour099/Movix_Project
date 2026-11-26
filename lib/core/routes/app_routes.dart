@@ -7,6 +7,7 @@ import 'package:movixapp/features/auth/views/forget_password_view.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/auth/views/reset_password_view.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
+import 'package:movixapp/features/calendar/views/calendar_view.dart';
 import 'package:movixapp/features/history/views/history_view.dart';
 import 'package:movixapp/features/home/screens/home_screen.dart';
 import 'package:movixapp/features/profile/views/edit_profile_view.dart';
@@ -38,9 +39,10 @@ class AppRoutes {
     '/about-us': (context) => const AboutUsView(),
     '/privacy-policy': (context) => const PrivacyPolicyView(),
     '/terms-and-conditions': (context) => const TermsAndConditionsView(),
+    '/calendar': (context) => const CalendarView(),
     '/history': (context) {
-  final args = ModalRoute.of(context)?.settings.arguments;
-  return HistoryView(initialFilter: args as String?);
-},
+      final args = ModalRoute.of(context)?.settings.arguments;
+      return HistoryView(initialFilter: args as String?);
+    },
   };
 }

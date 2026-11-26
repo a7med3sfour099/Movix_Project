@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movixapp/features/calendar/data/reminder_item.dart';
 import 'package:movixapp/features/home/data/media_item.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +16,7 @@ class ProfileDatabase {
 
     return await openDatabase(
       dbPath,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE profile (
@@ -37,6 +38,19 @@ class ProfileDatabase {
             genre_id INTEGER,
             image TEXT,
             category TEXT NOT NULL
+          )
+        ''');
+        await db.execute('''
+          CREATE TABLE reminders (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            category TEXT NOT NULL,
+            title TEXT NOT NULL,
+            subtitle TEXT NOT NULL,
+            time TEXT NOT NULL,
+            poster_url TEXT,
+            date TEXT NOT NULL,
+            is_enabled INTEGER NOT NULL
           )
         ''');
       },
@@ -67,6 +81,21 @@ class ProfileDatabase {
               genre_id INTEGER,
               image TEXT,
               category TEXT NOT NULL
+            )
+          ''');
+        }
+        if (oldVersion < 4) {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS reminders (
+              id TEXT PRIMARY KEY,
+              user_id TEXT NOT NULL,
+              category TEXT NOT NULL,
+              title TEXT NOT NULL,
+              subtitle TEXT NOT NULL,
+              time TEXT NOT NULL,
+              poster_url TEXT,
+              date TEXT NOT NULL,
+              is_enabled INTEGER NOT NULL
             )
           ''');
         }
@@ -216,6 +245,54 @@ class ProfileDatabase {
           'genre_id': item.genreId,
           'image': item.image,
           'category': 'watchlist',
+        });
+      }
+    });
+  }
+
+  Future<List<ReminderItem>> getReminders(String userId) async {
+    final db = await openMyDatabase();
+    final rows = await db.query(
+      'reminders',
+      where: 'user_id = ?',
+      whereArgs: [userId],
+    );
+
+    return rows.map((row) {
+      return ReminderItem(
+        id: row['id'] as String,
+        category: row['category'] as String? ?? '',
+        title: row['title'] as String? ?? '',
+        subtitle: row['subtitle'] as String? ?? '',
+        time: row['time'] as String? ?? '',
+        posterUrl: row['poster_url'] as String? ?? '',
+        date: DateTime.parse(row['date'] as String),
+        isEnabled: (row['is_enabled'] as int? ?? 1) == 1,
+      );
+    }).toList();
+  }
+
+  Future<void> saveReminders(
+      String userId, List<ReminderItem> reminders) async {
+    final db = await openMyDatabase();
+    await db.transaction((txn) async {
+      await txn.delete(
+        'reminders',
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+
+      for (final item in reminders) {
+        await txn.insert('reminders', {
+          'id': item.id,
+          'user_id': userId,
+          'category': item.category,
+          'title': item.title,
+          'subtitle': item.subtitle,
+          'time': item.time,
+          'poster_url': item.posterUrl,
+          'date': item.date.toIso8601String(),
+          'is_enabled': item.isEnabled ? 1 : 0,
         });
       }
     });
