@@ -25,11 +25,21 @@ class LibraryCubit extends Cubit<LibraryState> {
   final ProfileDatabase _database = ProfileDatabase();
   late final StreamSubscription<User?> _authSubscription;
 
+  void selectTab(int index) {
+    if (state.selectedTab != index) {
+      emit(state.copyWith(selectedTab: index));
+    }
+  }
+
   Future<void> loadLibraryForUser(String userId) async {
     try {
       final lib = await _database.getLibrary(userId);
       if (!isClosed && FirebaseAuth.instance.currentUser?.uid == userId) {
-        emit(LibraryState(favorites: lib.favorites, watchlist: lib.watchlist));
+        emit(LibraryState(
+          favorites: lib.favorites,
+          watchlist: lib.watchlist,
+          selectedTab: state.selectedTab,
+        ));
       }
     } catch (_) {}
   }
