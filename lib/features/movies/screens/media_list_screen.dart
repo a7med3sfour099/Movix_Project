@@ -1,16 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/bottom_bar.dart';
 import 'package:movixapp/Widgets/custom_back_button.dart';
 import 'package:movixapp/core/data/media_repository.dart';
 import 'package:movixapp/features/home/cubit/media_grid_cubit.dart';
-// import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
-// import 'package:movixapp/features/movies/data/movies_api.dart';
+import 'package:movixapp/features/home/cubit/media_grid_state.dart';
+import 'package:movixapp/features/home/widgets/home_header.dart';
+import 'package:movixapp/features/home/widgets/search_bar_field.dart';
 import 'package:movixapp/features/movies/widgets/media_grid_view.dart';
 
 /// Used for: Popular Movies, Popular TV Shows, Top Movies, Top TV Shows,
 /// Trending, Discover, Now Playing ("See More" from the home sections).
-class MediaListScreen extends StatelessWidget {
+/// Has a search bar (by title) and a Sort button that work on the list.
+class MediaListScreen extends StatefulWidget {
   final String title;
   final String path;
   final String type;
@@ -29,30 +34,103 @@ class MediaListScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      // create: (_) {
-      //   final api = MoviesApi();
-      //   return MediaGridCubit(
-      //     (page) => api.getPage(
-      //       path,
-      //       type,
-      //       page: page,
-      //       params: upcoming ? MoviesApi.upcomingParams() : params,
-      //     ),
-      //   )..load();
-      // },
-      create: (_) {
-final repo = MediaRepository.instance;
-        return MediaGridCubit(
-          (page) => repo.getPage(
-            path,
-            type,
-            page: page,
-            params: upcoming ? MediaRepository.upcomingParams() : params,
+  State<MediaListScreen> createState() => _MediaListScreenState();
+}
+
+class _MediaListScreenState extends State<MediaListScreen> {
+  late final MediaGridCubit _cubit;
+  final _controller = TextEditingController();
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    final repo = MediaRepository.instance;
+    _cubit = MediaGridCubit(
+      (page) => repo.getPage(
+        widget.path,
+        widget.type,
+        page: page,
+        params: widget.upcoming
+            ? MediaRepository.upcomingParams()
+            : widget.params,
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _controller.dispose();
+    _cubit.close();
+    super.dispose();
+  }
+
+  // Wait until the user stops typing before searching the list.
+  void _onChanged(String text) {
+    _debounce?.cancel();
+    // An empty box has nothing to wait for, so it is applied at once.
+    final delay = text.trim().isEmpty ? Duration.zero : searchDelay;
+    _debounce = Timer(delay, () => _cubit.setQuery(text));
+  }
+
+  // The keyboard search button searches right away.
+  void _onSubmitted(String text) {
+    _debounce?.cancel();
+    _cubit.setQuery(text);
+  }
+
+  void _openSort() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: HomeHeader.darkColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Sort by',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                for (final option in GridSort.values)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      option.label,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    trailing: _cubit.sort == option
+                        ? const Icon(Symbols.check, color: HomeHeader.greenColor)
+                        : null,
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _cubit.setSort(option);
+                    },
+                  ),
+              ],
+            ),
           ),
-        )..load();
-},
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: _cubit,
       child: Scaffold(
         backgroundColor: const Color(0xFF0B1512),
         bottomNavigationBar: const BottomBar(),
@@ -67,7 +145,7 @@ final repo = MediaRepository.instance;
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        title,
+                        widget.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -80,10 +158,49 @@ final repo = MediaRepository.instance;
                   ],
                 ),
               ),
-              Expanded(child: MediaGridView(upcoming: upcoming)),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomSearchBar(
+                        controller: _controller,
+                        hint: 'Search in ${widget.title}',
+                        onChanged: _onChanged,
+                        onSubmitted: _onSubmitted,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    BlocBuilder<MediaGridCubit, MediaGridState>(
+                      builder: (context, state) =>
+                          _sortButton(highlighted: _cubit.sort != GridSort.original),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(child: MediaGridView(upcoming: widget.upcoming)),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _sortButton({required bool highlighted}) {
+    return InkWell(
+      onTap: _openSort,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: HomeHeader.darkColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: highlighted ? HomeHeader.greenColor : const Color(0xFF26322D),
+          ),
+        ),
+        child: const Icon(Symbols.swap_vert, color: HomeHeader.greenColor),
       ),
     );
   }

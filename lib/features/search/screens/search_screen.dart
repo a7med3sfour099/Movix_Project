@@ -32,6 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _controller;
   Timer? _debounce;
 
+
   @override
   void initState() {
     super.initState();
@@ -55,7 +56,9 @@ class _SearchScreenState extends State<SearchScreen> {
   void _onChanged(String text) {
     _debounce?.cancel();
     // Wait until the user stops typing before calling the API.
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    // An empty box has nothing to wait for, so it is applied at once.
+    final delay = text.trim().isEmpty ? Duration.zero : searchDelay;
+    _debounce = Timer(delay, () {
       _cubit.search(text);
     });
   }
@@ -339,7 +342,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _body(SearchState state) {
-    if (state.query.isEmpty) {
+    // Empty box and no filters: history. Empty box + filters: their results.
+    if (state.query.isEmpty && !state.browsing) {
       return _historyView();
     }
 
