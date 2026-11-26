@@ -16,7 +16,7 @@ class ProfileDatabase {
 
     return await openDatabase(
       dbPath,
-      version: 4,
+      version: 5,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE profile (
@@ -50,6 +50,7 @@ class ProfileDatabase {
             time TEXT NOT NULL,
             poster_url TEXT,
             date TEXT NOT NULL,
+            repeat TEXT NOT NULL DEFAULT 'none',
             is_enabled INTEGER NOT NULL
           )
         ''');
@@ -95,9 +96,21 @@ class ProfileDatabase {
               time TEXT NOT NULL,
               poster_url TEXT,
               date TEXT NOT NULL,
+              repeat TEXT NOT NULL DEFAULT 'none',
               is_enabled INTEGER NOT NULL
             )
           ''');
+        }
+        if (oldVersion < 5) {
+          final columns = await db.rawQuery('PRAGMA table_info(reminders)');
+          final hasRepeat = columns.any(
+            (column) => column['name'] == 'repeat',
+          );
+          if (!hasRepeat) {
+            await db.execute(
+              "ALTER TABLE reminders ADD COLUMN repeat TEXT NOT NULL DEFAULT 'none'",
+            );
+          }
         }
       },
     );
@@ -267,6 +280,7 @@ class ProfileDatabase {
         time: row['time'] as String? ?? '',
         posterUrl: row['poster_url'] as String? ?? '',
         date: DateTime.parse(row['date'] as String),
+        repeat: row['repeat'] as String? ?? 'none',
         isEnabled: (row['is_enabled'] as int? ?? 1) == 1,
       );
     }).toList();
@@ -292,6 +306,7 @@ class ProfileDatabase {
           'time': item.time,
           'poster_url': item.posterUrl,
           'date': item.date.toIso8601String(),
+          'repeat': item.repeat,
           'is_enabled': item.isEnabled ? 1 : 0,
         });
       }

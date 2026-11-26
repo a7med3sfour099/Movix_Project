@@ -10,16 +10,22 @@ class ReminderCardWidget extends StatelessWidget {
   final ReminderItem item;
   final ValueChanged<bool> onToggle;
   final VoidCallback onDelete;
+  final VoidCallback onEdit;
 
   const ReminderCardWidget({
     super.key,
     required this.item,
     required this.onToggle,
     required this.onDelete,
+    required this.onEdit,
   });
 
   @override
   Widget build(BuildContext context) {
+    final repeatLabel = item.repeat == 'daily'
+        ? 'Daily'
+        : (item.repeat == 'weekly' ? 'Weekly' : null);
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -59,32 +65,45 @@ class ReminderCardWidget extends StatelessWidget {
                       weight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (dialogContext) => AreYouSureDialog(
-                            title: 'Remove Reminder?',
-                            description:
-                                'Are you sure you want to remove this reminder for "${item.title}"?',
-                            icon: Symbols.notifications_off,
-                            iconColor: const Color(0xFFE53935),
-                            iconBackgroundColor: const Color(0xFF331718),
-                            confirmText: 'Remove',
-                            confirmIcon: Symbols.delete,
-                            confirmColor: const Color(0xFF990000),
-                            onConfirm: () {
-                              Navigator.of(dialogContext).pop();
-                              onDelete();
-                            },
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: onEdit,
+                          child: const Icon(
+                            Symbols.edit,
+                            size: 18,
+                            color: Color(0xFFB4C2BC),
                           ),
-                        );
-                      },
-                      child: const Icon(
-                        Symbols.delete,
-                        size: 18,
-                        color: Color(0xFFB4C2BC),
-                      ),
+                        ),
+                        const Gap(12),
+                        InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (dialogContext) => AreYouSureDialog(
+                                title: 'Remove Reminder?',
+                                description:
+                                    'Are you sure you want to remove this reminder for "${item.title}"?',
+                                icon: Symbols.notifications_off,
+                                iconColor: const Color(0xFFE53935),
+                                iconBackgroundColor: const Color(0xFF331718),
+                                confirmText: 'Remove',
+                                confirmIcon: Symbols.delete,
+                                confirmColor: const Color(0xFF990000),
+                                onConfirm: () {
+                                  Navigator.of(dialogContext).pop();
+                                  onDelete();
+                                },
+                              ),
+                            );
+                          },
+                          child: const Icon(
+                            Symbols.delete,
+                            size: 18,
+                            color: Color(0xFFB4C2BC),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -124,6 +143,23 @@ class ReminderCardWidget extends StatelessWidget {
                           weight: FontWeight.bold,
                           color: AppColors.primary,
                         ),
+                        if (repeatLabel != null) ...[
+                          const Gap(8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1D2C28),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: CustomText(
+                              text: repeatLabel,
+                              size: 10,
+                              weight: FontWeight.w500,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     Transform.scale(
