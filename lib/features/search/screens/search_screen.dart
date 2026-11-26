@@ -55,6 +55,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _onChanged(String text) {
     _debounce?.cancel();
+    if (text.trim().isNotEmpty) _cubit.showLoading(text);
     // Wait until the user stops typing before calling the API.
     // An empty box has nothing to wait for, so it is applied at once.
     final delay = text.trim().isEmpty ? Duration.zero : searchDelay;

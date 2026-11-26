@@ -106,16 +106,39 @@ class MediaRepository {
     );
     return switch (result) {
       Success(:final data) => Success(
-        [...data]..sort((a, b) => a.date.compareTo(b.date)),
+        _onlyUnreleased(data)..sort((a, b) => a.date.compareTo(b.date)),
       ),
       Failure(:final exception) => Failure(exception),
     };
   }
 
-  // Future<Result<int>> getCount(String path) => _api.get<int>(
-  //   path,
-  //   parser: (json) => (json as Map<String, dynamic>)['total_results'] as int,
-  // );
+  /// One page of the full Upcoming list ("See More").
+  /// Uses the same discover query as the home section, never movie/upcoming,
+  /// because that endpoint also returns movies that are already out.
+  Future<Result<PageResult>> getUpcomingPage(int page) async {
+    final result = await getPage(
+      ApiEndpoints.discoverMovies,
+      'movie',
+      page: page,
+      params: upcomingParams(),
+    );
+    return switch (result) {
+      Success(:final data) => Success((
+        items: _onlyUnreleased(data.items),
+        hasMore: data.hasMore,
+      )),
+      Failure(:final exception) => Failure(exception),
+    };
+  }
+
+  /// Keeps only movies whose release date is today or later.
+  /// A safety net: TMDB sometimes lists movies that are already released.
+  List<MediaItem> _onlyUnreleased(List<MediaItem> items) {
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    return items
+        .where((i) => i.date.isNotEmpty && i.date.compareTo(today) >= 0)
+        .toList();
+  }
 
   Future<Result<int>> getCount(String path, {Map<String, dynamic>? query}) =>
       _api.get<int>(

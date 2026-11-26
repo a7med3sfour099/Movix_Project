@@ -1,21 +1,21 @@
 enum CatalogSort { popular, topRated, newest }
 
 class CatalogFilterState {
-  final int? genreId;
+  /// The genres picked in the sheet (empty = all genres).
+  final Set<int> genreIds;
   final CatalogSort sort;
 
   const CatalogFilterState({
-    this.genreId,
+    this.genreIds = const {},
     this.sort = CatalogSort.popular,
   });
 
   CatalogFilterState copyWith({
-    int? genreId,
-    bool clearGenre = false,
+    Set<int>? genreIds,
     CatalogSort? sort,
   }) =>
       CatalogFilterState(
-        genreId: clearGenre ? null : (genreId ?? this.genreId),
+        genreIds: genreIds ?? this.genreIds,
         sort: sort ?? this.sort,
       );
 
@@ -28,7 +28,8 @@ class CatalogFilterState {
       CatalogSort.newest => '$dateField.desc',
     };
     return {
-      if (genreId != null) 'with_genres': genreId,
+      // "|" means OR: titles from any of the picked genres.
+      if (genreIds.isNotEmpty) 'with_genres': genreIds.join('|'),
       'sort_by': sortBy,
       if (sort == CatalogSort.topRated) 'vote_count.gte': 300,
       if (sort == CatalogSort.newest) '$dateField.lte': today,

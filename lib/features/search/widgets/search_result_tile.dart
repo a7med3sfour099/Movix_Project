@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:movixapp/Widgets/media_poster.dart';
 import 'package:movixapp/features/actors/screens/actor_profile_screen.dart';
 import 'package:movixapp/features/details/views/media_details_view.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
@@ -160,7 +161,23 @@ class SearchResultTile extends StatelessWidget {
         color: const Color(0xFF5C6B65),
       ),
     );
-
+    // Same upcoming look as Home: gray poster + banner
+    if (!result.isPerson) {
+      final banner = MediaPoster.isUnreleased(result.date)
+          ? MediaPoster.bannerFor(result.date)
+          : null;
+      return SizedBox(
+        width: width,
+        height: height,
+        child: MediaPoster(
+          url: result.image,
+          bannerText: banner,
+          radius: 10,
+          compact: true,
+          placeholderIcon: Symbols.movie,
+        ),
+      );
+    }
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: result.image == null

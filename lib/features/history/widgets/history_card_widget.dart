@@ -135,7 +135,6 @@ class HistoryCard extends StatelessWidget {
                       },
                       child: CircleAvatar(
                         radius: 20,
-                        // backgroundColor: Color(0xff182120),
                         backgroundColor: Colors.redAccent.withOpacity(0.15),
                         child: const Icon(
                           Symbols.delete,

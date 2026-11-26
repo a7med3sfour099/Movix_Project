@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 
@@ -59,12 +60,23 @@ class _TrailerPlayerState extends State<TrailerPlayer> {
             border: Border.all(color: const Color(0xFF1E2E29)),
           ),
           clipBehavior: Clip.antiAlias,
-          child: YoutubePlayerScaffold(
-            controller: _controller,
-            aspectRatio: 16 / 9,
-            backgroundColor: HomeHeader.darkColor,
-            builder: (context, player) => player,
-          ),
+            child: YoutubePlayerScaffold(
+              controller: _controller,
+              aspectRatio: 16 / 9,
+              backgroundColor: HomeHeader.darkColor,
+              // Keep the app portrait-only, even inside and after fullscreen
+              defaultOrientations: const [
+                DeviceOrientation.portraitUp,
+                DeviceOrientation.portraitDown,
+              ],
+              fullscreenOrientations: const [
+                DeviceOrientation.portraitUp,
+                DeviceOrientation.portraitDown,
+              ],
+              // Stops accidental fullscreen from a vertical drag on the player
+              enableFullScreenOnVerticalDrag: false,
+              builder: (context, player) => player,
+            ),
         ),
         const SizedBox(height: 8),
         Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:movixapp/core/utils/count_format.dart';
 import 'package:movixapp/features/home/cubit/count_cubit.dart';
 import 'package:movixapp/features/home/cubit/count_state.dart';
 import 'package:movixapp/features/home/screens/catalog_view.dart';
@@ -20,24 +21,15 @@ class ExploreVaults extends StatelessWidget {
           CountsLoaded(:final movies, :final tvShows, :final actors) =>
             _buildVaults(
               context,
-              '${_formatCount(movies)} items',
-              '${_formatCount(tvShows)} items',
-              '${_formatCount(actors)} Actors',
+              '${CountFormat.vault(movies)} items',
+              '${CountFormat.vault(tvShows)} items',
+              '${CountFormat.vault(actors)} items',
             ),
           CountsFailure() => _buildVaults(context, 'Error', 'Error', 'Error'),
         };
       },
     );
   }
-  String _formatCount(int count) {
-    if (count >= 1000) {
-      final k = count / 1000;
-      final suffix = count >= 20000 ? '+' : '';
-      return '${k.toStringAsFixed(k.truncateToDouble() == k ? 0 : 1)}K$suffix';
-    }
-    return '$count';
-  }
-
   Widget _buildVaults(
     BuildContext context,
     String moviesText,
@@ -47,29 +39,13 @@ class ExploreVaults extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Explore Vaults',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            InkWell(
-              onTap: () {},
-              child: const Text(
-                'View All',
-                style: TextStyle(
-                  color: HomeHeader.greenColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+        const Text(
+          'Explore Vaults',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         const SizedBox(height: 12),
         SingleChildScrollView(
@@ -89,6 +65,7 @@ class ExploreVaults extends StatelessWidget {
                 tvText,
                 onTap: () => open(context, 'Tv Shows', 'tv'),
               ),
+              const SizedBox(width: 12),
               vaultCard(
                 Symbols.person,
                 'Actors',

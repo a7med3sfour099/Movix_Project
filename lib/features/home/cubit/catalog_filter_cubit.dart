@@ -4,8 +4,9 @@ import 'package:movixapp/features/home/cubit/catalog_filter_state.dart';
 class CatalogFilterCubit extends Cubit<CatalogFilterState> {
   CatalogFilterCubit() : super(const CatalogFilterState());
 
-  void selectGenre(int? id) {
-    emit(state.copyWith(genreId: id, clearGenre: id == null));
+  /// Called when the user taps Apply in the genres sheet.
+  void applyGenres(Set<int> ids) {
+    emit(state.copyWith(genreIds: Set.of(ids)));
   }
 
   void selectSort(CatalogSort sort) {

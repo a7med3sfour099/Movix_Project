@@ -70,10 +70,18 @@ class MediaGridCubit extends Cubit<MediaGridState> {
     }
   }
 
+  // Shows the loading effect while the debounce is still waiting
+  void showSearching() {
+    final current = state;
+    if (current is MediaGridLoaded) emit(current.copyWith(searching: true));
+  }
+
   void setQuery(String text) {
     _query = text.trim();
     final current = state;
-    if (current is MediaGridLoaded) emit(current.copyWith(query: _query));
+    if (current is MediaGridLoaded) {
+      emit(current.copyWith(query: _query, searching: false));
+    }
     _fillIfNeeded();
   }
 
