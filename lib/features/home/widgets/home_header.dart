@@ -8,12 +8,14 @@ class HomeHeader extends StatelessWidget {
   final String imagePath;
   final VoidCallback onSettingsTap;
   final VoidCallback onProfileTap;
+  final VoidCallback? onCalendarTap;
 
   const HomeHeader({
     super.key,
     required this.imagePath,
     required this.onSettingsTap,
     required this.onProfileTap,
+    this.onCalendarTap,
   });
 
   static const Color greenColor = Color(0xFF4FE4A6);
@@ -32,6 +34,16 @@ class HomeHeader extends StatelessWidget {
           weight: FontWeight.w800,
         ),
         const Spacer(),
+
+        IconButton(
+          onPressed: onCalendarTap,
+          icon: const Icon(
+            Symbols.calendar_month,
+            color: AppColors.primary,
+            size: 24,
+            weight: 200,
+          ),
+        ),
 
         IconButton(
           onPressed: onSettingsTap,
@@ -62,7 +74,6 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  //
   Widget buildImage() {
     if (imagePath == '') {
       return const Icon(Icons.person, color: AppColors.primary, size: 22);

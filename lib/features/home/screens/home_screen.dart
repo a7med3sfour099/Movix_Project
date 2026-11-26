@@ -178,6 +178,9 @@ class HomeScreen extends StatelessWidget {
                   builder: (context, imagePath) {
                     return HomeHeader(
                       imagePath: imagePath,
+                      onCalendarTap: () {
+                        Navigator.pushNamed(context, '/calendar');
+                      },
                       onSettingsTap: () {
                         Navigator.push(
                           context,
