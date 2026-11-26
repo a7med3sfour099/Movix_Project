@@ -75,6 +75,16 @@ class CalendarCubit extends Cubit<CalendarState> {
     _persist();
   }
 
+  void updateReminder(ReminderItem item) {
+    final updated = state.reminders.map((r) {
+      if (r.id == item.id) return item;
+      return r;
+    }).toList();
+    updated.sort((a, b) => a.date.compareTo(b.date));
+    emit(state.copyWith(reminders: updated));
+    _persist();
+  }
+
   void toggleReminder(String id) {
     final updated = state.reminders.map((r) {
       if (r.id == id) {

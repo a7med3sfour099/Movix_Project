@@ -9,6 +9,7 @@ import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/features/calendar/cubit/calendar_cubit.dart';
 import 'package:movixapp/features/calendar/cubit/calendar_state.dart';
 import 'package:movixapp/features/calendar/data/reminder_item.dart';
+import 'package:movixapp/features/calendar/views/add_reminder_view.dart';
 import 'package:movixapp/features/calendar/widgets/calendar_month_card.dart';
 import 'package:movixapp/features/calendar/widgets/reminder_card_widget.dart';
 
@@ -59,6 +60,40 @@ class CalendarView extends StatelessWidget {
     }
   }
 
+  Set<int> _calculateReminderDays(
+      DateTime currentMonth, List<ReminderItem> reminders) {
+    final days = <int>{};
+    final lastDayOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0);
+
+    for (final r in reminders) {
+      if (!r.isEnabled) continue;
+
+      final startDate = DateTime(r.date.year, r.date.month, r.date.day);
+
+      if (r.repeat == 'none') {
+        if (r.date.year == currentMonth.year &&
+            r.date.month == currentMonth.month) {
+          days.add(r.date.day);
+        }
+      } else if (r.repeat == 'daily') {
+        for (var day = 1; day <= lastDayOfMonth.day; day++) {
+          final d = DateTime(currentMonth.year, currentMonth.month, day);
+          if (!d.isBefore(startDate)) {
+            days.add(day);
+          }
+        }
+      } else if (r.repeat == 'weekly') {
+        for (var day = 1; day <= lastDayOfMonth.day; day++) {
+          final d = DateTime(currentMonth.year, currentMonth.month, day);
+          if (d.weekday == startDate.weekday && !d.isBefore(startDate)) {
+            days.add(day);
+          }
+        }
+      }
+    }
+    return days;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -70,14 +105,9 @@ class CalendarView extends StatelessWidget {
             builder: (context, state) {
               final cubit = context.read<CalendarCubit>();
 
-              final reminderDays = state.reminders
-                  .where((r) =>
-                      r.date.year == state.currentMonth.year &&
-                      r.date.month == state.currentMonth.month)
-                  .map((r) => r.date.day)
-                  .toSet();
+              final reminderDays =
+                  _calculateReminderDays(state.currentMonth, state.reminders);
 
-              // Group reminders by date (nearest day order)
               final sortedReminders = List<ReminderItem>.from(state.reminders)
                 ..sort((a, b) => a.date.compareTo(b.date));
 
@@ -211,6 +241,17 @@ class CalendarView extends StatelessWidget {
                                             cubit.toggleReminder(item.id),
                                         onDelete: () =>
                                             cubit.removeReminder(item.id),
+                                        onEdit: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            backgroundColor: Colors.transparent,
+                                            builder: (_) => AddReminderView(
+                                              calendarCubit: cubit,
+                                              initialItem: item,
+                                            ),
+                                          );
+                                        },
                                       );
                                     },
                                   ),
@@ -229,10 +270,11 @@ class CalendarView extends StatelessWidget {
                       text: 'Add Reminder',
                       backgroundColor: AppColors.primary,
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Add Reminder tapped'),
-                          ),
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => AddReminderView(calendarCubit: cubit),
                         );
                       },
                       child: const Row(
