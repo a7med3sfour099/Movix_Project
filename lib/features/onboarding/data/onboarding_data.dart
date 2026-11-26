@@ -1,6 +1,6 @@
 import 'package:movixapp/features/details/data/cast_member.dart';
 import 'package:movixapp/features/details/data/media_details.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 
 /// The movies shown in the onboarding illustrations.
 /// Everything is fixed and the images come from the app assets,

@@ -1,15 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:movixapp/core/api_config.dart';
-import 'movie_details.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
+import 'package:movixapp/core/network/dio_client.dart';
+import '../../home/data/movie_details.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 
 class MoviesApi {
-  final dio = Dio(
-    BaseOptions(
-      baseUrl: ApiConfig.baseUrl,
-      headers: {'Authorization': 'Bearer ${ApiConfig.token}'},
-    ),
-  );
+  final Dio dio = DioClient.instance.dio;
   static Map<int, String> genres = {};
 
   Future<void> loadGenres() async {

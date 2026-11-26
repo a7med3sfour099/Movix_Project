@@ -5,10 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/bottom_bar.dart';
 import 'package:movixapp/Widgets/custom_back_button.dart';
+import 'package:movixapp/core/data/media_repository.dart';
+import 'package:movixapp/features/home/cubit/media_grid_cubit.dart';
+import 'package:movixapp/features/home/cubit/media_grid_state.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/home/widgets/search_bar_field.dart';
-import 'package:movixapp/features/movies/cubit/media_grid_cubit.dart';
-import 'package:movixapp/features/movies/data/movies_api.dart';
 import 'package:movixapp/features/movies/widgets/media_grid_view.dart';
 
 /// Used for: Popular Movies, Popular TV Shows, Top Movies, Top TV Shows,
@@ -44,13 +45,15 @@ class _MediaListScreenState extends State<MediaListScreen> {
   @override
   void initState() {
     super.initState();
-    final api = MoviesApi();
+    final repo = MediaRepository.instance;
     _cubit = MediaGridCubit(
-      (page) => api.getPage(
+      (page) => repo.getPage(
         widget.path,
         widget.type,
         page: page,
-        params: widget.upcoming ? MoviesApi.upcomingParams() : widget.params,
+        params: widget.upcoming
+            ? MediaRepository.upcomingParams()
+            : widget.params,
       ),
     )..load();
   }
@@ -108,7 +111,7 @@ class _MediaListScreenState extends State<MediaListScreen> {
                       option.label,
                       style: const TextStyle(color: Colors.white),
                     ),
-                    trailing: _cubit.state.sort == option
+                    trailing: _cubit.sort == option
                         ? const Icon(Symbols.check, color: HomeHeader.greenColor)
                         : null,
                     onTap: () {
@@ -160,7 +163,7 @@ class _MediaListScreenState extends State<MediaListScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: SearchBarField(
+                      child: CustomSearchBar(
                         controller: _controller,
                         hint: 'Search in ${widget.title}',
                         onChanged: _onChanged,
@@ -169,9 +172,8 @@ class _MediaListScreenState extends State<MediaListScreen> {
                     ),
                     const SizedBox(width: 10),
                     BlocBuilder<MediaGridCubit, MediaGridState>(
-                      builder: (context, state) => _sortButton(
-                        highlighted: state.sort != GridSort.original,
-                      ),
+                      builder: (context, state) =>
+                          _sortButton(highlighted: _cubit.sort != GridSort.original),
                     ),
                   ],
                 ),

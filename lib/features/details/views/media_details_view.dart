@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/Widgets/details_scaffold.dart';
 import 'package:movixapp/Widgets/underline_tabs.dart';
 import 'package:movixapp/features/details/cubit/media_details_cubit.dart';
+import 'package:movixapp/features/details/cubit/media_details_state.dart';
 import 'package:movixapp/features/details/data/media_details.dart';
 import 'package:movixapp/features/details/widgets/cast_grid.dart';
 import 'package:movixapp/features/details/widgets/media_about_tab.dart';
@@ -11,11 +12,11 @@ import 'package:movixapp/features/details/widgets/media_header.dart';
 import 'package:movixapp/features/details/widgets/trailer_section.dart';
 import 'package:movixapp/features/details/widgets/watch_section.dart';
 
-class MediaDetailsScreen extends StatelessWidget {
+class MediaDetailsView extends StatelessWidget {
   final int id;
   final String type;
 
-  const MediaDetailsScreen({super.key, required this.id, this.type = 'movie'});
+  const MediaDetailsView({super.key, required this.id, this.type = 'movie'});
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +56,9 @@ class _DetailsBodyState extends State<_DetailsBody> {
       padding: const EdgeInsets.only(bottom: 24),
       children: [
         MediaHeader(details: details),
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: MediaActionBar(),
+          child: MediaActionBar(details: details),
         ),
         TrailerSection(videoKey: details.trailerKey),
         WatchSection(details: details),

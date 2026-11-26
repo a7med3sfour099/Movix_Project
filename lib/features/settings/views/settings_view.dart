@@ -33,7 +33,12 @@ class SettingsView extends StatelessWidget {
               children: [
                 Text("Profile", style: SettingsTextStyles.sectionTitle),
                 _tileGap,
-                SettingsTile(title: "Edit Profile", onTap: () {}),
+                SettingsTile(
+                  title: "Edit Profile",
+                  onTap: () {
+                    Navigator.pushNamed(context, '/edit-profile');
+                  },
+                ),
                 _tileGap,
                 SettingsTile(
                   title: "Change Password",
@@ -81,16 +86,16 @@ class SettingsView extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 15),
-Center(
-  child: LogoutButton(
-    onPressed: () {
-      showDialog(
-        context: context,
-        builder: (dialogContext) => const LogoutDialog(),
-      );
-    },
-  ),
-),
+                Center(
+                  child: LogoutButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) => const LogoutDialog(),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

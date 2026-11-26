@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:movixapp/Widgets/custom_text.dart';
+import 'package:movixapp/core/constants/app_colors.dart';
 
 class HomeHeader extends StatelessWidget {
   final String imagePath;
@@ -23,13 +25,11 @@ class HomeHeader extends StatelessWidget {
       children: [
         Image.asset('assets/images/logo.png', width: 36, height: 36),
         const SizedBox(width: 8),
-        const Text(
-          'MOVIX',
-          style: TextStyle(
-            color: greenColor,
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-          ),
+        CustomText(
+          text: 'Movix'.toUpperCase(),
+          color: AppColors.primary,
+          size: 22,
+          weight: FontWeight.w800,
         ),
         const Spacer(),
 
@@ -37,7 +37,7 @@ class HomeHeader extends StatelessWidget {
           onPressed: onSettingsTap,
           icon: const Icon(
             Symbols.settings,
-            color: greenColor,
+            color: AppColors.primary,
             size: 26,
             weight: 200,
           ),
@@ -52,8 +52,8 @@ class HomeHeader extends StatelessWidget {
             padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: darkColor,
-              border: Border.all(color: greenColor, width: 1),
+              color: AppColors.quaternary,
+              border: Border.all(color: AppColors.primary, width: 1),
             ),
             child: ClipOval(child: buildImage()),
           ),
@@ -65,7 +65,7 @@ class HomeHeader extends StatelessWidget {
   //
   Widget buildImage() {
     if (imagePath == '') {
-      return const Icon(Icons.person, color: greenColor, size: 22);
+      return const Icon(Icons.person, color: AppColors.primary, size: 22);
     }
     return Image.file(File(imagePath), fit: BoxFit.cover);
   }

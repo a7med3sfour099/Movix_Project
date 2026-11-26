@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:movixapp/core/api_config.dart';
+import 'package:movixapp/core/network/dio_client.dart';
 import 'package:movixapp/features/actors/data/actor.dart';
 import 'package:movixapp/features/actors/data/person_details.dart';
 
@@ -10,12 +10,8 @@ class ActorsApi {
   static const trendingDayPath = '/trending/person/day';
   static const trendingWeekPath = '/trending/person/week';
 
-  final dio = Dio(
-    BaseOptions(
-      baseUrl: ApiConfig.baseUrl,
-      headers: {'Authorization': 'Bearer ${ApiConfig.token}'},
-    ),
-  );
+  final Dio dio = DioClient.instance.dio;
+
   /*TMDB doesn't support gender filtering,so I filter actors here and keep loading more pages
   if needed to get enough results
   */
@@ -49,6 +45,7 @@ class ActorsApi {
     }
     return (items: items, hasMore: hasMore, nextPage: current);
   }
+
   Future<PersonDetails> getPerson(int id) async {
     final response = await dio.get(
       '/person/$id',

@@ -7,7 +7,9 @@ import 'package:movixapp/features/auth/views/forget_password_view.dart';
 import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/auth/views/reset_password_view.dart';
 import 'package:movixapp/features/auth/views/signup_view.dart';
+import 'package:movixapp/features/history/views/history_view.dart';
 import 'package:movixapp/features/home/screens/home_screen.dart';
+import 'package:movixapp/features/profile/views/edit_profile_view.dart';
 import 'package:movixapp/features/settings/views/about_us_view.dart';
 import 'package:movixapp/features/settings/views/privacy_policy_view.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
@@ -31,9 +33,14 @@ class AppRoutes {
       create: (_) => ChangePasswordCubit(),
       child: const ChangePassword(),
     ),
+    '/edit-profile': (context) => const EditProfileView(),
     '/setting': (context) => const SettingsView(),
     '/about-us': (context) => const AboutUsView(),
     '/privacy-policy': (context) => const PrivacyPolicyView(),
     '/terms-and-conditions': (context) => const TermsAndConditionsView(),
+    '/history': (context) {
+  final args = ModalRoute.of(context)?.settings.arguments;
+  return HistoryView(initialFilter: args as String?);
+},
   };
 }

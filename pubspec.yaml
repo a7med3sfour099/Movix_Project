@@ -40,6 +40,7 @@ dependencies:
   google_sign_in: ^7.2.0
   flutter_facebook_auth: ^7.3.2
   app_links: ^7.2.2
+  internet_connection_checker_plus: ^3.1.2
 
   # Firebase
   firebase_core: ^5.0.0
@@ -54,12 +55,12 @@ dependencies:
   # Responsiveness
   responsive_sizer: ^3.3.1
   responsive_builder: ^0.7.1
-  internet_connection_checker_plus: ^3.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -68,8 +69,13 @@ flutter:
     - assets/images/
     - assets/auth_assets/
     - assets/lottie/
+    - env.json
 
   fonts:
     - family: "JakartaSans"
       fonts:
         - asset: assets/fonts/PlusJakartaSans-VariableFont_wght.ttf
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon/app_icon.png"

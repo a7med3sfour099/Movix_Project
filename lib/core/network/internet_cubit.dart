@@ -31,12 +31,20 @@ class InternetState {
 class InternetCubit extends Cubit<InternetState> {
   InternetCubit() : super(const InternetState()) {
     _checkInitialConnection();
-
     _subscription = InternetConnection().onStatusChange.listen((status) {
-      if (status == InternetStatus.disconnected) {
-        emit(state.copyWith(isConnected: false));
-      }
-    });
+  if (status == InternetStatus.disconnected) {
+    emit(state.copyWith(
+      isConnected: false,
+      isLoading: false,
+    ));
+  } else if (status == InternetStatus.connected) {
+    emit(state.copyWith(
+      isConnected: true,
+      isLoading: false,
+      clearError: true,
+    ));
+  }
+});
   }
 
   late final StreamSubscription<InternetStatus> _subscription;

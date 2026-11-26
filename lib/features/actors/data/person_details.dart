@@ -1,5 +1,5 @@
 import 'package:movixapp/core/api_config.dart';
-import 'package:movixapp/features/movies/data/media_item.dart';
+import 'package:movixapp/features/home/data/media_item.dart';
 
 class PersonDetails {
   final int id;

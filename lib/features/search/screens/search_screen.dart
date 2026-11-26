@@ -115,7 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
               _header(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-                child: SearchBarField(
+                child: CustomSearchBar(
                   controller: _controller,
                   hint: 'Search movies, TV shows, actors...',
                   onChanged: _onChanged,

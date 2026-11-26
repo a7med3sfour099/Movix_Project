@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/services/app_navigation_service.dart';
 import 'package:movixapp/core/utils/auth_validators.dart';
-import 'package:movixapp/features/auth/cubit/forget_password_cubit.dart';
 import 'package:movixapp/features/auth/cubit/forget_password_state.dart';
 import 'package:movixapp/features/auth/cubit/reset_password_cubit.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';

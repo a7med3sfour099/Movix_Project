@@ -1,4 +1,4 @@
-import 'package:movixapp/core/api_config.dart';
+import 'package:movixapp/core/network/tmdb_config.dart';
 import 'package:movixapp/core/rating_calc.dart';
 
 class Movie {
@@ -39,7 +39,7 @@ class Movie {
 
     // img
     final poster = json['poster_path'];
-    final image = poster == null ? null : '${ApiConfig.imageBaseUrl}/w780$poster';
+    final image = poster == null ? null : TmdbConfig.posterUrl(poster as String, size: 'w780');
     // Trailer
     String? trailer;
     final videos = json['videos']?['results'] as List? ?? [];

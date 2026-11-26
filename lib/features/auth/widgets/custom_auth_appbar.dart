@@ -20,7 +20,10 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 0,
+      scrolledUnderElevation: 0,
       backgroundColor: AppColors.background,
+      surfaceTintColor: Colors.transparent,
+      automaticallyImplyLeading: false,
       leading: back == true
           ? Padding(
               padding: const EdgeInsets.all(10.0),
@@ -34,7 +37,11 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                     Icons.arrow_back,
                     color: AppColors.secondary,
                   ),
-                  onPressed: onPressed,
+                  onPressed:
+                      onPressed ??
+                      () {
+                        Navigator.pop(context);
+                      },
                 ),
               ),
             )
