@@ -8,6 +8,8 @@ import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/library/cubit/library_cubit.dart';
 import 'package:movixapp/features/details/widgets/rating_dialog.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movixapp/features/details/data/rating_database.dart';
 
 extension MediaDetailsX on MediaDetails {
   MediaItem toMediaItem() {
@@ -50,13 +52,34 @@ class MediaActionBar extends StatelessWidget {
               icon: Symbols.star,
               label: 'Rate Now',
               onTap: () async {
+                final userId = FirebaseAuth.instance.currentUser?.uid;
+                final ratingDb = RatingDatabase();
+                var oldRating = 0;
+                if (userId != null) {
+                  oldRating =
+                  await ratingDb.getRating(userId, details.id, details.type);
+                }
+                if (!context.mounted) return;
+
                 final rating = await showDialog<int>(
                   context: context,
                   barrierDismissible: true,
-                  builder: (_) => RatingDialog(mediaType: details.type),
+                  builder: (_) => RatingDialog(
+                    mediaType: details.type,
+                    initialRating: oldRating,
+                  ),
                 );
 
-                if (rating != null && context.mounted) {
+                if (rating == null) return;
+                if (userId != null) {
+                  await ratingDb.saveRating(
+                    userId,
+                    details.id,
+                    details.type,
+                    rating,
+                  );
+                }
+                if (context.mounted) {
                   showCustomSnackBar(
                     context,
                     message: 'Selected rating: $rating / 5',

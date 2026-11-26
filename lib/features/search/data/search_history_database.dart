@@ -1,32 +1,54 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:movixapp/features/search/data/search_result.dart';
 
 class SearchHistoryDatabase {
+  // Guests share one bucket
+  String get _userId => FirebaseAuth.instance.currentUser?.uid ?? 'guest';
+
   Future<Database> openMyDatabase() async {
     String folder = await getDatabasesPath();
     String dbPath = join(folder, 'search_history.db');
 
     return await openDatabase(
       dbPath,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
-        await db.execute(
-          'CREATE TABLE searches (text TEXT PRIMARY KEY, time INTEGER)',
-        );
-        await db.execute(
-          'CREATE TABLE viewed (key TEXT PRIMARY KEY, id INTEGER, type TEXT, '
-              'title TEXT, image TEXT, year INTEGER, rating REAL, '
-              'department TEXT, gender INTEGER, time INTEGER)',
-        );
+        await _createTables(db);
       },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('DROP TABLE IF EXISTS searches');
+          await db.execute('DROP TABLE IF EXISTS viewed');
+          await _createTables(db);
+        }
+      },
+    );
+  }
+  Future<void> _createTables(Database db) async {
+    await db.execute(
+      'CREATE TABLE searches (user_id TEXT, text TEXT, time INTEGER, '
+          'PRIMARY KEY (user_id, text))',
+    );
+    await db.execute(
+      'CREATE TABLE viewed (user_id TEXT, key TEXT, id INTEGER, type TEXT, '
+          'title TEXT, image TEXT, year INTEGER, rating REAL, '
+          'department TEXT, gender INTEGER, time INTEGER, '
+          'PRIMARY KEY (user_id, key))',
     );
   }
 
   // Search texts, newest first
   Future<List<String>> getSearches() async {
     Database db = await openMyDatabase();
-    List<Map> rows = await db.query('searches', orderBy: 'time DESC', limit: 15);
+    List<Map> rows = await db.query(
+      'searches',
+      where: 'user_id = ?',
+      whereArgs: [_userId],
+      orderBy: 'time DESC',
+      limit: 15,
+    );
     return rows.map((row) => row['text'] as String).toList();
   }
 
@@ -35,20 +57,28 @@ class SearchHistoryDatabase {
     Database db = await openMyDatabase();
     await db.insert(
       'searches',
-      {'text': text, 'time': DateTime.now().millisecondsSinceEpoch},
+      {
+        'user_id': _userId,
+        'text': text,
+        'time': DateTime.now().millisecondsSinceEpoch,
+      },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-
   Future<void> clearSearches() async {
     Database db = await openMyDatabase();
-    await db.delete('searches');
+    await db.delete('searches', where: 'user_id = ?', whereArgs: [_userId]);
   }
-
   // Viewed movies, shows and actors, newest first
   Future<List<SearchResult>> getViewed() async {
     Database db = await openMyDatabase();
-    List<Map> rows = await db.query('viewed', orderBy: 'time DESC', limit: 10);
+    List<Map> rows = await db.query(
+      'viewed',
+      where: 'user_id = ?',
+      whereArgs: [_userId],
+      orderBy: 'time DESC',
+      limit: 10,
+    );
 
     return rows.map((row) {
       return SearchResult(
@@ -71,6 +101,7 @@ class SearchHistoryDatabase {
     await db.insert(
       'viewed',
       {
+        'user_id': _userId,
         'key': '${result.type}-${result.id}',
         'id': result.id,
         'type': result.type,
@@ -85,9 +116,8 @@ class SearchHistoryDatabase {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-
   Future<void> clearViewed() async {
     Database db = await openMyDatabase();
-    await db.delete('viewed');
+    await db.delete('viewed', where: 'user_id = ?', whereArgs: [_userId]);
   }
 }

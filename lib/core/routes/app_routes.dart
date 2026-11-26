@@ -13,11 +13,13 @@ import 'package:movixapp/features/settings/views/about_us_view.dart';
 import 'package:movixapp/features/settings/views/privacy_policy_view.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
 import 'package:movixapp/features/settings/views/terms_and_conditions_view.dart';
+import 'package:movixapp/features/onboarding/screens/onboarding_screen.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> get routes => {
     '/home': (context) => const HomeScreen(),
     '/login': (context) => const LoginView(),
+    '/onboarding': (context) => const OnboardingScreen(),
     '/sign-up': (context) => const SignupView(),
     '/forget-password': (context) => BlocProvider(
       create: (_) => ForgetPasswordCubit(),

@@ -6,6 +6,10 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:movixapp/features/history/data/watched_database.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:movixapp/features/details/data/rating_database.dart';
+>>>>>>> Stashed changes
 
 class ProfileDatabase {
   String? get _userId => FirebaseAuth.instance.currentUser?.uid;
@@ -16,7 +20,11 @@ class ProfileDatabase {
 
     return await openDatabase(
       dbPath,
+<<<<<<< Updated upstream
       version: 4,
+=======
+      version: 5,
+>>>>>>> Stashed changes
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE profile (
@@ -41,6 +49,10 @@ class ProfileDatabase {
           )
         ''');
         await WatchedDatabase.createTable(db);
+<<<<<<< Updated upstream
+=======
+        await RatingDatabase.createTable(db);
+>>>>>>> Stashed changes
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -75,10 +87,32 @@ class ProfileDatabase {
         if (oldVersion < 4) {
           await WatchedDatabase.createTable(db);
         }
+<<<<<<< Updated upstream
+=======
+        if (oldVersion < 5) {
+          await RatingDatabase.createTable(db);
+        }
+>>>>>>> Stashed changes
       },
     );
   }
-
+  Future<void> _createWatchedTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS watched (
+        user_id TEXT NOT NULL,
+        media_id INTEGER NOT NULL,
+        media_type TEXT NOT NULL,
+        title TEXT,
+        year TEXT,
+        date TEXT,
+        rating TEXT,
+        genre_id INTEGER,
+        image TEXT,
+        watched_at INTEGER,
+        PRIMARY KEY (user_id, media_id, media_type)
+      )
+    ''');
+  }
   Future<String> getImagePath() async {
     final userId = _userId;
     if (userId == null) return '';
