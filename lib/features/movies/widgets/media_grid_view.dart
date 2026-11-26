@@ -65,18 +65,31 @@ class MediaGridView extends StatelessWidget {
               ],
             ),
           ),
-          MediaGridLoaded(:final items, :final loadingMore) =>
-            items.isEmpty
-                ? Center(
-                    child: Text(
-                      emptyMessage,
-                      style: const TextStyle(color: Color(0xFF7C8B85)),
-                    ),
-                  )
-                : _buildGrid(context, items, loadingMore),
+          final MediaGridLoaded loaded => _buildLoaded(context, loaded),
         };
       },
     );
+  }
+
+  Widget _buildLoaded(BuildContext context, MediaGridLoaded state) {
+    final items = state.visible;
+    if (items.isEmpty) {
+      // Still loading more pages that may contain the search text.
+      if (state.query.isNotEmpty && (state.hasMore || state.loadingMore)) {
+        return const Center(
+          child: CircularProgressIndicator(color: HomeHeader.greenColor),
+        );
+      }
+      return Center(
+        child: Text(
+          state.query.isNotEmpty
+              ? 'No results for "${state.query}"'
+              : emptyMessage,
+          style: const TextStyle(color: Color(0xFF7C8B85)),
+        ),
+      );
+    }
+    return _buildGrid(context, items, state.loadingMore);
   }
 
   Widget _buildGrid(

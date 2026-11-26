@@ -44,6 +44,9 @@ class SearchState {
     );
   }
 
+  /// No search text, but filters are on: the list comes from the filters only.
+  bool get browsing => query.isEmpty && filters.activeCount > 0;
+
   /// Genres that really came back from the API.
   List<String> get genreOptions {
     final names = <String>{};
@@ -129,6 +132,11 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> _load(String query) async {
     final id = ++_requestId;
     if (query.isEmpty) {
+      // Filters only (no text): show everything that matches them.
+      if (state.filters.activeCount > 0) {
+        await _discover(id);
+        return;
+      }
       emit(state.copyWith(
         query: '',
         results: const [],
@@ -144,6 +152,28 @@ class SearchCubit extends Cubit<SearchState> {
       if (id != _requestId || isClosed) return;
       final loaded = state.copyWith(results: results, loading: false);
       emit(loaded.copyWith(filters: _cleanFilters(loaded)));
+    } catch (_) {
+      if (id != _requestId || isClosed) return;
+      emit(state.copyWith(
+        loading: false,
+        results: const [],
+        error: 'Something went wrong, try again',
+      ));
+    }
+  }
+
+  Future<void> _discover(int id) async {
+    emit(state.copyWith(
+      query: '',
+      results: const [],
+      loading: true,
+      clearError: true,
+    ));
+    try {
+      final results = await _api.discover(state.filters);
+      if (id != _requestId || isClosed) return;
+      // Filters are NOT cleaned here: the results were made from them.
+      emit(state.copyWith(results: results, loading: false));
     } catch (_) {
       if (id != _requestId || isClosed) return;
       emit(state.copyWith(
@@ -171,8 +201,14 @@ class SearchCubit extends Cubit<SearchState> {
   void applyFilters(SearchFilters filters) {
     final typeChanged = filters.type != state.filters.type;
     emit(state.copyWith(filters: filters));
+
+    // Empty search box: Apply shows the matching titles right away.
+    if (state.query.isEmpty) {
+      _load('');
+      return;
+    }
     // Movies / TV Shows use a different endpoint, the rest is filtered locally.
-    if (typeChanged && state.query.isNotEmpty) _load(state.query);
+    if (typeChanged) _load(state.query);
   }
 
   void applySort(SearchSort sort, bool ascending) {
