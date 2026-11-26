@@ -27,6 +27,12 @@ class LibraryCubit extends Cubit<LibraryState> {
   final WatchedDatabase _watchedDatabase = WatchedDatabase();
   late final StreamSubscription<User?> _authSubscription;
 
+  void selectTab(int index) {
+    if (state.selectedTab != index) {
+      emit(state.copyWith(selectedTab: index));
+    }
+  }
+
   Future<void> loadLibraryForUser(String userId) async {
     try {
       final lib = await _database.getLibrary(userId);
@@ -43,6 +49,7 @@ class LibraryCubit extends Cubit<LibraryState> {
           favorites: lib.favorites,
           watchlist: lib.watchlist,
           history: watched,
+          selectedTab: state.selectedTab,
         ));
       }
     } catch (_) {}

@@ -24,7 +24,7 @@ class BottomBar extends StatelessWidget {
   static Route<void> _routeFor(
     int index,
     SearchType searchType,
-    LibraryTab libraryTab,
+    LibraryTab? libraryTab,
     MediaFilter libraryFilter,
   ) {
     switch (index) {
@@ -51,7 +51,7 @@ class BottomBar extends StatelessWidget {
       BuildContext context,
       int index, {
         SearchType searchType = SearchType.all,
-        LibraryTab libraryTab = LibraryTab.favorites,
+        LibraryTab? libraryTab,
         MediaFilter libraryFilter = MediaFilter.all,
       }) {
     final cubit = context.read<BottomBarCubit>();
