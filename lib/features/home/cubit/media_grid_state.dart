@@ -26,6 +26,8 @@ class MediaGridLoaded extends MediaGridState {
   /// Search text (filters the loaded items by title).
   final String query;
   final GridSort sort;
+  /// True while the user is typing and the search has not started yet.
+  final bool searching;
 
   const MediaGridLoaded({
     required this.items,
@@ -33,6 +35,7 @@ class MediaGridLoaded extends MediaGridState {
     this.loadingMore = false,
     this.query = '',
     this.sort = GridSort.original,
+    this.searching = false,
   });
 
   MediaGridLoaded copyWith({
@@ -41,6 +44,7 @@ class MediaGridLoaded extends MediaGridState {
     bool? loadingMore,
     String? query,
     GridSort? sort,
+    bool? searching,
   }) =>
       MediaGridLoaded(
         items: items ?? this.items,
@@ -48,6 +52,7 @@ class MediaGridLoaded extends MediaGridState {
         loadingMore: loadingMore ?? this.loadingMore,
         query: query ?? this.query,
         sort: sort ?? this.sort,
+        searching: searching ?? this.searching,
       );
 
   /// The items after the search text and the sort are applied.

@@ -5,16 +5,16 @@ import 'package:movixapp/Widgets/media_poster.dart';
 import 'package:movixapp/core/utils/date_utils.dart';
 import 'package:movixapp/features/details/data/media_details.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
-
 // Shows the title, backdrop, poster, and key details for movies and TV shows
 class MediaHeader extends StatelessWidget {
   final MediaDetails details;
-
   const MediaHeader({super.key, required this.details});
 
   @override
   Widget build(BuildContext context) {
     final d = details;
+    // Same gray + COMING SOON look as the cards, for unreleased titles
+    final banner = d.isUnreleased ? MediaPoster.bannerFor(d.date) : null;
     final greenLine = [
       d.isTv ? 'TV SHOW' : 'MOVIE',
       if (d.year.isNotEmpty) d.year,
@@ -27,7 +27,7 @@ class MediaHeader extends StatelessWidget {
           height: 330,
           child: Stack(
             children: [
-              _backdrop(d.backdrop),
+              _backdrop(d.backdrop, banner),
               Positioned(
                 left: 16,
                 right: 16,
@@ -39,7 +39,9 @@ class MediaHeader extends StatelessWidget {
                       width: 120,
                       child: MediaPoster(
                         url: d.poster,
+                        bannerText: banner,
                         radius: 16,
+                        compact: true,
                       ),
                     ),
                     const SizedBox(width: 14),
@@ -116,8 +118,7 @@ class MediaHeader extends StatelessWidget {
     );
   }
 
-  Widget _backdrop(String? url) {
-    const dark = ColoredBox(color: Color(0xFF0F1F1A));
+  Widget _backdrop(String? url, String? banner) {
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -126,13 +127,13 @@ class MediaHeader extends StatelessWidget {
           right: 0,
           top: 0,
           height: 230,
-          child: url == null
-              ? dark
-              : Image.network(
-                  url,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stack) => dark,
-                ),
+          // MediaPoster handles the gray look + banner and the dark fallback
+          child: MediaPoster(
+            url: url,
+            bannerText: banner,
+            aspectRatio: 16 / 9,
+            radius: 0,
+          ),
         ),
         const Positioned(
           left: 0,

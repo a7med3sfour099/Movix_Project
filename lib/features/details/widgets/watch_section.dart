@@ -5,20 +5,17 @@ import 'package:movixapp/features/details/data/media_details.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
 
 /// Watch button for movies and series. Watching is not available yet,
-/// so it stays grayscale with a COMING SOON or STAY TUNED banner.
+/// Watch button Always grayscale with a WATCHING SOON banner
 class WatchSection extends StatelessWidget {
   final MediaDetails details;
 
   const WatchSection({super.key, required this.details});
-
-
   static const _accent = HomeHeader.greenColor;
 
   @override
   Widget build(BuildContext context) {
-    final banner = details.isUnreleased
-        ? MediaPoster.bannerFor(details.date)
-        : MediaPoster.stayTuned;
+    // Watching is not available yet for any title, so the text is fixed
+    const banner = MediaPoster.watchSoon;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Column(

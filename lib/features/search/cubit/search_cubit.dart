@@ -128,7 +128,14 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   Future<void> retry() => _load(state.query);
-
+  /// Shows the loading effect right away, while the debounce is still waiting.
+  void showLoading(String text) {
+    emit(state.copyWith(
+      query: text.trim(),
+      loading: true,
+      clearError: true,
+    ));
+  }
   Future<void> _load(String query) async {
     final id = ++_requestId;
     if (query.isEmpty) {

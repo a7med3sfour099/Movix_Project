@@ -57,11 +57,10 @@ class _DetailsBodyState extends State<_DetailsBody> {
       children: [
         MediaHeader(details: details),
         Padding(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: MediaActionBar(details: details),
         ),
         TrailerSection(videoKey: details.trailerKey),
-        WatchSection(details: details),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -71,6 +70,8 @@ class _DetailsBodyState extends State<_DetailsBody> {
             onTap: (i) => setState(() => _tab = i),
           ),
         ),
+        // Watch now sits right after About / Cast
+        WatchSection(details: details),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
           child: _tab == 0

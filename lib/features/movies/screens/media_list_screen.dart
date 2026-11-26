@@ -69,6 +69,7 @@ class _MediaListScreenState extends State<MediaListScreen> {
   // Wait until the user stops typing before searching the list.
   void _onChanged(String text) {
     _debounce?.cancel();
+    if (text.trim().isNotEmpty) _cubit.showSearching();
     // An empty box has nothing to wait for, so it is applied at once.
     final delay = text.trim().isEmpty ? Duration.zero : searchDelay;
     _debounce = Timer(delay, () => _cubit.setQuery(text));

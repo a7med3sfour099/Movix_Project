@@ -24,14 +24,14 @@ class MediaAboutTab extends StatelessWidget {
         Row(
           children: [
             const Text(
-              'Rating',
+              'Average Rating',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(width: 24),
+            const SizedBox(width:20),
             StarRating(score: details.rawRating),
           ],
         ),

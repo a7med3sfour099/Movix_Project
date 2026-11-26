@@ -44,6 +44,11 @@ class MediaGridView extends StatelessWidget {
 
   Widget _buildLoaded(BuildContext context, MediaGridLoaded state) {
     final items = state.visible;
+    if (state.searching) {
+      return const Center(
+        child: CircularProgressIndicator(color: HomeHeader.greenColor),
+      );
+    }
     if (items.isEmpty) {
       if (state.query.isNotEmpty && (state.hasMore || state.loadingMore)) {
         return const Center(

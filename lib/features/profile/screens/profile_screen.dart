@@ -137,7 +137,7 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ProfileSection(
-                    title: 'Watched history',
+                    title: 'Watched History',
                     cards: [
                       ProfileStatCard(
                         title: 'Total Watched Movies',
@@ -169,14 +169,14 @@ class ProfileScreen extends StatelessWidget {
                     title: 'Watchlist',
                     cards: [
                       ProfileStatCard(
-                        title: 'Movies in watchlist',
+                        title: 'Movies in Watchlist',
                         icon: Icons.bookmark_border,
                         count: watchlistMovies,
                         subtitle: 'Saved',
                       ),
                       Gap(12),
                       ProfileStatCard(
-                        title: 'Tv Shows in watchlist',
+                        title: 'Tv Shows in Watchlist',
                         icon: Icons.bookmark_border,
                         count: watchlistTv,
                         subtitle: 'saved',
@@ -185,17 +185,17 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   Gap(12),
                   ProfileSection(
-                    title: 'All-time favorites',
+                    title: 'All-Time Favorites',
                     cards: [
                       ProfileStatCard(
-                        title: 'Favorite \nmovies',
+                        title: 'Favorite \nMovies',
                         icon: Icons.favorite,
                         count: favoriteMovies,
                         subtitle: 'curated',
                       ),
                       Gap(12),
                       ProfileStatCard(
-                        title: 'favorite tv shows',
+                        title: 'Favorite TV Shows',
                         icon: Icons.favorite,
                         count: favoriteTv,
                         subtitle: 'curated',
