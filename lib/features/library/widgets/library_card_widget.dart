@@ -9,15 +9,21 @@ import 'package:movixapp/features/home/widgets/home_header.dart';
 class LibraryCard extends StatelessWidget {
   final MediaItem item;
   final bool isFavoriteTab;
+  final bool isWatched;
   final VoidCallback onDelete;
   final VoidCallback onTap;
+  final VoidCallback onAddToHistory;
+  final VoidCallback onAddToWatchlist;
 
   const LibraryCard({
     super.key,
     required this.item,
     required this.isFavoriteTab,
+    required this.isWatched,
     required this.onDelete,
     required this.onTap,
+    required this.onAddToHistory,
+    required this.onAddToWatchlist,
   });
 
   @override
@@ -57,8 +63,10 @@ class LibraryCard extends StatelessWidget {
                       ),
                     ),
                   Positioned(
-                    top: 8,
-                    right: 8,
+                    top: isFavoriteTab ? null : 8,
+                    bottom: isFavoriteTab ? 8 : null,
+                    right: isFavoriteTab ? null : 8,
+                    left: isFavoriteTab ? 8 : null,
                     child: Container(
                       padding:
                           const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -84,6 +92,28 @@ class LibraryCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (isFavoriteTab)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: onAddToWatchlist,
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: const Color(0xCC131D1B),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: HomeHeader.greenColor),
+                          ),
+                          child: Icon(
+                            Symbols.bookmark,
+                            size: 18,
+                            color: HomeHeader.greenColor,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
               Positioned(
@@ -159,11 +189,7 @@ class LibraryCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Added to history')),
-                );
-              },
+              onPressed: isWatched ? null : onAddToHistory,
               style: ElevatedButton.styleFrom(
                 backgroundColor: HomeHeader.greenColor,
                 foregroundColor: const Color(0xFF0B1512),
@@ -172,10 +198,12 @@ class LibraryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 0,
+                disabledBackgroundColor: const Color(0xFF1E2E29),
+                disabledForegroundColor: const Color(0xFF7C8B85),
               ),
-              child: const Text(
-                'Add to history',
-                style: TextStyle(
+              child: Text(
+                isWatched ? 'In history' : 'Add to history',
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                 ),

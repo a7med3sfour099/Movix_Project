@@ -8,6 +8,8 @@ import 'package:movixapp/features/home/widgets/home_header.dart';
 import 'package:movixapp/features/library/cubit/library_cubit.dart';
 import 'package:movixapp/features/details/widgets/rating_dialog.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movixapp/features/details/data/rating_database.dart';
 
 extension MediaDetailsX on MediaDetails {
   MediaItem toMediaItem() {
@@ -34,6 +36,7 @@ class MediaActionBar extends StatelessWidget {
     final libraryCubit = context.watch<LibraryCubit>();
     final isFavorite = libraryCubit.isFavorite(details.id);
     final isInWatchlist = libraryCubit.isInWatchlist(details.id);
+    final isWatched = libraryCubit.isWatched(details.id, details.type);
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -49,13 +52,34 @@ class MediaActionBar extends StatelessWidget {
               icon: Symbols.star,
               label: 'Rate Now',
               onTap: () async {
+                final userId = FirebaseAuth.instance.currentUser?.uid;
+                final ratingDb = RatingDatabase();
+                var oldRating = 0;
+                if (userId != null) {
+                  oldRating =
+                  await ratingDb.getRating(userId, details.id, details.type);
+                }
+                if (!context.mounted) return;
+
                 final rating = await showDialog<int>(
                   context: context,
                   barrierDismissible: true,
-                  builder: (_) => RatingDialog(mediaType: details.type),
+                  builder: (_) => RatingDialog(
+                    mediaType: details.type,
+                    initialRating: oldRating,
+                  ),
                 );
 
-                if (rating != null && context.mounted) {
+                if (rating == null) return;
+                if (userId != null) {
+                  await ratingDb.saveRating(
+                    userId,
+                    details.id,
+                    details.type,
+                    rating,
+                  );
+                }
+                if (context.mounted) {
                   showCustomSnackBar(
                     context,
                     message: 'Selected rating: $rating / 5',
@@ -92,8 +116,11 @@ class MediaActionBar extends StatelessWidget {
                       },
                     ),
                   );
-                } else {
-                  libraryCubit.toggleWatchlist(details.toMediaItem());
+                } else if (!libraryCubit.toggleWatchlist(details.toMediaItem())) {
+                  showCustomSnackBar(
+                    context,
+                    message: 'Already watched, so it can\'t go to the watchlist',
+                  );
                 }
               },
             ),
@@ -137,11 +164,34 @@ class MediaActionBar extends StatelessWidget {
             child: _ActionButton(
               icon: Symbols.check_circle,
               label: 'Watched',
+              selected: isWatched,
               onTap: () {
-                showCustomSnackBar(
-                  context,
-                  message: 'Marked as watched',
-                );
+                if (isWatched) {
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) => AreYouSureDialog(
+                      title: 'Remove from history?',
+                      description:
+                          'Are you sure you want to remove this title from your history? It will no longer count as watched.',
+                      icon: Symbols.history,
+                      iconColor: const Color(0xFFE53935),
+                      iconBackgroundColor: const Color(0xFF331718),
+                      confirmText: 'Remove',
+                      confirmIcon: Symbols.delete,
+                      confirmColor: const Color(0xFF990000),
+                      onConfirm: () {
+                        Navigator.of(dialogContext).pop();
+                        libraryCubit.removeFromHistory(details.toMediaItem());
+                      },
+                    ),
+                  );
+                } else {
+                  libraryCubit.markWatched(details.toMediaItem());
+                  showCustomSnackBar(
+                    context,
+                    message: 'Added to history',
+                  );
+                }
               },
             ),
           ),

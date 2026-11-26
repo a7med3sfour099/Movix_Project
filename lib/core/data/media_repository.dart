@@ -172,17 +172,4 @@ class MediaRepository {
     }
     return items;
   }
-
-Future<Result<List<MediaItem>>> getHistory({
-  String? filter,
-  int page = 1,
-}) {
-  if (filter == 'tv') {
-    return getList(ApiEndpoints.popularTvShows, 'tv', pages: page);
-  } else if (filter == 'movie') {
-    return getList(ApiEndpoints.popularMovies, 'movie', pages: page);
-  } else {
-    return getList(ApiEndpoints.trendingAllWeek, 'all', pages: page);
-  }
-}
 }

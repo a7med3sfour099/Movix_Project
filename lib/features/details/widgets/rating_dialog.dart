@@ -9,16 +9,18 @@ import 'package:movixapp/features/details/cubit/rating.dart';
 
 class RatingDialog extends StatelessWidget {
   final String mediaType;
+  final int initialRating;
 
   const RatingDialog({
     super.key,
     required this.mediaType,
+    this.initialRating = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => RatingCubit(),
+      create: (_) => RatingCubit(initialRating),
       child: BlocBuilder<RatingCubit, int>(
         builder: (context, rating) {
           final cubit = context.read<RatingCubit>();

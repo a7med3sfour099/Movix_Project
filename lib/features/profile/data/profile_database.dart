@@ -6,6 +6,8 @@ import 'package:movixapp/features/home/data/media_item.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:movixapp/features/history/data/watched_database.dart';
+import 'package:movixapp/features/details/data/rating_database.dart';
 
 class ProfileDatabase {
   String? get _userId => FirebaseAuth.instance.currentUser?.uid;
