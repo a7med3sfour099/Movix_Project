@@ -11,18 +11,22 @@ import 'package:movixapp/features/home/data/media_item.dart';
 class HistoryCard extends StatelessWidget {
   final MediaItem item;
   final VoidCallback onDelete;
-  final VoidCallback onWatched;
+  final VoidCallback onFavorite;
+  final VoidCallback? onTap;
 
   const HistoryCard({
     super.key,
     required this.item,
     required this.onDelete,
-    required this.onWatched,
+    required this.onFavorite,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       decoration: BoxDecoration(
         color: Color(0xff182120),
         borderRadius: BorderRadius.circular(16),
@@ -147,14 +151,14 @@ class HistoryCard extends StatelessWidget {
                 ),
                 const Gap(12),
 
-                /// Watched button
+                /// Add to favorite button (stays on this page)
                 SizedBox(
                   width: double.infinity,
                   height: 35,
                   child: CustomElevatedbutton(
-                    text: "Watched",
+                    text: "Add to favorite",
                     size: 14,
-                    onPressed: onWatched,
+                    onPressed: onFavorite,
                   ),
                 ),
               ],
@@ -162,6 +166,7 @@ class HistoryCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 

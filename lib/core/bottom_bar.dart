@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:movixapp/core/bottom_bar_cubit.dart';
 import 'package:movixapp/features/home/widgets/home_header.dart';
+import 'package:movixapp/features/library/data/library_filter.dart';
 import 'package:movixapp/features/library/views/library_view.dart';
 import 'package:movixapp/features/profile/screens/profile_screen.dart';
 import 'package:movixapp/features/search/data/search_filters.dart';
@@ -20,14 +21,24 @@ class BottomBar extends StatelessWidget {
 
   static const names = ['Discover', 'Search', 'Library', 'Profile'];
 
-  static Route<void> _routeFor(int index, SearchType searchType) {
+  static Route<void> _routeFor(
+    int index,
+    SearchType searchType,
+    LibraryTab libraryTab,
+    MediaFilter libraryFilter,
+  ) {
     switch (index) {
       case 1:
         return MaterialPageRoute<void>(
           builder: (_) => const SearchScreen(),
         );
       case 2:
-        return MaterialPageRoute<void>(builder: (_) => const LibraryView());
+        return MaterialPageRoute<void>(
+          builder: (_) => LibraryView(
+            initialTab: libraryTab,
+            initialFilter: libraryFilter,
+          ),
+        );
       default:
         return MaterialPageRoute<void>(builder: (_) => const ProfileScreen());
     }
@@ -35,10 +46,13 @@ class BottomBar extends StatelessWidget {
 
   /// Switches tab: goes back to Home, then opens the tab's page on top of it.
   /// [searchType] is only used when opening Search.
+  /// [libraryTab] / [libraryFilter] are only used when opening Library.
   static void open(
       BuildContext context,
       int index, {
         SearchType searchType = SearchType.all,
+        LibraryTab libraryTab = LibraryTab.favorites,
+        MediaFilter libraryFilter = MediaFilter.all,
       }) {
     final cubit = context.read<BottomBarCubit>();
     final navigator = Navigator.of(context);
@@ -53,7 +67,7 @@ class BottomBar extends StatelessWidget {
     // Replace everything above Home in one step (no pop-then-push flicker).
     navigator
         .pushAndRemoveUntil(
-      _routeFor(index, searchType),
+      _routeFor(index, searchType, libraryTab, libraryFilter),
           (route) => route.isFirst,
     )
         .then((_) {

@@ -5,6 +5,7 @@ import 'package:movixapp/features/home/data/media_item.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:movixapp/features/history/data/watched_database.dart';
 
 class ProfileDatabase {
   String? get _userId => FirebaseAuth.instance.currentUser?.uid;
@@ -15,7 +16,7 @@ class ProfileDatabase {
 
     return await openDatabase(
       dbPath,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE profile (
@@ -39,6 +40,7 @@ class ProfileDatabase {
             category TEXT NOT NULL
           )
         ''');
+        await WatchedDatabase.createTable(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -69,6 +71,9 @@ class ProfileDatabase {
               category TEXT NOT NULL
             )
           ''');
+        }
+        if (oldVersion < 4) {
+          await WatchedDatabase.createTable(db);
         }
       },
     );

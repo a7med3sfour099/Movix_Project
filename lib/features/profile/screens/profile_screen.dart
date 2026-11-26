@@ -9,6 +9,7 @@ import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/core/services/auth_service.dart';
 import 'package:movixapp/features/auth/widgets/custom_auth_appbar.dart';
 import 'package:movixapp/features/library/cubit/library_cubit.dart';
+import 'package:movixapp/features/library/data/library_filter.dart';
 import 'package:movixapp/features/profile/Widgets/profile_Stats_card.dart';
 import 'package:movixapp/features/profile/Widgets/profile_section.dart';
 import '../cubit/profile_cubit.dart';
@@ -36,6 +37,22 @@ class ProfileScreen extends StatelessWidget {
         .where((i) => i.type == 'tv')
         .length
         .toString();
+    final watchedMovies = libraryState.history
+        .where((i) => i.type != 'tv')
+        .length
+        .toString();
+    final watchedTv = libraryState.history
+        .where((i) => i.type == 'tv')
+        .length
+        .toString();
+
+    // Opens Library on the right tab with the Movies / TV filter applied.
+    void openLibrary(LibraryTab tab, MediaFilter filter) => BottomBar.open(
+          context,
+          2,
+          libraryTab: tab,
+          libraryFilter: filter,
+        );
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
@@ -142,25 +159,19 @@ class ProfileScreen extends StatelessWidget {
                       ProfileStatCard(
                         title: 'Total Watched Movies',
                         icon: Icons.movie_outlined,
-                        count: '0',
+                        count: watchedMovies,
                         subtitle: 'Movies',
-                        onTap: () => Navigator.pushNamed(
-                          context,
-                          '/history',
-                          arguments: 'movie',
-                        ),
+                        onTap: () =>
+                            openLibrary(LibraryTab.history, MediaFilter.movies),
                       ),
                       Gap(12),
                       ProfileStatCard(
                         title: 'Total Watched TV Shows',
                         icon: Icons.tv_outlined,
-                        count: '0',
+                        count: watchedTv,
                         subtitle: 'Series',
-                        onTap: () => Navigator.pushNamed(
-                          context,
-                          '/history',
-                          arguments: 'tv',
-                        ),
+                        onTap: () =>
+                            openLibrary(LibraryTab.history, MediaFilter.tv),
                       ),
                     ],
                   ),
@@ -173,6 +184,8 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.bookmark_border,
                         count: watchlistMovies,
                         subtitle: 'Saved',
+                        onTap: () => openLibrary(
+                            LibraryTab.watchlist, MediaFilter.movies),
                       ),
                       Gap(12),
                       ProfileStatCard(
@@ -180,6 +193,8 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.bookmark_border,
                         count: watchlistTv,
                         subtitle: 'saved',
+                        onTap: () =>
+                            openLibrary(LibraryTab.watchlist, MediaFilter.tv),
                       ),
                     ],
                   ),
@@ -192,6 +207,8 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.favorite,
                         count: favoriteMovies,
                         subtitle: 'curated',
+                        onTap: () => openLibrary(
+                            LibraryTab.favorites, MediaFilter.movies),
                       ),
                       Gap(12),
                       ProfileStatCard(
@@ -199,6 +216,8 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.favorite,
                         count: favoriteTv,
                         subtitle: 'curated',
+                        onTap: () =>
+                            openLibrary(LibraryTab.favorites, MediaFilter.tv),
                       ),
                     ],
                   ),

@@ -34,6 +34,7 @@ class MediaActionBar extends StatelessWidget {
     final libraryCubit = context.watch<LibraryCubit>();
     final isFavorite = libraryCubit.isFavorite(details.id);
     final isInWatchlist = libraryCubit.isInWatchlist(details.id);
+    final isWatched = libraryCubit.isWatched(details.id, details.type);
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -92,8 +93,11 @@ class MediaActionBar extends StatelessWidget {
                       },
                     ),
                   );
-                } else {
-                  libraryCubit.toggleWatchlist(details.toMediaItem());
+                } else if (!libraryCubit.toggleWatchlist(details.toMediaItem())) {
+                  showCustomSnackBar(
+                    context,
+                    message: 'Already watched, so it can\'t go to the watchlist',
+                  );
                 }
               },
             ),
@@ -137,11 +141,34 @@ class MediaActionBar extends StatelessWidget {
             child: _ActionButton(
               icon: Symbols.check_circle,
               label: 'Watched',
+              selected: isWatched,
               onTap: () {
-                showCustomSnackBar(
-                  context,
-                  message: 'Marked as watched',
-                );
+                if (isWatched) {
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) => AreYouSureDialog(
+                      title: 'Remove from history?',
+                      description:
+                          'Are you sure you want to remove this title from your history? It will no longer count as watched.',
+                      icon: Symbols.history,
+                      iconColor: const Color(0xFFE53935),
+                      iconBackgroundColor: const Color(0xFF331718),
+                      confirmText: 'Remove',
+                      confirmIcon: Symbols.delete,
+                      confirmColor: const Color(0xFF990000),
+                      onConfirm: () {
+                        Navigator.of(dialogContext).pop();
+                        libraryCubit.removeFromHistory(details.toMediaItem());
+                      },
+                    ),
+                  );
+                } else {
+                  libraryCubit.markWatched(details.toMediaItem());
+                  showCustomSnackBar(
+                    context,
+                    message: 'Added to history',
+                  );
+                }
               },
             ),
           ),
