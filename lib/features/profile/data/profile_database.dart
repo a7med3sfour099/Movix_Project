@@ -18,7 +18,7 @@ class ProfileDatabase {
 
     return await openDatabase(
       dbPath,
-      version: 6,
+      version: 7,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE profile (
@@ -28,6 +28,7 @@ class ProfileDatabase {
           )
         ''');
         await WatchedDatabase.createTable(db);
+        await RatingDatabase.createTable(db);
         await db.execute('''
           CREATE TABLE library (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -113,6 +114,10 @@ class ProfileDatabase {
         }
         if (oldVersion < 6) {
           await WatchedDatabase.createTable(db);
+        }
+        // the ratings table was missing, so Rate Now did nothing
+        if (oldVersion < 7) {
+          await RatingDatabase.createTable(db);
         }
       },
     );

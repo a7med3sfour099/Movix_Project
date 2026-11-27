@@ -21,7 +21,7 @@ class LogoutDialog extends StatelessWidget {
         if (context.mounted) {
           Navigator.pushNamedAndRemoveUntil(
             context,
-            '/onboarding',
+            '/login',
             (route) => false,
           );
         }

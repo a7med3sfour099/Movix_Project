@@ -53,7 +53,7 @@ class _LibraryViewState extends State<LibraryView> {
     final saved = context.read<LibraryCubit>().state.selectedTab;
     _tab = widget.initialTab ?? _tabs[saved.clamp(0, _tabs.length - 1).toInt()];
     _filters = {for (final tab in _tabs) tab: MediaFilter.all};
-    // A filter coming from outside (Profile card) only applies to its own tab.
+    // filter from Profile affects only its tab
     _filters[_tab] = widget.initialFilter;
     _pageController = PageController(initialPage: _tab.index);
   }
@@ -81,10 +81,9 @@ class _LibraryViewState extends State<LibraryView> {
 
   List<MediaItem> _itemsFor(LibraryState state, LibraryTab tab) {
     final all = switch (tab) {
-      // Newest added first (these two lists are stored oldest first).
+      // Newest added first
       LibraryTab.favorites => state.favorites.reversed,
       LibraryTab.watchlist => state.watchlist.reversed,
-      // History is already newest first (read ordered by watched_at).
       LibraryTab.history => state.history,
     };
     return all.where(_filterOf(tab).matches).toList();
@@ -213,8 +212,6 @@ class _LibraryViewState extends State<LibraryView> {
             : 4;
         final cellWidth =
             (width - horizontalPadding * 2 - gap * (columns - 1)) / columns;
-        // Poster is 2:3, then a fixed block for the texts and the button.
-        // A fixed height (not a ratio) so the card never overflows.
         final extent = cellWidth * 1.5 + (isHistory ? 130 : 135);
 
         return CustomScrollView(
@@ -268,17 +265,26 @@ class _LibraryViewState extends State<LibraryView> {
       item: item,
       isFavoriteTab: tab == LibraryTab.favorites,
       isWatched: cubit.isWatched(item.id, item.type),
+      isInWatchlist: cubit.isInWatchlist(item.id),
       onTap: () => _openDetails(item),
       onDelete: () => _remove(item, tab),
-      onAddToHistory: () {
-        cubit.markWatched(item);
-        _snack('Added to history');
+      // add to History, or remove it if it is already there
+      onToggleHistory: () {
+        if (cubit.isWatched(item.id, item.type)) {
+          cubit.removeFromHistory(item);
+          _snack('Removed from history');
+        } else {
+          cubit.markWatched(item);
+          _snack('Added to history');
+        }
       },
-      onAddToWatchlist: () {
+      // add to Watchlist, or remove it if it is already there
+      onToggleWatchlist: () {
         if (cubit.isWatched(item.id, item.type)) {
           _snack('Already watched, so it can\'t go to the watchlist');
         } else if (cubit.isInWatchlist(item.id)) {
-          _snack('Already in your watchlist');
+          cubit.removeFromWatchlist(item);
+          _snack('Removed from watchlist');
         } else {
           cubit.addFavoriteToWatchlist(item);
           _snack('Added to watchlist');

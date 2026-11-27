@@ -11,6 +11,7 @@ import 'package:movixapp/core/services/app_link_service.dart';
 import 'package:movixapp/core/services/app_navigation_service.dart';
 import 'package:movixapp/core/services/genres_service.dart';
 import 'package:movixapp/features/auth/cubit/auth_cubit.dart';
+import 'package:movixapp/features/auth/views/login_view.dart';
 import 'package:movixapp/features/home/cubit/home_tab_cubit.dart';
 import 'package:movixapp/features/home/screens/home_screen.dart';
 import 'package:movixapp/features/onboarding/data/onboarding_prefs.dart';
@@ -125,7 +126,11 @@ class MyApp extends StatelessWidget {
                     return const HomeScreen();
                   }
 
-                  return const OnboardingScreen();
+                  // onboarding only the first time after installing the app,
+                  // after that (even after log out) go straight to login
+                  return onboardingSeen
+                      ? const LoginView()
+                      : const OnboardingScreen();
                 },
               ),
             ),

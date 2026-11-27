@@ -12,4 +12,9 @@ class CatalogFilterCubit extends Cubit<CatalogFilterState> {
   void selectSort(CatalogSort sort) {
     emit(state.copyWith(sort: sort));
   }
+
+  // Arabic button: press once to show only Arabic, press again to show everything
+  void toggleArabic() {
+    emit(state.copyWith(arabicOnly: !state.arabicOnly));
+  }
 }
