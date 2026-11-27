@@ -8,6 +8,9 @@ import 'package:movixapp/features/Errors/custom_circular_icon.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/core/network/internet_cubit.dart';
 import 'package:movixapp/features/auth/widgets/custom_snackbar.dart';
+import 'package:movixapp/core/bottom_bar.dart';
+import 'package:movixapp/features/library/data/library_filter.dart';
+import 'package:movixapp/core/routes/nav_key.dart';
 
 class OfflineErrorView extends StatelessWidget {
   const OfflineErrorView({super.key});
@@ -56,6 +59,47 @@ class OfflineErrorView extends StatelessWidget {
                       size: 14,
                     ),
                     Gap(35),
+
+                    // Go to Library
+                    CustomElevatedbutton(
+                      text: "",
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.video_library_outlined,
+                            size: 22,
+                            color: AppColors.background,
+                          ),
+                          Gap(5),
+                          CustomText(
+                            text: "Go to Library",
+                            color: AppColors.background,
+                            weight: FontWeight.bold,
+                          ),
+                        ],
+                      ),
+                      onPressed: () {
+                        final navigatorContext =
+                            NavKey.navigatorKey.currentContext;
+
+                        if (navigatorContext == null) return;
+
+                        navigatorContext
+                            .read<InternetCubit>()
+                            .dismissOfflineScreen();
+                        BottomBar.open(
+                          navigatorContext,
+                          2,
+                          libraryFilter: MediaFilter.all,
+                          allowOffline: true,
+                        );
+                      },
+                    ),
+
+                    Gap(15),
+
+                    // Retry connection
                     BlocBuilder<InternetCubit, InternetState>(
                       builder: (context, state) {
                         return CustomElevatedbutton(

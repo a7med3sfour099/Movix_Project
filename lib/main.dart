@@ -101,7 +101,7 @@ class MyApp extends StatelessWidget {
                   return Stack(
                     children: [
                       child ?? const SizedBox.shrink(),
-                      if (!state.isConnected)
+                      if (!state.isConnected && state.showOfflineScreen)
                         const Positioned.fill(child: OfflineErrorView()),
                     ],
                   );

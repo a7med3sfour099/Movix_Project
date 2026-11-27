@@ -49,8 +49,7 @@ class _LibraryViewState extends State<LibraryView> {
   void initState() {
     super.initState();
     final saved = context.read<LibraryCubit>().state.selectedTab;
-    _tab = widget.initialTab ??
-        _tabs[saved.clamp(0, _tabs.length - 1).toInt()];
+    _tab = widget.initialTab ?? _tabs[saved.clamp(0, _tabs.length - 1).toInt()];
     _filter = widget.initialFilter;
     _pageController = PageController(initialPage: _tab.index);
   }
@@ -129,10 +128,6 @@ class _LibraryViewState extends State<LibraryView> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: CustomBackButton(),
-                      ),
                       const Text(
                         'Library',
                         style: TextStyle(
@@ -164,9 +159,7 @@ class _LibraryViewState extends State<LibraryView> {
                       setState(() => _tab = _tabs[index]);
                       context.read<LibraryCubit>().selectTab(index);
                     },
-                    children: [
-                      for (final tab in _tabs) _page(state, tab),
-                    ],
+                    children: [for (final tab in _tabs) _page(state, tab)],
                   ),
                 ),
               ],
@@ -187,8 +180,7 @@ class _LibraryViewState extends State<LibraryView> {
         child: HomeTabs(
           tabs: [for (final f in MediaFilter.values) f.label],
           selectedIndex: MediaFilter.values.indexOf(_filter),
-          onTap: (index) =>
-              setState(() => _filter = MediaFilter.values[index]),
+          onTap: (index) => setState(() => _filter = MediaFilter.values[index]),
         ),
       ),
     );
@@ -208,10 +200,10 @@ class _LibraryViewState extends State<LibraryView> {
         final columns = !isHistory
             ? 2
             : width < 600
-                ? 2
-                : width < 900
-                    ? 3
-                    : 4;
+            ? 2
+            : width < 900
+            ? 3
+            : 4;
         final cellWidth =
             (width - horizontalPadding * 2 - gap * (columns - 1)) / columns;
         // Poster is 2:3, then a fixed block for the texts and the button.
@@ -223,10 +215,7 @@ class _LibraryViewState extends State<LibraryView> {
           slivers: [
             SliverToBoxAdapter(child: _filterBar()),
             if (items.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: _emptyState(tab),
-              )
+              SliverFillRemaining(hasScrollBody: false, child: _emptyState(tab))
             else
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -294,20 +283,20 @@ class _LibraryViewState extends State<LibraryView> {
   Widget _emptyState(LibraryTab tab) {
     final (icon, title, subtitle) = switch (tab) {
       LibraryTab.favorites => (
-          Symbols.favorite,
-          'No favorites yet',
-          'Saved movies and shows will show up here',
-        ),
+        Symbols.favorite,
+        'No favorites yet',
+        'Saved movies and shows will show up here',
+      ),
       LibraryTab.watchlist => (
-          Symbols.bookmark,
-          'Your watchlist is empty',
-          'Saved movies and shows will show up here',
-        ),
+        Symbols.bookmark,
+        'Your watchlist is empty',
+        'Saved movies and shows will show up here',
+      ),
       LibraryTab.history => (
-          Symbols.history,
-          'No History Yet',
-          'Movies and shows you mark as watched will show up here',
-        ),
+        Symbols.history,
+        'No History Yet',
+        'Movies and shows you mark as watched will show up here',
+      ),
     };
     final filtered = _filter != MediaFilter.all;
 

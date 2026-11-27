@@ -18,7 +18,7 @@ class ProfileDatabase {
 
     return await openDatabase(
       dbPath,
-      version: 5,
+      version: 6,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE profile (
@@ -27,6 +27,7 @@ class ProfileDatabase {
             image_path TEXT
           )
         ''');
+        await WatchedDatabase.createTable(db);
         await db.execute('''
           CREATE TABLE library (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,9 +66,7 @@ class ProfileDatabase {
           );
 
           if (!hasUserId) {
-            await db.execute(
-              'ALTER TABLE profile ADD COLUMN user_id TEXT',
-            );
+            await db.execute('ALTER TABLE profile ADD COLUMN user_id TEXT');
           }
         }
         if (oldVersion < 3) {
@@ -105,14 +104,15 @@ class ProfileDatabase {
         }
         if (oldVersion < 5) {
           final columns = await db.rawQuery('PRAGMA table_info(reminders)');
-          final hasRepeat = columns.any(
-            (column) => column['name'] == 'repeat',
-          );
+          final hasRepeat = columns.any((column) => column['name'] == 'repeat');
           if (!hasRepeat) {
             await db.execute(
               "ALTER TABLE reminders ADD COLUMN repeat TEXT NOT NULL DEFAULT 'none'",
             );
           }
+        }
+        if (oldVersion < 6) {
+          await WatchedDatabase.createTable(db);
         }
       },
     );
@@ -144,9 +144,7 @@ class ProfileDatabase {
     if (userId == null) return '';
 
     ImagePicker picker = ImagePicker();
-    XFile? picked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    XFile? picked = await picker.pickImage(source: ImageSource.gallery);
 
     if (picked == null) return '';
     Directory folder = await getApplicationDocumentsDirectory();
@@ -165,16 +163,9 @@ class ProfileDatabase {
       whereArgs: [userId],
     );
 
-    await db.delete(
-      'profile',
-      where: 'user_id = ?',
-      whereArgs: [userId],
-    );
+    await db.delete('profile', where: 'user_id = ?', whereArgs: [userId]);
 
-    await db.insert('profile', {
-      'user_id': userId,
-      'image_path': newPath,
-    });
+    await db.insert('profile', {'user_id': userId, 'image_path': newPath});
 
     for (Map<String, Object?> row in oldRows) {
       File oldFile = File(row['image_path'] as String);
@@ -187,7 +178,8 @@ class ProfileDatabase {
   }
 
   Future<({List<MediaItem> favorites, List<MediaItem> watchlist})> getLibrary(
-      String userId) async {
+    String userId,
+  ) async {
     final db = await openMyDatabase();
     final rows = await db.query(
       'library',
@@ -227,11 +219,7 @@ class ProfileDatabase {
   ) async {
     final db = await openMyDatabase();
     await db.transaction((txn) async {
-      await txn.delete(
-        'library',
-        where: 'user_id = ?',
-        whereArgs: [userId],
-      );
+      await txn.delete('library', where: 'user_id = ?', whereArgs: [userId]);
 
       for (final item in favorites) {
         await txn.insert('library', {
@@ -289,14 +277,12 @@ class ProfileDatabase {
   }
 
   Future<void> saveReminders(
-      String userId, List<ReminderItem> reminders) async {
+    String userId,
+    List<ReminderItem> reminders,
+  ) async {
     final db = await openMyDatabase();
     await db.transaction((txn) async {
-      await txn.delete(
-        'reminders',
-        where: 'user_id = ?',
-        whereArgs: [userId],
-      );
+      await txn.delete('reminders', where: 'user_id = ?', whereArgs: [userId]);
 
       for (final item in reminders) {
         await txn.insert('reminders', {

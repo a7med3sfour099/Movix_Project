@@ -21,10 +21,6 @@ class LibraryCubit extends Cubit<LibraryState> {
 
       await loadLibraryForUser(user.uid);
     });
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
-      loadLibraryForUser(currentUser.uid);
-    }
   }
 
   final ProfileDatabase _database = ProfileDatabase();
