@@ -45,6 +45,7 @@ class AddReminderState {
     bool? isEditing,
     bool? isSaving,
     String? error,
+    bool clearError = false,
   }) {
     return AddReminderState(
       type: type ?? this.type,
@@ -60,7 +61,7 @@ class AddReminderState {
       repeat: repeat ?? this.repeat,
       isEditing: isEditing ?? this.isEditing,
       isSaving: isSaving ?? this.isSaving,
-      error: error ?? this.error,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 }
