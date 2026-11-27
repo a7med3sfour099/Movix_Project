@@ -19,6 +19,7 @@ import 'package:movixapp/features/actors/screens/actors_catalog_screen.dart';
 import 'package:movixapp/features/actors/widgets/actor_section.dart';
 import 'package:movixapp/features/movies/screens/media_list_screen.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -179,9 +180,27 @@ class HomeScreen extends StatelessWidget {
                     return HomeHeader(
                       imagePath: imagePath,
                       onCalendarTap: () {
+                        final isGuest =
+                            FirebaseAuth.instance.currentUser?.isAnonymous ??
+                            false;
+
+                        if (isGuest) {
+                          Navigator.pushNamed(context, '/guest-mode-error');
+                          return;
+                        }
+
                         Navigator.pushNamed(context, '/calendar');
                       },
                       onSettingsTap: () {
+                        final isGuest =
+                            FirebaseAuth.instance.currentUser?.isAnonymous ??
+                            false;
+
+                        if (isGuest) {
+                          Navigator.pushNamed(context, '/guest-mode-error');
+                          return;
+                        }
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => SettingsView()),

@@ -15,6 +15,7 @@ import 'package:movixapp/features/settings/views/privacy_policy_view.dart';
 import 'package:movixapp/features/settings/views/settings_view.dart';
 import 'package:movixapp/features/settings/views/terms_and_conditions_view.dart';
 import 'package:movixapp/features/onboarding/screens/onboarding_screen.dart';
+import 'package:movixapp/features/Errors/guest_mode_error_view.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> get routes => {
@@ -22,6 +23,7 @@ class AppRoutes {
     '/login': (context) => const LoginView(),
     '/onboarding': (context) => const OnboardingScreen(),
     '/sign-up': (context) => const SignupView(),
+    '/guest-mode-error': (context) => const GuestModeErrorView(),
     '/forget-password': (context) => BlocProvider(
       create: (_) => ForgetPasswordCubit(),
       child: const ForgetPassword(),

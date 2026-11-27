@@ -25,6 +25,7 @@ import 'package:movixapp/core/constants/app_colors.dart';
 import 'package:movixapp/features/splash/screens/splash_screen.dart';
 
 final AppLinkService appLinkService = AppLinkService();
+
 class NoTransitionBuilder extends PageTransitionsBuilder {
   const NoTransitionBuilder();
 
@@ -77,7 +78,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => HomeTabCubit()),
         BlocProvider(create: (context) => BottomBarCubit()),
         BlocProvider(create: (context) => LibraryCubit()),
-        BlocProvider(create: (context) => InternetCubit(),),
+        BlocProvider(create: (context) => InternetCubit()),
       ],
       child: ResponsiveSizer(
         builder: (context, orientation, screenType) {
@@ -85,7 +86,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             navigatorKey: NavKey.navigatorKey,
             theme: ThemeData(
-                scaffoldBackgroundColor: AppColors.background,
+              scaffoldBackgroundColor: AppColors.background,
               canvasColor: AppColors.background,
               pageTransitionsTheme: const PageTransitionsTheme(
                 builders: {
@@ -94,38 +95,41 @@ class MyApp extends StatelessWidget {
                 },
               ),
             ),
-             builder: (context, child) {
-return BlocBuilder<InternetCubit, InternetState>(
-  builder: (context, state) {
-    return Stack(
-      children: [
-        child ?? const SizedBox.shrink(),
-        if (!state.isConnected)
-          const Positioned.fill(
-            child: OfflineErrorView(),
-          ),
-      ],
-    );
-  },
-);
- }, home: SplashScreen(
-      next: StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
+            builder: (context, child) {
+              return BlocBuilder<InternetCubit, InternetState>(
+                builder: (context, state) {
+                  return Stack(
+                    children: [
+                      child ?? const SizedBox.shrink(),
+                      if (!state.isConnected)
+                        const Positioned.fill(child: OfflineErrorView()),
+                    ],
                   );
-                }
-                final user = snapshot.data;
-                if (user != null && user.emailVerified) {
-                  return const HomeScreen();
-                }
-                return const OnboardingScreen();
-              },
+                },
+              );
+            },
+            home: SplashScreen(
+              next: StreamBuilder<User?>(
+                stream: FirebaseAuth.instance.authStateChanges(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  final user = snapshot.data;
+
+                  if (user != null &&
+                      (user.isAnonymous || user.emailVerified)) {
+                    return const HomeScreen();
+                  }
+
+                  return const OnboardingScreen();
+                },
+              ),
             ),
-          ),
-             routes: AppRoutes.routes,
+            routes: AppRoutes.routes,
           );
         },
       ),

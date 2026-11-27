@@ -52,12 +52,22 @@ class MediaActionBar extends StatelessWidget {
               icon: Symbols.star,
               label: 'Rate Now',
               onTap: () async {
+                final isGuest =
+                    FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
+
+                if (isGuest) {
+                  Navigator.pushNamed(context, '/guest-mode-error');
+                  return;
+                }
                 final userId = FirebaseAuth.instance.currentUser?.uid;
                 final ratingDb = RatingDatabase();
                 var oldRating = 0;
                 if (userId != null) {
-                  oldRating =
-                  await ratingDb.getRating(userId, details.id, details.type);
+                  oldRating = await ratingDb.getRating(
+                    userId,
+                    details.id,
+                    details.type,
+                  );
                 }
                 if (!context.mounted) return;
 
@@ -95,6 +105,13 @@ class MediaActionBar extends StatelessWidget {
               label: 'Watchlist',
               selected: isInWatchlist,
               onTap: () {
+                final isGuest =
+                    FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
+
+                if (isGuest) {
+                  Navigator.pushNamed(context, '/guest-mode-error');
+                  return;
+                }
                 if (isInWatchlist) {
                   showDialog(
                     context: context,
@@ -110,16 +127,17 @@ class MediaActionBar extends StatelessWidget {
                       confirmColor: const Color(0xFF990000),
                       onConfirm: () {
                         Navigator.of(dialogContext).pop();
-                        libraryCubit.removeFromWatchlist(
-                          details.toMediaItem(),
-                        );
+                        libraryCubit.removeFromWatchlist(details.toMediaItem());
                       },
                     ),
                   );
-                } else if (!libraryCubit.toggleWatchlist(details.toMediaItem())) {
+                } else if (!libraryCubit.toggleWatchlist(
+                  details.toMediaItem(),
+                )) {
                   showCustomSnackBar(
                     context,
-                    message: 'Already watched, so it can\'t go to the watchlist',
+                    message:
+                        'Already watched, so it can\'t go to the watchlist',
                   );
                 }
               },
@@ -147,13 +165,18 @@ class MediaActionBar extends StatelessWidget {
                       confirmColor: const Color(0xFF990000),
                       onConfirm: () {
                         Navigator.of(dialogContext).pop();
-                        libraryCubit.removeFromFavorites(
-                          details.toMediaItem(),
-                        );
+                        libraryCubit.removeFromFavorites(details.toMediaItem());
                       },
                     ),
                   );
                 } else {
+                  final isGuest =
+                      FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
+                  if (isGuest) {
+                    Navigator.pushNamed(context, '/guest-mode-error');
+                    return;
+                  }
+
                   libraryCubit.toggleFavorite(details.toMediaItem());
                 }
               },
@@ -166,6 +189,14 @@ class MediaActionBar extends StatelessWidget {
               label: 'Watched',
               selected: isWatched,
               onTap: () {
+                final isGuest =
+                    FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
+
+                if (isGuest) {
+                  Navigator.pushNamed(context, '/guest-mode-error');
+                  return;
+                }
+
                 if (isWatched) {
                   showDialog(
                     context: context,
@@ -187,10 +218,7 @@ class MediaActionBar extends StatelessWidget {
                   );
                 } else {
                   libraryCubit.markWatched(details.toMediaItem());
-                  showCustomSnackBar(
-                    context,
-                    message: 'Added to history',
-                  );
+                  showCustomSnackBar(context, message: 'Added to history');
                 }
               },
             ),

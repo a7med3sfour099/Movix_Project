@@ -8,15 +8,19 @@ import 'library_state.dart';
 
 class LibraryCubit extends Cubit<LibraryState> {
   LibraryCubit() : super(const LibraryState()) {
-    _authSubscription =
-        FirebaseAuth.instance.authStateChanges().listen((user) async {
-      if (user == null) {
-        if (!isClosed) emit(const LibraryState());
-        return;
-      }
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
+      user,
+    ) async {
+      if (isClosed) return;
+
+      // Clear previous user's data immediately.
+      emit(LibraryState(selectedTab: state.selectedTab));
+
+      // Guest and signed-out users start with an empty library.
+      if (user == null || user.isAnonymous) return;
+
       await loadLibraryForUser(user.uid);
     });
-
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       loadLibraryForUser(currentUser.uid);
@@ -45,12 +49,14 @@ class LibraryCubit extends Cubit<LibraryState> {
       } catch (_) {}
 
       if (!isClosed && FirebaseAuth.instance.currentUser?.uid == userId) {
-        emit(LibraryState(
-          favorites: lib.favorites,
-          watchlist: lib.watchlist,
-          history: watched,
-          selectedTab: state.selectedTab,
-        ));
+        emit(
+          LibraryState(
+            favorites: lib.favorites,
+            watchlist: lib.watchlist,
+            history: watched,
+            selectedTab: state.selectedTab,
+          ),
+        );
       }
     } catch (_) {}
   }
@@ -84,22 +90,28 @@ class LibraryCubit extends Cubit<LibraryState> {
   // so history always compares id + type.
   bool _same(MediaItem item, int id, String type) =>
       item.id == id && item.type == type;
-
   void toggleFavorite(MediaItem item) {
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) return;
+
     final favorites = List<MediaItem>.from(state.favorites);
     final index = favorites.indexWhere((element) => element.id == item.id);
+
     if (index >= 0) {
       favorites.removeAt(index);
     } else {
       favorites.add(item);
     }
+
     emit(state.copyWith(favorites: favorites));
     _persist();
   }
 
   void removeFromFavorites(MediaItem item) {
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) return;
+
     final favorites = List<MediaItem>.from(state.favorites);
     favorites.removeWhere((element) => element.id == item.id);
+
     emit(state.copyWith(favorites: favorites));
     _persist();
   }
@@ -108,20 +120,29 @@ class LibraryCubit extends Cubit<LibraryState> {
   /// Returns false (and changes nothing) when the item is already watched,
   /// because a watched title can never be in the watchlist.
   bool toggleWatchlist(MediaItem item) {
-    if (isWatched(item.id, item.type) && !isInWatchlist(item.id)) return false;
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) return false;
+
+    if (isWatched(item.id, item.type) && !isInWatchlist(item.id)) {
+      return false;
+    }
+
     final watchlist = List<MediaItem>.from(state.watchlist);
     final index = watchlist.indexWhere((element) => element.id == item.id);
+
     if (index >= 0) {
       watchlist.removeAt(index);
     } else {
       watchlist.add(item);
     }
+
     emit(state.copyWith(watchlist: watchlist));
     _persist();
     return true;
   }
 
   void removeFromWatchlist(MediaItem item) {
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) return;
+
     final watchlist = List<MediaItem>.from(state.watchlist);
     watchlist.removeWhere((element) => element.id == item.id);
     emit(state.copyWith(watchlist: watchlist));
@@ -131,6 +152,7 @@ class LibraryCubit extends Cubit<LibraryState> {
   /// Marks a title as watched: it goes to History (newest first)
   /// and automatically leaves the Watchlist.
   void markWatched(MediaItem item) {
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) return;
     if (isWatched(item.id, item.type)) return;
 
     final history = [item, ...state.history];
@@ -145,9 +167,12 @@ class LibraryCubit extends Cubit<LibraryState> {
   }
 
   void removeFromHistory(MediaItem item) {
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) return;
+
     final history = state.history
         .where((element) => !_same(element, item.id, item.type))
         .toList();
+
     emit(state.copyWith(history: history));
     unawaited(_deleteWatched(item));
   }
@@ -156,9 +181,15 @@ class LibraryCubit extends Cubit<LibraryState> {
   /// moved). Returns false if it is already watched, because a watched title
   /// can never be in the Watchlist.
   bool addFavoriteToWatchlist(MediaItem item) {
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) {
+      return false;
+    }
+
     if (isWatched(item.id, item.type)) return false;
     if (isInWatchlist(item.id)) return true;
+
     final watchlist = List<MediaItem>.from(state.watchlist)..add(item);
+
     emit(state.copyWith(watchlist: watchlist));
     _persist();
     return true;
@@ -166,8 +197,12 @@ class LibraryCubit extends Cubit<LibraryState> {
 
   /// Adds to favorites only (never removes). Used by the History card.
   void addToFavorites(MediaItem item) {
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? true) return;
+
     if (isFavorite(item.id)) return;
+
     final favorites = List<MediaItem>.from(state.favorites)..add(item);
+
     emit(state.copyWith(favorites: favorites));
     _persist();
   }

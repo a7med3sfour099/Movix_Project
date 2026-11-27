@@ -9,6 +9,7 @@ class AuthService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   User? get currentUser => firebaseAuth.currentUser;
+  bool get isGuest => currentUser?.isAnonymous ?? false;
 
   Stream<User?> get authStateChanges => firebaseAuth.authStateChanges();
 
@@ -18,6 +19,11 @@ class AuthService {
       email: email,
       password: password,
     );
+  }
+
+  /// Sign in as a guest
+  Future<UserCredential> signInAsGuest() async {
+    return await firebaseAuth.signInAnonymously();
   }
 
   /// Sign up
@@ -102,7 +108,8 @@ class AuthService {
     final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
     await googleSignIn.initialize(
-      serverClientId: '851109101482-fc79db6qjoiv2knkp8itmva2dde2j2tr.apps.googleusercontent.com',
+      serverClientId:
+          '851109101482-fc79db6qjoiv2knkp8itmva2dde2j2tr.apps.googleusercontent.com',
     );
 
     final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
@@ -149,14 +156,15 @@ class AuthService {
 
     return await firebaseAuth.signInWithProvider(twitterProvider);
   }
+
   /// Send email verification
-Future<void> sendEmailVerification() async {
-  final user = firebaseAuth.currentUser;
+  Future<void> sendEmailVerification() async {
+    final user = firebaseAuth.currentUser;
 
-  if (user == null) {
-    throw Exception('No user is currently signed in');
+    if (user == null) {
+      throw Exception('No user is currently signed in');
+    }
+
+    await user.sendEmailVerification();
   }
-
-  await user.sendEmailVerification();
-}
 }

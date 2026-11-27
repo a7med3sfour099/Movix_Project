@@ -32,7 +32,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   // Clear all controllers
-  void clearControllers ({bool clearLoginEmail = true}) {
+  void clearControllers({bool clearLoginEmail = true}) {
     nameController.clear();
     signupEmailController.clear();
     if (clearLoginEmail) {
@@ -176,10 +176,16 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> enterGuestMode() async {
     emit(AuthGuestLoading());
 
-    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      await _authService.signInAsGuest();
 
-    if (isClosed) return;
+      if (isClosed) return;
 
-    emit(AuthGuest());
+      emit(AuthGuest());
+    } catch (error) {
+      if (isClosed) return;
+
+      emit(AuthFailure(FirebaseErrorHandler.getMessage(error)));
+    }
   }
 }

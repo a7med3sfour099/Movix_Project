@@ -8,6 +8,7 @@ import 'package:movixapp/features/library/views/library_view.dart';
 import 'package:movixapp/features/profile/screens/profile_screen.dart';
 import 'package:movixapp/features/search/data/search_filters.dart';
 import 'package:movixapp/features/search/screens/search_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({super.key});
@@ -29,15 +30,11 @@ class BottomBar extends StatelessWidget {
   ) {
     switch (index) {
       case 1:
-        return MaterialPageRoute<void>(
-          builder: (_) => const SearchScreen(),
-        );
+        return MaterialPageRoute<void>(builder: (_) => const SearchScreen());
       case 2:
         return MaterialPageRoute<void>(
-          builder: (_) => LibraryView(
-            initialTab: libraryTab,
-            initialFilter: libraryFilter,
-          ),
+          builder: (_) =>
+              LibraryView(initialTab: libraryTab, initialFilter: libraryFilter),
         );
       default:
         return MaterialPageRoute<void>(builder: (_) => const ProfileScreen());
@@ -48,12 +45,18 @@ class BottomBar extends StatelessWidget {
   /// [searchType] is only used when opening Search.
   /// [libraryTab] / [libraryFilter] are only used when opening Library.
   static void open(
-      BuildContext context,
-      int index, {
-        SearchType searchType = SearchType.all,
-        LibraryTab? libraryTab,
-        MediaFilter libraryFilter = MediaFilter.all,
-      }) {
+    BuildContext context,
+    int index, {
+    SearchType searchType = SearchType.all,
+    LibraryTab? libraryTab,
+    MediaFilter libraryFilter = MediaFilter.all,
+  }) {
+    final isGuest = FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
+
+    if (isGuest && (index == 2 || index == 3)) {
+      Navigator.pushNamed(context, '/guest-mode-error');
+      return;
+    }
     final cubit = context.read<BottomBarCubit>();
     final navigator = Navigator.of(context);
     if (index != 0 && cubit.state == index) return;
@@ -67,13 +70,13 @@ class BottomBar extends StatelessWidget {
     // Replace everything above Home in one step (no pop-then-push flicker).
     navigator
         .pushAndRemoveUntil(
-      _routeFor(index, searchType, libraryTab, libraryFilter),
+          _routeFor(index, searchType, libraryTab, libraryFilter),
           (route) => route.isFirst,
-    )
+        )
         .then((_) {
-      // Back to Home (e.g. with the back button) -> Discover is selected again.
-      if (cubit.state == index) cubit.selectItem(0);
-    });
+          // Back to Home (e.g. with the back button) -> Discover is selected again.
+          if (cubit.state == index) cubit.selectItem(0);
+        });
   }
 
   @override
@@ -82,9 +85,7 @@ class BottomBar extends StatelessWidget {
       builder: (context, selected) {
         return Material(
           color: const Color(0xFF08130F),
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           child: SafeArea(
             top: false,
             child: Padding(
@@ -93,7 +94,7 @@ class BottomBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List.generate(
                   4,
-                      (index) => buildItem(context, index, selected),
+                  (index) => buildItem(context, index, selected),
                 ),
               ),
             ),
@@ -105,9 +106,7 @@ class BottomBar extends StatelessWidget {
 
   Widget buildItem(BuildContext context, int index, int selected) {
     final isSelected = index == selected;
-    final color = isSelected
-        ? HomeHeader.greenColor
-        : const Color(0xFFB4C2BC);
+    final color = isSelected ? HomeHeader.greenColor : const Color(0xFFB4C2BC);
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
@@ -135,8 +134,9 @@ class BottomBar extends StatelessWidget {
             const SizedBox(height: 2),
             CircleAvatar(
               radius: 2,
-              backgroundColor:
-              isSelected ? HomeHeader.greenColor : Colors.transparent,
+              backgroundColor: isSelected
+                  ? HomeHeader.greenColor
+                  : Colors.transparent,
             ),
           ],
         ),
