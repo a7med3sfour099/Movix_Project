@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movixapp/features/calendar/cubit/calendar_cubit.dart';
 import 'package:movixapp/features/calendar/data/reminder_item.dart';
+import 'package:movixapp/features/home/widgets/search_bar_field.dart';
 import 'package:movixapp/features/search/data/search_api.dart';
 import 'package:movixapp/features/search/data/search_filters.dart';
 import 'package:movixapp/features/search/data/search_result.dart';
@@ -46,13 +49,22 @@ class AddReminderCubit extends Cubit<AddReminderState> {
 
   final SearchApi _searchApi = SearchApi();
 
+  // Same idea as the main Search page: wait until the user stops typing.
+  Timer? _debounce;
+  int _requestId = 0;
+
   void selectType(SearchType type) {
     if (state.type != type) {
+      _debounce?.cancel();
+      _requestId++;
       emit(state.copyWith(
         type: type,
         clearSelectedMedia: true,
         searchResults: const [],
+        isSearching: false,
       ));
+      // Movies / TV Shows is the only difference from the main search:
+      // search again right away, but only inside the new type.
       if (state.searchQuery.trim().isNotEmpty) {
         search(state.searchQuery);
       }
@@ -63,37 +75,75 @@ class AddReminderCubit extends Cubit<AddReminderState> {
     emit(state.copyWith(repeat: repeat));
   }
 
-  Future<void> search(String query) async {
-    emit(state.copyWith(searchQuery: query));
-    if (query.trim().isEmpty) {
-      emit(state.copyWith(searchResults: const [], isSearching: false));
+  /// Called on every letter. Shows the loading effect right away, then
+  /// calls the API only after the user stops typing ([searchDelay]).
+  void onSearchChanged(String text) {
+    _debounce?.cancel();
+    final query = text.trim();
+
+    if (query.isEmpty) {
+      _requestId++; // ignore any answer that is still on its way
+      emit(state.copyWith(
+        searchQuery: '',
+        searchResults: const [],
+        isSearching: false,
+      ));
       return;
     }
 
-    emit(state.copyWith(isSearching: true));
+    if (!state.isSearching || state.searchQuery != query) {
+      emit(state.copyWith(searchQuery: query, isSearching: true));
+    }
+    _debounce = Timer(searchDelay, () => search(query));
+  }
+
+  /// Searches now (Enter key, or when the debounce is over).
+  Future<void> search(String query) async {
+    _debounce?.cancel();
+    final q = query.trim();
+    final id = ++_requestId;
+
+    if (q.isEmpty) {
+      emit(state.copyWith(
+        searchQuery: '',
+        searchResults: const [],
+        isSearching: false,
+      ));
+      return;
+    }
+
+    emit(state.copyWith(searchQuery: q, isSearching: true));
     try {
-      final results = await _searchApi.search(query.trim(), state.type);
-      if (!isClosed) {
-        emit(state.copyWith(searchResults: results, isSearching: false));
-      }
+      // One page (20 results) is enough for a pick-list, and much faster.
+      final results = await _searchApi.search(q, state.type, maxPages: 1);
+      if (id != _requestId || isClosed) return;
+      emit(state.copyWith(searchResults: results, isSearching: false));
     } catch (_) {
-      if (!isClosed) {
-        emit(state.copyWith(
-          isSearching: false,
-          error: 'Failed to fetch search results',
-        ));
-      }
+      if (id != _requestId || isClosed) return;
+      emit(state.copyWith(
+        isSearching: false,
+        error: 'Failed to fetch search results',
+      ));
     }
   }
 
   void selectMedia(SearchResult result) {
+    _debounce?.cancel();
+    _requestId++;
     if (titleController.text.isEmpty) {
       titleController.text = result.title;
-      emit(state.copyWith(selectedMedia: result, reminderTitle: result.title));
+      emit(state.copyWith(
+        selectedMedia: result,
+        reminderTitle: result.title,
+        isSearching: false,
+      ));
     } else {
-      emit(state.copyWith(selectedMedia: result));
+      emit(state.copyWith(selectedMedia: result, isSearching: false));
     }
   }
+
+  /// Called after the error message was shown, so it is not shown again.
+  void clearError() => emit(state.copyWith(clearError: true));
 
   void updateTitle(String title) {
     emit(state.copyWith(reminderTitle: title));
@@ -173,6 +223,7 @@ class AddReminderCubit extends Cubit<AddReminderState> {
 
   @override
   Future<void> close() {
+    _debounce?.cancel();
     titleController.dispose();
     return super.close();
   }

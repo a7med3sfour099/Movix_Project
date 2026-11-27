@@ -34,7 +34,9 @@ class LibraryView extends StatefulWidget {
 
 class _LibraryViewState extends State<LibraryView> {
   late LibraryTab _tab;
-  late MediaFilter _filter;
+  // Each tab remembers its own Movies / TV filter (default: All).
+  // Leaving the Library and coming back starts again from All.
+  late final Map<LibraryTab, MediaFilter> _filters;
 
   // The three tabs are pages you can swipe between (or tap).
   late final PageController _pageController;
@@ -50,7 +52,9 @@ class _LibraryViewState extends State<LibraryView> {
     super.initState();
     final saved = context.read<LibraryCubit>().state.selectedTab;
     _tab = widget.initialTab ?? _tabs[saved.clamp(0, _tabs.length - 1).toInt()];
-    _filter = widget.initialFilter;
+    _filters = {for (final tab in _tabs) tab: MediaFilter.all};
+    // A filter coming from outside (Profile card) only applies to its own tab.
+    _filters[_tab] = widget.initialFilter;
     _pageController = PageController(initialPage: _tab.index);
   }
 
@@ -73,6 +77,8 @@ class _LibraryViewState extends State<LibraryView> {
     _animating = false;
   }
 
+  MediaFilter _filterOf(LibraryTab tab) => _filters[tab] ?? MediaFilter.all;
+
   List<MediaItem> _itemsFor(LibraryState state, LibraryTab tab) {
     final all = switch (tab) {
       // Newest added first (these two lists are stored oldest first).
@@ -81,7 +87,7 @@ class _LibraryViewState extends State<LibraryView> {
       // History is already newest first (read ordered by watched_at).
       LibraryTab.history => state.history,
     };
-    return all.where(_filter.matches).toList();
+    return all.where(_filterOf(tab).matches).toList();
   }
 
   void _snack(String message) {
@@ -172,15 +178,16 @@ class _LibraryViewState extends State<LibraryView> {
 
   /// Filter chips (All / Movies / TV Shows). They live INSIDE each page's
   /// scroll view, so they scroll away with the content.
-  Widget _filterBar() {
+  Widget _filterBar(LibraryTab tab) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
       child: Align(
         alignment: Alignment.centerLeft,
         child: HomeTabs(
           tabs: [for (final f in MediaFilter.values) f.label],
-          selectedIndex: MediaFilter.values.indexOf(_filter),
-          onTap: (index) => setState(() => _filter = MediaFilter.values[index]),
+          selectedIndex: MediaFilter.values.indexOf(_filterOf(tab)),
+          onTap: (index) =>
+              setState(() => _filters[tab] = MediaFilter.values[index]),
         ),
       ),
     );
@@ -213,7 +220,7 @@ class _LibraryViewState extends State<LibraryView> {
         return CustomScrollView(
           key: PageStorageKey<String>('library_scroll_${tab.name}'),
           slivers: [
-            SliverToBoxAdapter(child: _filterBar()),
+            SliverToBoxAdapter(child: _filterBar(tab)),
             if (items.isEmpty)
               SliverFillRemaining(hasScrollBody: false, child: _emptyState(tab))
             else
@@ -298,7 +305,8 @@ class _LibraryViewState extends State<LibraryView> {
         'Movies and shows you mark as watched will show up here',
       ),
     };
-    final filtered = _filter != MediaFilter.all;
+    final filter = _filterOf(tab);
+    final filtered = filter != MediaFilter.all;
 
     return Center(
       child: Column(
@@ -316,7 +324,7 @@ class _LibraryViewState extends State<LibraryView> {
           ),
           const SizedBox(height: 4),
           Text(
-            filtered ? 'Nothing here for "${_filter.label}"' : subtitle,
+            filtered ? 'Nothing here for "${filter.label}"' : subtitle,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Color(0xFF7C8B85), fontSize: 13),
           ),
