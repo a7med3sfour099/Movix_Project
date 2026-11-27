@@ -10,20 +10,22 @@ class LibraryCard extends StatelessWidget {
   final MediaItem item;
   final bool isFavoriteTab;
   final bool isWatched;
+  final bool isInWatchlist;
   final VoidCallback onDelete;
   final VoidCallback onTap;
-  final VoidCallback onAddToHistory;
-  final VoidCallback onAddToWatchlist;
+  final VoidCallback onToggleHistory;
+  final VoidCallback onToggleWatchlist;
 
   const LibraryCard({
     super.key,
     required this.item,
     required this.isFavoriteTab,
     required this.isWatched,
+    required this.isInWatchlist,
     required this.onDelete,
     required this.onTap,
-    required this.onAddToHistory,
-    required this.onAddToWatchlist,
+    required this.onToggleHistory,
+    required this.onToggleWatchlist,
   });
 
   @override
@@ -92,24 +94,32 @@ class LibraryCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (isFavoriteTab)
+                  // Watchlist button on the Favorites cards.
+                  // Green = it is in my watchlist, press again to remove it.
+                  // It disappears when the movie is watched
+                  if (isFavoriteTab && !isWatched)
                     Positioned(
                       top: 8,
                       right: 8,
                       child: GestureDetector(
-                        onTap: onAddToWatchlist,
+                        onTap: onToggleWatchlist,
                         child: Container(
                           width: 34,
                           height: 34,
                           decoration: BoxDecoration(
-                            color: const Color(0xCC131D1B),
+                            color: isInWatchlist
+                                ? HomeHeader.greenColor
+                                : const Color(0xCC131D1B),
                             shape: BoxShape.circle,
                             border: Border.all(color: HomeHeader.greenColor),
                           ),
                           child: Icon(
                             Symbols.bookmark,
                             size: 18,
-                            color: HomeHeader.greenColor,
+                            fill: isInWatchlist ? 1 : 0,
+                            color: isInWatchlist
+                                ? const Color(0xFF0B1512)
+                                : HomeHeader.greenColor,
                           ),
                         ),
                       ),
@@ -189,17 +199,19 @@ class LibraryCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: isWatched ? null : onAddToHistory,
+              // First press adds to History, press again on "In history" to remove it
+              onPressed: onToggleHistory,
               style: ElevatedButton.styleFrom(
-                backgroundColor: HomeHeader.greenColor,
-                foregroundColor: const Color(0xFF0B1512),
+                backgroundColor:
+                    isWatched ? const Color(0xFF1E2E29) : HomeHeader.greenColor,
+                foregroundColor: isWatched
+                    ? const Color(0xFF7C8B85)
+                    : const Color(0xFF0B1512),
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 0,
-                disabledBackgroundColor: const Color(0xFF1E2E29),
-                disabledForegroundColor: const Color(0xFF7C8B85),
               ),
               child: Text(
                 isWatched ? 'In history' : 'Add to history',

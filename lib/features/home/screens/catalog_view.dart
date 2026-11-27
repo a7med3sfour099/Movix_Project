@@ -111,7 +111,9 @@ class _CatalogView extends StatelessWidget {
                     ? typedGenres[picked.first] ?? 'Genre'
                     : '${picked.length} Genres';
 
-            return Padding(
+            // scrollable
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
@@ -127,6 +129,17 @@ class _CatalogView extends StatelessWidget {
                     selected: false,
                     highlighted: filter.sort != CatalogSort.popular,
                     onTap: () => _openSortSheet(context, filter.sort),
+                  ),
+                  const SizedBox(width: 10),
+                  // Arabic button: green = only Arabic, press again to go back to all
+                  _chip(
+                    'Arabic',
+                    selected: filter.arabicOnly,
+                    highlighted: filter.arabicOnly,
+                    onTap: () {
+                      context.read<CatalogFilterCubit>().toggleArabic();
+                      _reloadGrid(context);
+                    },
                   ),
                 ],
               ),
