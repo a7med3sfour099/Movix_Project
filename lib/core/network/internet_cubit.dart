@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 class InternetState {
   final bool isConnected;
@@ -32,20 +33,18 @@ class InternetState {
   }
 }
 
-class InternetCubit extends Cubit<InternetState> {
+class InternetCubit extends Cubit<InternetState> with WidgetsBindingObserver {
   InternetCubit() : super(const InternetState()) {
+    WidgetsBinding.instance.addObserver(this);
     _checkInitialConnection();
 
     _subscription = InternetConnection().onStatusChange.listen((status) {
       if (status == InternetStatus.disconnected) {
-        emit(
-          state.copyWith(
-            isConnected: false,
-            isLoading: false,
-            showOfflineScreen: true,
-          ),
-        );
+        _scheduleOfflineCheck();
       } else if (status == InternetStatus.connected) {
+        _offlineTimer?.cancel();
+        _checkId++;
+
         emit(
           state.copyWith(
             isConnected: true,
@@ -57,24 +56,81 @@ class InternetCubit extends Cubit<InternetState> {
       }
     });
   }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
+    if (lifecycleState == AppLifecycleState.paused ||
+        lifecycleState == AppLifecycleState.inactive ||
+        lifecycleState == AppLifecycleState.hidden) {
+      _offlineTimer?.cancel();
+      _checkId++;
+    } else if (lifecycleState == AppLifecycleState.resumed) {
+      _scheduleOfflineCheck();
+    }
+  }
 
   late final StreamSubscription<InternetStatus> _subscription;
+  Timer? _offlineTimer;
+  int _checkId = 0;
 
   void dismissOfflineScreen() {
     emit(state.copyWith(showOfflineScreen: false));
   }
 
+  void _scheduleOfflineCheck() {
+    _offlineTimer?.cancel();
+
+    final currentCheck = ++_checkId;
+
+    _offlineTimer = Timer(const Duration(seconds: 5), () async {
+      try {
+        var connected = await InternetConnection().hasInternetAccess;
+
+        if (isClosed || currentCheck != _checkId) return;
+
+        // Confirm the connection status one more time.
+        if (!connected) {
+          await Future.delayed(const Duration(seconds: 3));
+
+          if (isClosed || currentCheck != _checkId) return;
+
+          connected = await InternetConnection().hasInternetAccess;
+        }
+
+        if (isClosed || currentCheck != _checkId) return;
+
+        emit(
+          state.copyWith(
+            isConnected: connected,
+            isLoading: false,
+            showOfflineScreen: !connected,
+            clearError: connected,
+          ),
+        );
+      } catch (_) {
+        if (isClosed || currentCheck != _checkId) return;
+
+        emit(
+          state.copyWith(
+            isConnected: false,
+            isLoading: false,
+            showOfflineScreen: true,
+          ),
+        );
+      }
+    });
+  }
+
   Future<void> _checkInitialConnection() async {
-    await Future.delayed(const Duration(seconds: 3));
+    final checkId = _checkId;
 
     final connected = await InternetConnection().hasInternetAccess;
 
-    debugPrint('Initial Internet Check: $connected');
+    if (isClosed || checkId != _checkId) return;
 
-    if (!isClosed) {
-      emit(
-        state.copyWith(isConnected: connected, showOfflineScreen: !connected),
-      );
+    if (connected) {
+      emit(state.copyWith(isConnected: true, showOfflineScreen: false));
+    } else {
+      _scheduleOfflineCheck();
     }
   }
 
@@ -82,13 +138,19 @@ class InternetCubit extends Cubit<InternetState> {
     emit(state.copyWith(isLoading: true, clearError: true));
 
     try {
+      await Future.delayed(const Duration(seconds: 5));
+
+      if (isClosed) return;
+
       final connected = await InternetConnection().hasInternetAccess;
-      await Future.delayed(const Duration(seconds: 3));
 
       if (isClosed) return;
 
       if (connected) {
-        emit(const InternetState(isConnected: true));
+        _offlineTimer?.cancel();
+        _checkId++;
+
+        emit(const InternetState(isConnected: true, showOfflineScreen: false));
       } else {
         emit(
           const InternetState(
@@ -113,6 +175,8 @@ class InternetCubit extends Cubit<InternetState> {
 
   @override
   Future<void> close() {
+    WidgetsBinding.instance.removeObserver(this);
+    _offlineTimer?.cancel();
     _subscription.cancel();
     return super.close();
   }
