@@ -37,8 +37,8 @@ class InternetCubit extends Cubit<InternetState> with WidgetsBindingObserver {
   InternetCubit() : super(const InternetState()) {
     WidgetsBinding.instance.addObserver(this);
     _checkInitialConnection();
-
     _subscription = InternetConnection().onStatusChange.listen((status) {
+      if (!_isAppResumed) return;
       if (status == InternetStatus.disconnected) {
         _scheduleOfflineCheck();
       } else if (status == InternetStatus.connected) {
@@ -58,12 +58,20 @@ class InternetCubit extends Cubit<InternetState> with WidgetsBindingObserver {
   }
   @override
   void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
+    debugPrint('APP LIFECYCLE: $lifecycleState');
     if (lifecycleState == AppLifecycleState.paused ||
         lifecycleState == AppLifecycleState.inactive ||
         lifecycleState == AppLifecycleState.hidden) {
+      _isAppResumed = false;
       _offlineTimer?.cancel();
       _checkId++;
     } else if (lifecycleState == AppLifecycleState.resumed) {
+      _isAppResumed = true;
+      _offlineTimer?.cancel();
+      _checkId++;
+
+      emit(state.copyWith(showOfflineScreen: false, isLoading: false));
+
       _scheduleOfflineCheck();
     }
   }
@@ -71,6 +79,7 @@ class InternetCubit extends Cubit<InternetState> with WidgetsBindingObserver {
   late final StreamSubscription<InternetStatus> _subscription;
   Timer? _offlineTimer;
   int _checkId = 0;
+  bool _isAppResumed = true;
 
   void dismissOfflineScreen() {
     emit(state.copyWith(showOfflineScreen: false));
@@ -78,13 +87,11 @@ class InternetCubit extends Cubit<InternetState> with WidgetsBindingObserver {
 
   void _scheduleOfflineCheck() {
     _offlineTimer?.cancel();
-
     final currentCheck = ++_checkId;
 
     _offlineTimer = Timer(const Duration(seconds: 5), () async {
       try {
         var connected = await InternetConnection().hasInternetAccess;
-
         if (isClosed || currentCheck != _checkId) return;
 
         // Confirm the connection status one more time.
@@ -95,7 +102,6 @@ class InternetCubit extends Cubit<InternetState> with WidgetsBindingObserver {
 
           connected = await InternetConnection().hasInternetAccess;
         }
-
         if (isClosed || currentCheck != _checkId) return;
 
         emit(
