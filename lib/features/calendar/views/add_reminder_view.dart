@@ -87,7 +87,8 @@ class _ReminderForm extends StatelessWidget {
           previous.selectedDate != current.selectedDate ||
           previous.selectedTime != current.selectedTime ||
           previous.repeat != current.repeat ||
-          previous.isEditing != current.isEditing,
+          previous.isEditing != current.isEditing ||
+          previous.isSaving != current.isSaving,
       builder: (context, state) {
         final cubit = context.read<AddReminderCubit>();
 
@@ -346,12 +347,18 @@ class _ReminderForm extends StatelessWidget {
             CustomElevatedbutton(
               text: state.isEditing ? 'Save changes' : 'Save reminder',
               backgroundColor: AppColors.primary,
-              onPressed: () {
-                final success = cubit.saveReminder(calendarCubit);
-                if (success) {
-                  Navigator.of(context).pop();
-                }
-              },
+              isLoading: state.isSaving,
+  onPressed: state.isSaving
+      ? null
+      : () async {
+          final success = await cubit.saveReminder(calendarCubit);
+
+          if (!context.mounted) return;
+
+          if (success) {
+            Navigator.of(context).pop();
+          }
+        },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

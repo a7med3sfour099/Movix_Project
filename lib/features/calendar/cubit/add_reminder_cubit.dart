@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movixapp/core/services/notification_service.dart';
 import 'package:movixapp/features/calendar/cubit/calendar_cubit.dart';
 import 'package:movixapp/features/calendar/data/reminder_item.dart';
 import 'package:movixapp/features/home/widgets/search_bar_field.dart';
@@ -34,16 +35,18 @@ class AddReminderCubit extends Cubit<AddReminderState> {
         parsedTime = TimeOfDay.now();
       }
 
-      emit(state.copyWith(
-        isEditing: true,
-        reminderTitle: initialItem!.title,
-        selectedDate: initialItem!.date,
-        selectedTime: parsedTime,
-        repeat: initialItem!.repeat,
-        type: initialItem!.category.contains('TV')
-            ? SearchType.tv
-            : SearchType.movies,
-      ));
+      emit(
+        state.copyWith(
+          isEditing: true,
+          reminderTitle: initialItem!.title,
+          selectedDate: initialItem!.date,
+          selectedTime: parsedTime,
+          repeat: initialItem!.repeat,
+          type: initialItem!.category.contains('TV')
+              ? SearchType.tv
+              : SearchType.movies,
+        ),
+      );
     }
   }
 
@@ -57,12 +60,14 @@ class AddReminderCubit extends Cubit<AddReminderState> {
     if (state.type != type) {
       _debounce?.cancel();
       _requestId++;
-      emit(state.copyWith(
-        type: type,
-        clearSelectedMedia: true,
-        searchResults: const [],
-        isSearching: false,
-      ));
+      emit(
+        state.copyWith(
+          type: type,
+          clearSelectedMedia: true,
+          searchResults: const [],
+          isSearching: false,
+        ),
+      );
       // Movies / TV Shows is the only difference from the main search:
       // search again right away, but only inside the new type.
       if (state.searchQuery.trim().isNotEmpty) {
@@ -83,11 +88,13 @@ class AddReminderCubit extends Cubit<AddReminderState> {
 
     if (query.isEmpty) {
       _requestId++; // ignore any answer that is still on its way
-      emit(state.copyWith(
-        searchQuery: '',
-        searchResults: const [],
-        isSearching: false,
-      ));
+      emit(
+        state.copyWith(
+          searchQuery: '',
+          searchResults: const [],
+          isSearching: false,
+        ),
+      );
       return;
     }
 
@@ -104,11 +111,13 @@ class AddReminderCubit extends Cubit<AddReminderState> {
     final id = ++_requestId;
 
     if (q.isEmpty) {
-      emit(state.copyWith(
-        searchQuery: '',
-        searchResults: const [],
-        isSearching: false,
-      ));
+      emit(
+        state.copyWith(
+          searchQuery: '',
+          searchResults: const [],
+          isSearching: false,
+        ),
+      );
       return;
     }
 
@@ -120,10 +129,12 @@ class AddReminderCubit extends Cubit<AddReminderState> {
       emit(state.copyWith(searchResults: results, isSearching: false));
     } catch (_) {
       if (id != _requestId || isClosed) return;
-      emit(state.copyWith(
-        isSearching: false,
-        error: 'Failed to fetch search results',
-      ));
+      emit(
+        state.copyWith(
+          isSearching: false,
+          error: 'Failed to fetch search results',
+        ),
+      );
     }
   }
 
@@ -132,11 +143,13 @@ class AddReminderCubit extends Cubit<AddReminderState> {
     _requestId++;
     if (titleController.text.isEmpty) {
       titleController.text = result.title;
-      emit(state.copyWith(
-        selectedMedia: result,
-        reminderTitle: result.title,
-        isSearching: false,
-      ));
+      emit(
+        state.copyWith(
+          selectedMedia: result,
+          reminderTitle: result.title,
+          isSearching: false,
+        ),
+      );
     } else {
       emit(state.copyWith(selectedMedia: result, isSearching: false));
     }
@@ -157,10 +170,12 @@ class AddReminderCubit extends Cubit<AddReminderState> {
     emit(state.copyWith(selectedTime: time));
   }
 
-  bool saveReminder(CalendarCubit calendarCubit) {
+  Future<bool> saveReminder(CalendarCubit calendarCubit) async {
+    if (state.isSaving) return false;
     if (state.selectedMedia == null && state.reminderTitle.trim().isEmpty) {
-      emit(state.copyWith(
-          error: 'Please select a movie/show or enter a title'));
+      emit(
+        state.copyWith(error: 'Please select a movie/show or enter a title'),
+      );
       return false;
     }
     if (state.selectedDate == null) {
@@ -171,54 +186,70 @@ class AddReminderCubit extends Cubit<AddReminderState> {
       emit(state.copyWith(error: 'Please select a time'));
       return false;
     }
+    emit(state.copyWith(isSaving: true));
 
-    final media = state.selectedMedia;
-    final category = state.type == SearchType.movies
-        ? 'MOVIE PREMIERE'
-        : (media?.type == 'tv'
-            ? 'TV SHOW'
-            : (initialItem?.category ?? 'SHOW PREMIERE'));
+    try {
+      final media = state.selectedMedia;
+      final category = state.type == SearchType.movies
+          ? 'MOVIE PREMIERE'
+          : (media?.type == 'tv'
+                ? 'TV SHOW'
+                : (initialItem?.category ?? 'SHOW PREMIERE'));
 
-    final title = state.reminderTitle.trim().isNotEmpty
-        ? state.reminderTitle.trim()
-        : (media?.title ?? (initialItem?.title ?? 'Scheduled Reminder'));
+      final title = state.reminderTitle.trim().isNotEmpty
+          ? state.reminderTitle.trim()
+          : (media?.title ?? (initialItem?.title ?? 'Scheduled Reminder'));
 
-    final date = DateTime(
-      state.selectedDate!.year,
-      state.selectedDate!.month,
-      state.selectedDate!.day,
-      state.selectedTime!.hour,
-      state.selectedTime!.minute,
-    );
+      final date = DateTime(
+        state.selectedDate!.year,
+        state.selectedDate!.month,
+        state.selectedDate!.day,
+        state.selectedTime!.hour,
+        state.selectedTime!.minute,
+      );
 
-    final hour = state.selectedTime!.hourOfPeriod == 0
-        ? 12
-        : state.selectedTime!.hourOfPeriod;
-    final minuteStr = state.selectedTime!.minute.toString().padLeft(2, '0');
-    final periodStr =
-        state.selectedTime!.period == DayPeriod.am ? 'AM' : 'PM';
-    final timeStr = '$hour:$minuteStr $periodStr';
+      final hour = state.selectedTime!.hourOfPeriod == 0
+          ? 12
+          : state.selectedTime!.hourOfPeriod;
+      final minuteStr = state.selectedTime!.minute.toString().padLeft(2, '0');
+      final periodStr = state.selectedTime!.period == DayPeriod.am
+          ? 'AM'
+          : 'PM';
+      final timeStr = '$hour:$minuteStr $periodStr';
 
-    final reminder = ReminderItem(
-      id: initialItem?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      category: category,
-      title: title,
-      subtitle: media != null
-          ? 'Scheduled Premiere'
-          : (initialItem?.subtitle ?? 'Custom Alert'),
-      time: timeStr,
-      posterUrl: media?.image ?? (initialItem?.posterUrl ?? ''),
-      date: date,
-      repeat: state.repeat,
-      isEnabled: initialItem?.isEnabled ?? true,
-    );
+      final reminder = ReminderItem(
+        id: initialItem?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        category: category,
+        title: title,
+        subtitle: media != null
+            ? 'Scheduled Premiere'
+            : (initialItem?.subtitle ?? 'Custom Alert'),
+        time: timeStr,
+        posterUrl: media?.image ?? (initialItem?.posterUrl ?? ''),
+        date: date,
+        repeat: state.repeat,
+        isEnabled: initialItem?.isEnabled ?? true,
+      );
 
-    if (state.isEditing) {
-      calendarCubit.updateReminder(reminder);
-    } else {
-      calendarCubit.addReminder(reminder);
+      final bool success = state.isEditing
+          ? await calendarCubit.updateReminder(reminder)
+          : await calendarCubit.addReminder(reminder);
+
+      if (!success) {
+        emit(
+          state.copyWith(error: 'Failed to save reminder. Please try again.'),
+        );
+        return false;
+      }
+      return true;
+    } catch (_) {
+      emit(state.copyWith(error: 'Failed to save reminder. Please try again.'));
+      return false;
+    } finally {
+      if (!isClosed) {
+        emit(state.copyWith(isSaving: false));
+      }
     }
-    return true;
   }
 
   @override
