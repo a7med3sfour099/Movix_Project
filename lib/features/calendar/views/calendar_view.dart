@@ -101,7 +101,15 @@ class CalendarView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: SafeArea(
-          child: BlocBuilder<CalendarCubit, CalendarState>(
+          child: BlocConsumer<CalendarCubit, CalendarState>(
+  listenWhen: (previous, current) =>
+      current.error != null && current.error != previous.error,
+  listener: (context, state) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(state.error!)),
+    );
+    context.read<CalendarCubit>().clearError();
+  },
             builder: (context, state) {
               final cubit = context.read<CalendarCubit>();
 
@@ -238,7 +246,7 @@ class CalendarView extends StatelessWidget {
                                       return ReminderCardWidget(
                                         item: item,
                                         onToggle: (value) =>
-                                            cubit.toggleReminder(item.id),
+                                            cubit.setReminderEnabled(item.id, value),
                                         onDelete: () =>
                                             cubit.removeReminder(item.id),
                                         onEdit: () {
